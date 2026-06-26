@@ -1,44 +1,57 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 
 @theme inline {
-  --font-sans: 'Geist Variable', sans-serif;
-  --radius: 0.625rem;
-  
-  /* Colores OKLCH basados en el logo TDS */
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
-  
-  /* Verde Bosque Dep (Primary) */
-  --color-primary: oklch(0.35 0.12 150);
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --radius: 0.75rem;
+
+  /* 🌟 Bombonera Theme — Fútbol, Fuego, Neón, Colombia */
+  --color-background: oklch(0.985 0.005 75);
+  --color-foreground: oklch(0.15 0.015 75);
+
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.15 0.015 75);
+
+  --color-popover: oklch(1 0 0);
+  --color-popover-foreground: oklch(0.15 0.015 75);
+
+  /* 🔴 Rojo Intenso — Camiseta de Ronaldo, fuego, energía */
+  --color-primary: oklch(0.55 0.2 27);
   --color-primary-foreground: oklch(0.985 0 0);
-  
-  /* Marrón Tierra (Secondary) */
-  --color-secondary: oklch(0.45 0.08 70);
-  --color-secondary-foreground: oklch(0.985 0 0);
-  
-  --color-border: oklch(0.922 0 0);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.45 0 0);
-  
-  /* Estado */
-  --color-destructive: oklch(0.55 0.18 25);
+
+  /* 🟡 Amarillo Dorado — Borde del logo, bandera de Colombia */
+  --color-secondary: oklch(0.75 0.16 80);
+  --color-secondary-foreground: oklch(0.15 0.03 75);
+
+  /* 🔵 Azul Eléctrico — Camiseta de Messi, efectos neón */
+  --color-accent: oklch(0.6 0.16 230);
+  --color-accent-foreground: oklch(0.985 0 0);
+
+  /* 🟠 Naranja Fuego — Llamas, tipografía "LA" */
+  --color-destructive: oklch(0.6 0.2 38);
   --color-destructive-foreground: oklch(0.985 0 0);
-  
-  /* Ring / Focus */
-  --color-ring: oklch(0.35 0.12 150);
+
+  --color-muted: oklch(0.965 0.005 75);
+  --color-muted-foreground: oklch(0.5 0.01 75);
+
+  --color-border: oklch(0.9 0.01 75);
+  --color-input: oklch(0.9 0.01 75);
+  --color-ring: oklch(0.55 0.2 27);
 }
 
 @layer base {
   * { @apply border-border; }
   body { 
     @apply bg-background text-foreground antialiased;
-    /* Evitar scroll horizontal accidental */
     overflow-x: hidden;
-    /* Mejorar scroll en iOS */
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Selection — rojo intenso */
+  ::selection {
+    background: oklch(0.55 0.2 27 / 0.25);
+    color: oklch(0.55 0.2 27);
   }
 }
 
@@ -60,22 +73,21 @@
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar — rojo tenue */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.95 0 0);
+  background: oklch(0.95 0.005 75);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.8 0 0);
+  background: oklch(0.55 0.2 27 / 0.3);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.7 0 0);
+  background: oklch(0.55 0.2 27 / 0.5);
 }
-

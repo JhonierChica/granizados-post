@@ -153,7 +153,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ collapsed, onToggle }) => {
   return (
     <>
       {/* Mobile Nav Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-primary text-primary-foreground flex items-center justify-between px-6 z-50 shadow-lg">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-[#DC2626] text-white flex items-center justify-between px-6 z-50 shadow-lg">
         <button 
           className="w-12 h-12 flex items-center justify-center bg-white/20 rounded-xl active:scale-95 transition-transform" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -165,8 +165,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ collapsed, onToggle }) => {
           </div>
         </button>
         <div className="flex flex-col items-center">
-          <span className="font-black text-sm uppercase tracking-widest leading-none">La Terraza</span>
-          <span className="font-bold text-[10px] opacity-70">del Sinú</span>
+          <span className="font-black text-sm uppercase tracking-widest leading-none">La Bombonera</span>
+          <span className="font-bold text-[10px] opacity-70">🔥 Granizados</span>
         </div>
         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center font-black text-sm backdrop-blur-md border border-white/10">
           {user?.username.charAt(0).toUpperCase()}
@@ -181,13 +181,13 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ collapsed, onToggle }) => {
       >
         <div className="h-20 flex items-center justify-between px-6 border-b shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-xl">
-               <img src="/logo-tds.png" alt="Logo" className="h-8 w-auto" />
+            <div className="p-1.5 bg-[#E63946]/10 rounded-xl">
+               <img src="/logo-bombonera.png" alt="Logo" className="h-8 w-auto" />
             </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <span className="text-primary font-black text-sm leading-tight uppercase tracking-tighter">La Terraza</span>
-                <span className="text-secondary font-bold text-[10px] uppercase">del Sinú</span>
+                <span className="text-[#E63946] font-black text-sm leading-tight uppercase tracking-tighter">La Bombonera</span>
+                <span className="text-[#FFB703] font-bold text-[10px] uppercase">🔥 Granizados</span>
               </div>
             )}
           </div>
