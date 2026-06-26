@@ -150,13 +150,21 @@ npm run dev:frontend     # frontend solo
 - `paymentmethods` — métodos de pago
 - `clients` — clientes
 - `deliveries` — domicilios
+- `cashregister` — cierre de caja diario (control de ventas del día)
+- `dashboard` — reportes y resúmenes de ventas
 - `profiles` + `permissions` — roles y permisos
 
 ---
 
-## Lo que NO está en este sistema (vs Terraza)
+## Diferencias con Terraza
 
-- ❌ No hay módulo de cocina / chef — la mesera prepara todo
-- ❌ No hay EN_PREPARACION, LISTO, CANCELADO — estados simplificados
-- ❌ No hay cierre de caja (por ahora)
-- ❌ No hay cargos/puestos de empleados
+### ✅ Sí está (como en Terraza)
+- Cierre de caja diario (`cashregister`)
+- Dashboard / reportes de ventas
+- Pagos multi-método
+- Domicilios (PENDING → DELIVERED)
+- WebSockets (STOMP) para actualización en tiempo real
+
+### ❌ No está (no aplica a este negocio)
+- No hay módulo de cocina / chef — la mesera prepara todo
+- No hay EN_PREPARACION, LISTO — estados simplificados a PENDIENTE → SERVIDO → PAGADO
