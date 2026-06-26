@@ -2,6 +2,8 @@
 -- Please log an issue at https://github.com/pgadmin-org/pgadmin4/issues/new/choose if you find any bugs, including reproduction steps.
 BEGIN;
 
+CREATE SEQUENCE IF NOT EXISTS public.menu_id_menu_seq;
+CREATE SEQUENCE IF NOT EXISTS public.metodopago_id_metpag_seq;
 
 CREATE TABLE IF NOT EXISTS public.cargo
 (

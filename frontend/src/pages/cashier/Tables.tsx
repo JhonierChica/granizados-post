@@ -292,7 +292,7 @@ const TablesList: React.FC = () => {
                   name="location"
                   value={formData.location || ''}
                   onChange={handleChange}
-                  placeholder="Ej: Terraza del Lago, Salón VIP..."
+                  placeholder="Ej: Cancha central, Palco VIP..."
                   className="h-14 font-bold"
                />
 

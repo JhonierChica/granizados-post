@@ -146,7 +146,7 @@ const Employees: React.FC = () => {
       <div className="space-y-6 sm:space-y-8">
         <PageHeader
           title="Nómina de Empleados"
-          subtitle="Administra el talento humano de La Terraza."
+          subtitle="Administra el talento humano de La Bombonera."
           icon={<EmployeeIcon size={22} />}
           iconColor="text-primary bg-primary/10"
           action={

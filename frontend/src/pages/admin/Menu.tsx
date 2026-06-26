@@ -144,7 +144,7 @@ const Menu: React.FC = () => {
       <div className="space-y-6 sm:space-y-8">
         <PageHeader
           title="Carta y Menú"
-          subtitle="Gestiona los platillos y precios de La Terraza."
+          subtitle="Gestiona el menú de granizados y bebidas de La Bombonera."
           icon={<UtensilsIcon size={22} />}
           iconColor="text-primary bg-primary/10"
           action={
