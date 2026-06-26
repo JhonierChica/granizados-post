@@ -1,2 +1,81 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@theme inline {
+  --font-sans: 'Geist Variable', sans-serif;
+  --radius: 0.625rem;
+  
+  /* Colores OKLCH basados en el logo TDS */
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.145 0 0);
+  
+  /* Verde Bosque Dep (Primary) */
+  --color-primary: oklch(0.35 0.12 150);
+  --color-primary-foreground: oklch(0.985 0 0);
+  
+  /* Marrón Tierra (Secondary) */
+  --color-secondary: oklch(0.45 0.08 70);
+  --color-secondary-foreground: oklch(0.985 0 0);
+  
+  --color-border: oklch(0.922 0 0);
+  --color-muted: oklch(0.97 0 0);
+  --color-muted-foreground: oklch(0.45 0 0);
+  
+  /* Estado */
+  --color-destructive: oklch(0.55 0.18 25);
+  --color-destructive-foreground: oklch(0.985 0 0);
+  
+  /* Ring / Focus */
+  --color-ring: oklch(0.35 0.12 150);
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { 
+    @apply bg-background text-foreground antialiased;
+    /* Evitar scroll horizontal accidental */
+    overflow-x: hidden;
+    /* Mejorar scroll en iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile Utilities */
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.95 0 0);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.8 0 0);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.7 0 0);
+}
+

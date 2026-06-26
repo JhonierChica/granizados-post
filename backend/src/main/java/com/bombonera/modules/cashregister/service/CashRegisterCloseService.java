@@ -1,0 +1,359 @@
+package com.bombonera.modules.cashregister.service;
+
+import com.bombonera.modules.cashregister.dto.CashRegisterCloseResponse;
+import com.bombonera.modules.cashregister.dto.CreateCashRegisterCloseRequest;
+import com.bombonera.modules.cashregister.model.CashRegisterClose;
+import com.bombonera.modules.cashregister.repository.CashRegisterCloseRepository;
+import com.bombonera.modules.payments.model.Payment;
+import com.bombonera.modules.payments.repository.PaymentRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.text.Normalizer;
+import java.util.stream.Collectors;
+
+import com.bombonera.modules.cashregister.dto.ItemSalesSummaryDTO;
+import com.bombonera.modules.orders.model.OrderItem;
+
+@Service
+public class CashRegisterCloseService {
+
+    private static final Logger log = LoggerFactory.getLogger(CashRegisterCloseService.class);
+
+    private final CashRegisterCloseRepository cashRegisterCloseRepository;
+    private final PaymentRepository paymentRepository;
+
+    public CashRegisterCloseService(CashRegisterCloseRepository cashRegisterCloseRepository,
+                                     PaymentRepository paymentRepository) {
+        this.cashRegisterCloseRepository = cashRegisterCloseRepository;
+        this.paymentRepository = paymentRepository;
+    }
+
+    @Transactional
+    public CashRegisterCloseResponse createDailyCashClose(String closedBy) {
+        LocalDate today = LocalDate.now();
+        
+        // Verificar si ya existe un cierre para hoy
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+        List<CashRegisterClose> existingCloses = cashRegisterCloseRepository
+                .findByClosingDateBetweenOrderByClosingDateDesc(startOfDay, endOfDay);
+        if (!existingCloses.isEmpty()) {
+            throw new RuntimeException("Ya existe un cierre de caja para el día de hoy");
+        }
+
+        // Obtener pagos del día
+        List<Payment> todayPayments = paymentRepository.findByPaymentDate(today);
+        List<Payment> completedPayments = todayPayments.stream()
+                .filter(p -> "C".equals(p.getStatus()))
+                .collect(Collectors.toList());
+
+        BigDecimal totalSales = completedPayments.stream()
+                .map(Payment::getAmountAsBigDecimal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        int totalTransactions = completedPayments.size();
+
+        // Obtener monto inicial del último cierre
+        BigDecimal initialAmount = BigDecimal.ZERO;
+        try {
+            CashRegisterClose lastClose = cashRegisterCloseRepository
+                    .findTopByOrderByClosingDateDesc().orElse(null);
+            if (lastClose != null) {
+                initialAmount = lastClose.getFinalAmount();
+            }
+        } catch (Exception e) {
+            log.warn("No previous cash register closes found, using initial amount of 0: {}", e.getMessage());
+        }
+
+        BigDecimal finalAmount = initialAmount.add(totalSales);
+        BigDecimal expectedAmount = initialAmount.add(totalSales);
+        BigDecimal difference = finalAmount.subtract(expectedAmount);
+
+        CashRegisterClose close = new CashRegisterClose();
+        close.setOpeningDate(startOfDay);
+        close.setClosingDate(LocalDateTime.now());
+        close.setInitialAmount(initialAmount);
+        close.setFinalAmount(finalAmount);
+        close.setExpectedAmount(expectedAmount);
+        close.setDifference(difference);
+        close.setTotalSales(totalSales);
+        close.setTotalTransactions(totalTransactions);
+        MethodTotals methodTotals = calculateMethodTotals(today);
+        close.setCashAmount(methodTotals.cashAmount);
+        close.setCardAmount(methodTotals.cardAmount);
+        close.setOtherAmount(methodTotals.transferAmount.add(methodTotals.otherAmount));
+        close.setClosedBy(closedBy);
+        close.setNotes("Cierre de caja del día " + today);
+
+        CashRegisterClose savedClose = cashRegisterCloseRepository.save(close);
+        return mapToResponse(savedClose);
+    }
+
+    @Transactional
+    public CashRegisterCloseResponse createCashRegisterClose(CreateCashRegisterCloseRequest request) {
+        LocalDateTime closingDate = request.getClosingDate() != null ? request.getClosingDate() : LocalDateTime.now();
+        LocalDate closingLocalDate = closingDate.toLocalDate();
+
+        // Guard: Evitar cierres duplicados para el mismo día (basado en la fecha del cierre)
+        LocalDateTime startOfDay = closingLocalDate.atStartOfDay();
+        LocalDateTime endOfDay = closingLocalDate.atTime(LocalTime.MAX);
+        List<CashRegisterClose> existingCloses = cashRegisterCloseRepository
+                .findByClosingDateBetweenOrderByClosingDateDesc(startOfDay, endOfDay);
+        
+        if (!existingCloses.isEmpty()) {
+            throw new RuntimeException("Ya existe un cierre de caja registrado para el día " + closingLocalDate);
+        }
+
+        CashRegisterClose close = new CashRegisterClose();
+        close.setClosingDate(closingDate);
+        
+        // Obtener último cierre histórico para el monto inicial
+        CashRegisterClose lastClose = cashRegisterCloseRepository.findTopByOrderByClosingDateDesc().orElse(null);
+        
+        LocalDateTime openingDate = request.getOpeningDate();
+        if (openingDate == null) {
+            openingDate = (lastClose != null) ? lastClose.getClosingDate() : startOfDay;
+        }
+        close.setOpeningDate(openingDate);
+
+        BigDecimal initialAmount = request.getInitialAmount();
+        if (initialAmount == null || initialAmount.compareTo(BigDecimal.ZERO) == 0) {
+            initialAmount = (lastClose != null) ? lastClose.getFinalAmount() : BigDecimal.ZERO;
+        }
+        close.setInitialAmount(initialAmount);
+
+        // Cálculo de ventas para el día del cierre
+        BigDecimal totalSales = request.getTotalSales();
+        Integer totalTransactions = request.getTotalTransactions();
+
+        if (totalSales == null || totalSales.compareTo(BigDecimal.ZERO) == 0) {
+            List<Payment> todayPayments = paymentRepository.findByPaymentDate(closingLocalDate);
+            List<Payment> completedPayments = todayPayments.stream()
+                    .filter(p -> "C".equals(p.getStatus()))
+                    .collect(Collectors.toList());
+            
+            totalSales = completedPayments.stream()
+                    .map(Payment::getAmountAsBigDecimal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            totalTransactions = completedPayments.size();
+        }
+
+        close.setTotalSales(totalSales);
+        close.setTotalTransactions(totalTransactions);
+        
+        BigDecimal expectedAmount = initialAmount.add(totalSales);
+        close.setExpectedAmount(expectedAmount);
+        
+        BigDecimal finalAmount = request.getFinalAmount();
+        if (finalAmount == null || finalAmount.compareTo(BigDecimal.ZERO) == 0) {
+            finalAmount = expectedAmount;
+        }
+        close.setFinalAmount(finalAmount);
+        
+        close.setDifference(finalAmount.subtract(expectedAmount));
+        MethodTotals methodTotals = calculateMethodTotals(closingLocalDate);
+        close.setCashAmount(methodTotals.cashAmount);
+        close.setCardAmount(methodTotals.cardAmount);
+        close.setOtherAmount(methodTotals.transferAmount.add(methodTotals.otherAmount));
+        
+        close.setClosedBy(request.getClosedBy() != null ? request.getClosedBy() : "Sistema");
+        close.setNotes(request.getNotes() != null ? request.getNotes() : "Cierre de jornada consolidado");
+
+        CashRegisterClose savedClose = cashRegisterCloseRepository.save(close);
+        return mapToResponse(savedClose);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CashRegisterCloseResponse> getAllCloses() {
+        return cashRegisterCloseRepository.findAllOrderByClosingDateDesc()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public CashRegisterCloseResponse getCloseById(Long id) {
+        CashRegisterClose close = cashRegisterCloseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cierre de caja no encontrado con id: " + id));
+        return mapToResponse(close);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CashRegisterCloseResponse> getClosesByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return cashRegisterCloseRepository.findByClosingDateBetweenOrderByClosingDateDesc(startDate, endDate)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CashRegisterCloseResponse> getClosesByUser(String closedBy) {
+        return cashRegisterCloseRepository.findByClosedByOrderByClosingDateDesc(closedBy)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public CashRegisterCloseResponse getLastClose() {
+        CashRegisterClose close = cashRegisterCloseRepository.findTopByOrderByClosingDateDesc()
+                .orElseThrow(() -> new RuntimeException("No se encontraron cierres de caja"));
+        return mapToResponse(close);
+    }
+
+    private CashRegisterCloseResponse mapToResponse(CashRegisterClose close) {
+        CashRegisterCloseResponse response = new CashRegisterCloseResponse();
+        response.setId(close.getId());
+        response.setOpeningDate(close.getOpeningDate());
+        response.setClosingDate(close.getClosingDate());
+        response.setInitialAmount(close.getInitialAmount());
+        response.setFinalAmount(close.getFinalAmount());
+        response.setExpectedAmount(close.getExpectedAmount());
+        response.setDifference(close.getDifference());
+        response.setTotalSales(close.getTotalSales());
+        response.setTotalTransactions(close.getTotalTransactions());
+        response.setCashAmount(close.getCashAmount());
+        response.setCardAmount(close.getCardAmount());
+        response.setOtherAmount(close.getOtherAmount());
+        response.setClosedBy(close.getClosedBy());
+        response.setNotes(close.getNotes());
+        response.setCreatedAt(close.getCreatedAt());
+
+        // Calcular resumen de ventas por item dinámicamente
+        if (close.getClosingDate() != null) {
+            LocalDate date = close.getClosingDate().toLocalDate();
+            List<Payment> payments = paymentRepository.findByPaymentDate(date);
+            List<Payment> completedPayments = payments.stream()
+                    .filter(p -> "C".equals(p.getStatus()))
+                    .collect(Collectors.toList());
+            response.setItemSales(calculateItemSalesSummary(completedPayments));
+
+            MethodTotals methodTotals = calculateMethodTotals(date);
+            response.setCashAmount(methodTotals.cashAmount);
+            response.setCardAmount(methodTotals.cardAmount);
+            response.setOtherAmount(methodTotals.otherAmount);
+            response.setTransferAmount(methodTotals.transferAmount);
+        }
+
+        return response;
+    }
+
+    private List<ItemSalesSummaryDTO> calculateItemSalesSummary(List<Payment> payments) {
+        Map<String, ItemSalesSummaryDTO> summaryMap = new HashMap<>();
+        Set<Long> processedOrderIds = new HashSet<>(); // Evita contar la misma orden múltiples veces (split payments)
+
+        for (Payment payment : payments) {
+            if (payment.getOrder() != null && payment.getOrder().getId() != null) {
+                Long orderId = payment.getOrder().getId();
+                // Si ya procesamos esta orden por otro pago (split payment), la saltamos
+                if (!processedOrderIds.add(orderId)) {
+                    continue;
+                }
+            }
+            if (payment.getOrder() != null && payment.getOrder().getItems() != null) {
+                for (OrderItem item : payment.getOrder().getItems()) {
+                    if (item.getMenuItem() != null && "A".equals(item.getStatus())) {
+                        String itemName = item.getMenuItem().getName();
+                        String categoryName = item.getMenuItem().getCategory() != null ? 
+                                item.getMenuItem().getCategory().getName() : "Sin Categoría";
+                        BigDecimal unitPrice = item.getUnitPrice() != null ? 
+                                BigDecimal.valueOf(item.getUnitPrice()) : BigDecimal.ZERO;
+                        int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+
+                        if (summaryMap.containsKey(itemName)) {
+                            ItemSalesSummaryDTO summary = summaryMap.get(itemName);
+                            summary.setQuantity(summary.getQuantity() + quantity);
+                            summary.setTotal(summary.getTotal().add(unitPrice.multiply(BigDecimal.valueOf(quantity))));
+                        } else {
+                            ItemSalesSummaryDTO summary = new ItemSalesSummaryDTO();
+                            summary.setName(itemName);
+                            summary.setCategoryName(categoryName);
+                            summary.setQuantity(quantity);
+                            summary.setUnitPrice(unitPrice);
+                            summary.setTotal(unitPrice.multiply(BigDecimal.valueOf(quantity)));
+                            summaryMap.put(itemName, summary);
+                        }
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(summaryMap.values());
+    }
+
+    private MethodTotals calculateMethodTotals(LocalDate date) {
+        List<Object[]> totals = paymentRepository.sumAmountsByMethodAndDate(date, "C");
+        BigDecimal cashAmount = BigDecimal.ZERO;
+        BigDecimal transferAmount = BigDecimal.ZERO;
+        BigDecimal cardAmount = BigDecimal.ZERO;
+        BigDecimal otherAmount = BigDecimal.ZERO;
+
+        for (Object[] row : totals) {
+            String methodName = row[0] != null ? row[0].toString() : "";
+            BigDecimal amount = row[1] == null
+                    ? BigDecimal.ZERO
+                    : BigDecimal.valueOf(((Number) row[1]).doubleValue());
+
+            if (isCashMethod(methodName)) {
+                cashAmount = cashAmount.add(amount);
+            } else if (isTransferMethod(methodName)) {
+                transferAmount = transferAmount.add(amount);
+            } else if (isCardMethod(methodName)) {
+                cardAmount = cardAmount.add(amount);
+            } else {
+                otherAmount = otherAmount.add(amount);
+            }
+        }
+
+        return new MethodTotals(cashAmount, transferAmount, cardAmount, otherAmount);
+    }
+
+    private boolean isCashMethod(String name) {
+        String normalized = normalizeMethodName(name);
+        return normalized.contains("EFECTIVO") || normalized.contains("CASH");
+    }
+
+    private boolean isTransferMethod(String name) {
+        String normalized = normalizeMethodName(name);
+        return normalized.contains("TRANSFER") || normalized.contains("TRASFER");
+    }
+
+    private boolean isCardMethod(String name) {
+        String normalized = normalizeMethodName(name);
+        return normalized.contains("TARJETA") || normalized.contains("CARD");
+    }
+
+    private String normalizeMethodName(String name) {
+        if (name == null) return "";
+        String normalized = Normalizer.normalize(name, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return normalized.toUpperCase();
+    }
+
+    private static class MethodTotals {
+        private final BigDecimal cashAmount;
+        private final BigDecimal transferAmount;
+        private final BigDecimal cardAmount;
+        private final BigDecimal otherAmount;
+
+        private MethodTotals(BigDecimal cashAmount, BigDecimal transferAmount, BigDecimal cardAmount, BigDecimal otherAmount) {
+            this.cashAmount = cashAmount;
+            this.transferAmount = transferAmount;
+            this.cardAmount = cardAmount;
+            this.otherAmount = otherAmount;
+        }
+    }
+}
