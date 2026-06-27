@@ -168,12 +168,12 @@ const Employees: React.FC = () => {
         )}
 
         {positions.length === 0 ? (
-          <div className="text-center py-16 sm:py-20 bg-amber-50 rounded-3xl sm:rounded-4xl border-2 border-dashed border-amber-200">
-            <div className="mb-4 text-amber-500">
+          <div className="text-center py-16 sm:py-20 bg-amber-500/10 rounded-3xl sm:rounded-4xl border-2 border-dashed border-amber-500/20">
+            <div className="mb-4 text-amber-400">
               <BriefcaseIcon size={48} className="mx-auto" />
             </div>
-            <h3 className="text-lg sm:text-xl font-black uppercase text-amber-800 mb-2">Configuración Requerida</h3>
-            <p className="text-amber-700/70 font-medium max-w-sm mx-auto text-sm">Debes crear al menos un cargo antes de registrar empleados.</p>
+            <h3 className="text-lg sm:text-xl font-black uppercase text-amber-300 mb-2">Configuracion Requerida</h3>
+            <p className="text-amber-400/60 font-medium max-w-sm mx-auto text-sm">Debes crear al menos un cargo antes de registrar empleados.</p>
           </div>
         ) : employees.length === 0 ? (
           <div className="text-center py-16 sm:py-20 bg-muted/20 rounded-3xl sm:rounded-4xl border-2 border-dashed border-muted">

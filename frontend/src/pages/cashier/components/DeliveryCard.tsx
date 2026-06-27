@@ -21,8 +21,8 @@ interface DeliveryCardProps {
 }
 
 const DELIVERY_STATUS_MAP: Record<string, { text: string; class: string }> = {
-  PENDING:    { text: 'PENDIENTE',    class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  DELIVERED:  { text: 'ENTREGADO',    class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  PENDING:    { text: 'PENDIENTE',    class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+  DELIVERED:  { text: 'ENTREGADO',    class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
 };
 
 const DeliveryCard: React.FC<DeliveryCardProps> = ({
@@ -131,9 +131,9 @@ const DeliveryCard: React.FC<DeliveryCardProps> = ({
         </div>
 
         {order?.notes && (
-          <div className="p-2.5 bg-amber-50/50 border border-amber-100 rounded-lg flex gap-2">
-            <InfoIcon size={14} className="text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-amber-800/80 font-medium leading-relaxed italic wrap-break-word">
+          <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-lg flex gap-2">
+            <InfoIcon size={14} className="text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-[10px] text-amber-300/80 font-medium leading-relaxed italic wrap-break-word">
               {order.notes}
             </p>
           </div>

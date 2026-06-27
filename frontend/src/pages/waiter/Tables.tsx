@@ -58,13 +58,13 @@ const WaiterTables: React.FC = () => {
   const getStatusInfo = (tableStatus: string) => {
     switch (tableStatus) {
       case 'AVAILABLE':
-        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: <CheckCircleIcon size={16} /> };
+        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: <CheckCircleIcon size={16} /> };
       case 'OCCUPIED':
-        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-50 text-rose-700 border-rose-100', icon: <XCircleIcon size={16} /> };
+        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-500/10 text-rose-400 border-rose-500/20', icon: <XCircleIcon size={16} /> };
       case 'RESERVED':
-        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-50 text-amber-700 border-amber-100', icon: <ClockIcon size={16} /> };
+        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: <ClockIcon size={16} /> };
       default:
-        return { label: tableStatus, emoji: '', class: 'bg-muted text-muted-foreground border-muted', icon: <TableIcon size={16} /> };
+        return { label: tableStatus, emoji: '', class: 'bg-muted text-muted-foreground border-border', icon: <TableIcon size={16} /> };
     }
   };
 
@@ -88,14 +88,14 @@ const WaiterTables: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4 bg-muted/20 p-1 sm:p-2 rounded-xl sm:rounded-2xl border border-muted/50 overflow-x-auto no-scrollbar shrink-0">
-             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-emerald-100 text-emerald-800 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'AVAILABLE').length} Libres
+             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
+                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'AVAILABLE').length} Libres
              </div>
-             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-rose-100 text-rose-800 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
-                <div className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'OCCUPIED').length} Ocupadas
+             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-rose-500/10 text-rose-400 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
+                <div className="w-1.5 h-1.5 bg-rose-400 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'OCCUPIED').length} Ocupadas
              </div>
-             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-amber-100 text-amber-800 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
-                <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'RESERVED').length} Reservas
+             <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 bg-amber-500/10 text-amber-400 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tight shrink-0">
+                <div className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" /> {tables.filter(t => t.status === 'RESERVED').length} Reservas
              </div>
           </div>
         </div>
@@ -170,7 +170,7 @@ const WaiterTables: React.FC = () => {
         >
           <div className="space-y-8 py-2 animate-in slide-in-from-bottom-4 duration-300">
             <div className="bg-secondary/5 p-6 rounded-3xl border border-secondary/10 flex items-center gap-5">
-              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-3xl font-black text-secondary shadow-sm shadow-secondary/10">
+              <div className="w-16 h-16 bg-card rounded-2xl flex items-center justify-center text-3xl font-black text-secondary shadow-sm shadow-secondary/10">
                 {editingTable?.tableNumber}
               </div>
               <div className="space-y-1">
@@ -183,23 +183,23 @@ const WaiterTables: React.FC = () => {
             <div className="space-y-4">
               <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Cambiar estado operativo:</label>
               <div className="grid grid-cols-1 gap-3">
-                {[
-                  { id: TABLE_STATUS.AVAILABLE, label: 'MARCAR COMO DISPONIBLE', icon: <CheckCircleIcon size={24} />, class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-                  { id: TABLE_STATUS.OCCUPIED, label: 'MARCAR COMO OCUPADA', icon: <XCircleIcon size={24} />, class: 'bg-rose-50 text-rose-700 border-rose-200' },
-                  { id: TABLE_STATUS.RESERVED, label: 'MARCAR COMO RESERVADA', icon: <ClockIcon size={24} />, class: 'bg-amber-50 text-amber-700 border-amber-200' }
-                ].map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={() => setStatus(opt.id)}
-                    className={`
-                      w-full flex items-center gap-4 p-5 rounded-2xl border-2 font-black text-xs uppercase tracking-tight transition-all
-                      ${status === opt.id ? `${opt.class} ring-4 ring-secondary/5` : 'bg-white border-muted/50 text-muted-foreground hover:bg-muted/5'}
-                    `}
-                  >
+                  {[
+                    { id: TABLE_STATUS.AVAILABLE, label: 'MARCAR COMO DISPONIBLE', icon: <CheckCircleIcon size={24} />, class: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+                    { id: TABLE_STATUS.OCCUPIED, label: 'MARCAR COMO OCUPADA', icon: <XCircleIcon size={24} />, class: 'bg-rose-500/10 text-rose-400 border-rose-500/20' },
+                    { id: TABLE_STATUS.RESERVED, label: 'MARCAR COMO RESERVADA', icon: <ClockIcon size={24} />, class: 'bg-amber-500/10 text-amber-400 border-amber-500/20' }
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setStatus(opt.id)}
+                      className={`
+                        w-full flex items-center gap-4 p-5 rounded-2xl border-2 font-black text-xs uppercase tracking-tight transition-all
+                        ${status === opt.id ? `${opt.class} ring-4 ring-secondary/10` : 'bg-card border-border/60 text-muted-foreground hover:bg-muted'}
+                      `}
+                    >
                     <span className="text-2xl leading-none">{opt.icon}</span>
                     <span className="flex-1">{opt.label}</span>
                     {status === opt.id && (
-                      <div className="bg-white/50 p-1 rounded-full text-current">
+                      <div className="bg-muted/30 p-1 rounded-full text-current">
                         <CheckCircleIcon size={18} />
                       </div>
                     )}

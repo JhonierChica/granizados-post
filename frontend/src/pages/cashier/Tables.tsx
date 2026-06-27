@@ -119,13 +119,13 @@ const TablesList: React.FC = () => {
   const getStatusInfo = (tableStatus: string) => {
     switch (tableStatus) {
       case 'AVAILABLE':
-        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-100 border-emerald-200 text-emerald-800' };
+        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' };
       case 'OCCUPIED':
-        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-100 border-rose-200 text-rose-800' };
+        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-500/10 border-rose-500/20 text-rose-400' };
       case 'RESERVED':
-        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-100 border-amber-200 text-amber-800' };
+        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' };
       default:
-        return { label: 'FUERA DE SERVICIO', emoji: '', class: 'bg-muted border-muted-foreground/20 text-muted-foreground' };
+        return { label: 'FUERA DE SERVICIO', emoji: '', class: 'bg-muted border-border text-muted-foreground' };
     }
   };
 
@@ -143,7 +143,7 @@ const TablesList: React.FC = () => {
             <Button
               onClick={handleAdd}
               size="lg"
-              className="rounded-xl sm:rounded-2xl font-black h-11 sm:h-14 px-6 sm:px-10 shadow-2xl shadow-primary/20 bg-primary text-white border-none group transition-all w-full sm:w-auto"
+              className="w-full sm:w-auto"
             >
               <PlusIcon size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
               NUEVA MESA
@@ -241,7 +241,7 @@ const TablesList: React.FC = () => {
                <TableIcon size={64} className="mx-auto text-muted-foreground opacity-20 mb-6" />
                <h3 className="text-xl font-black uppercase tracking-tighter text-muted-foreground">No hay locales registrados</h3>
                <p className="text-muted-foreground font-medium italic mb-10">Define tu primera mesa para comenzar a operar.</p>
-               <Button onClick={handleAdd} className="rounded-xl px-8 font-black bg-primary">CREAR PRIMERA MESA</Button>
+               <Button onClick={handleAdd} size="lg">CREAR PRIMERA MESA</Button>
             </div>
           )}
 
@@ -255,7 +255,7 @@ const TablesList: React.FC = () => {
           >
             <div className="space-y-8 py-2 animate-in slide-in-from-bottom-4 duration-300">
                <div className="bg-primary/5 p-6 rounded-4xl border border-primary/10 flex items-center gap-6">
-                  <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-primary shadow-xl shadow-primary/10 transition-transform hover:scale-110">
+                   <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center text-primary shadow-xl shadow-primary/10 transition-transform hover:scale-110">
                      <TableIcon size={40} />
                   </div>
                   <div className="space-y-1">

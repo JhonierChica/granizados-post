@@ -76,13 +76,13 @@ const Payments: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDIENTE':
-        return <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">PENDIENTE</Badge>;
+        return <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">PENDIENTE</Badge>;
       case 'COMPLETADO':
-        return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">COMPLETADO</Badge>;
+        return <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">COMPLETADO</Badge>;
       case 'CANCELADO':
-        return <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">CANCELADO</Badge>;
+        return <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/20 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">CANCELADO</Badge>;
       default:
-        return <Badge className="bg-muted text-muted-foreground border-muted text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">{status}</Badge>;
+        return <Badge className="bg-muted text-muted-foreground border-border text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">{status}</Badge>;
     }
   };
 
@@ -123,7 +123,7 @@ const Payments: React.FC = () => {
                 <CashRegisterIcon size={18} /> CIERRE DE CAJA
               </button>
             ) : (
-              <div className="h-12 sm:h-14 px-5 sm:px-8 rounded-xl sm:rounded-2xl bg-blue-50 text-blue-700 border-2 border-blue-200 font-black text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center">
+              <div className="h-12 sm:h-14 px-5 sm:px-8 rounded-xl sm:rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 font-black text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-center">
                 <CalendarIcon size={18} /> MODO CONSULTA
               </div>
             )
@@ -137,7 +137,7 @@ const Payments: React.FC = () => {
             className={`
               px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center gap-2
               ${mode === 'current'
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200'
+                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/20'
                 : 'text-muted-foreground hover:text-foreground'
               }
             `}
@@ -149,7 +149,7 @@ const Payments: React.FC = () => {
             className={`
               px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all duration-300 flex items-center gap-2
               ${mode === 'history'
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
                 : 'text-muted-foreground hover:text-foreground'
               }
             `}
@@ -160,7 +160,7 @@ const Payments: React.FC = () => {
 
         {/* Stats Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-           <Card className="bg-white border-2 border-muted/60 relative overflow-hidden group">
+           <Card className="bg-card border border-border/60 relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 transition-transform group-hover:scale-125 duration-700">
                  <PaymentIcon size={80} />
               </div>
@@ -211,7 +211,7 @@ const Payments: React.FC = () => {
 
         {/* Filters and List */}
         <div className="space-y-4 sm:space-y-6">
-              <div className="bg-white p-4 sm:p-6 rounded-3xl sm:rounded-5xl border-2 border-muted/40 shadow-sm flex flex-col sm:flex-row items-end gap-3 sm:gap-6 transition-all hover:border-emerald-500/20">
+              <div className="bg-card p-4 sm:p-6 rounded-3xl sm:rounded-5xl border border-border/60 shadow-sm flex flex-col sm:flex-row items-end gap-3 sm:gap-6 transition-all hover:border-emerald-500/20">
                 {mode === 'history' && (
                   <div className="flex flex-col gap-2 w-full sm:w-56 animate-in slide-in-from-left-2">
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] ml-1 text-blue-800/60">Consultar Fecha</label>
@@ -264,7 +264,7 @@ const Payments: React.FC = () => {
            <div className="grid grid-cols-1 gap-4">
               {filteredPayments.length > 0 ? (
                 filteredPayments.map((payment) => (
-                  <div key={payment.id} className="group bg-white p-5 rounded-3xl border-2 border-transparent hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6">
+                  <div key={payment.id} className="group bg-card p-5 rounded-3xl border border-border/60 hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6">
                      <div className="flex items-center gap-6 flex-1">
                         <div className="w-14 h-14 bg-muted/40 rounded-2xl flex items-center justify-center text-muted-foreground group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 shadow-inner">
                            <ReceiptIcon size={24} />
@@ -280,7 +280,7 @@ const Payments: React.FC = () => {
                            {payment.items && payment.items.length > 0 && (
                              <div className="flex flex-wrap gap-1.5 mt-2.5 animate-in fade-in slide-in-from-left-2 duration-500">
                                {payment.items.map((item, idx) => (
-                                 <div key={idx} className="bg-muted/40 hover:bg-white hover:shadow-md hover:scale-105 transition-all px-2.5 py-1 rounded-lg border border-muted/60 flex items-center gap-2 group/item">
+                                 <div key={idx} className="bg-muted/40 hover:bg-card hover:shadow-md hover:scale-105 transition-all px-2.5 py-1 rounded-lg border border-border/60 flex items-center gap-2 group/item">
                                    <div className="flex items-center justify-center bg-primary/10 text-primary w-4 h-4 rounded-md text-[8px] font-black">
                                      {item.quantity}
                                    </div>
@@ -322,8 +322,8 @@ const Payments: React.FC = () => {
                   </div>
                 ))
                ) : (
-                <div className={`text-center py-32 rounded-6xl border-2 border-dashed flex flex-col items-center gap-6 shadow-inner ${mode === 'current' ? 'bg-emerald-50/20 border-emerald-100' : 'bg-blue-50/20 border-blue-100'}`}>
-                   <div className={`p-6 rounded-full shadow-lg ${mode === 'current' ? 'bg-white shadow-emerald-500/5 text-emerald-500' : 'bg-white shadow-blue-500/5 text-blue-500'}`}>
+                <div className={`text-center py-32 rounded-6xl border-2 border-dashed flex flex-col items-center gap-6 shadow-inner ${mode === 'current' ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-blue-500/5 border-blue-500/10'}`}>
+                   <div className={`p-6 rounded-full shadow-lg ${mode === 'current' ? 'bg-card shadow-emerald-500/5 text-emerald-400' : 'bg-card shadow-blue-500/5 text-blue-400'}`}>
                       <ShieldCheckIcon size={48} />
                    </div>
                    <div className="space-y-2">
@@ -343,13 +343,13 @@ const Payments: React.FC = () => {
 
         {/* Security / Help Note — solo visible en modo flujo actual */}
         {mode === 'current' && payments.length > 0 && (
-          <div className="bg-amber-50 p-6 rounded-4xl border border-amber-100 flex items-start gap-5">
-             <div className="bg-amber-500 text-white p-2 rounded-xl mt-1 shadow-lg shadow-amber-200">
+          <div className="bg-amber-500/10 p-6 rounded-4xl border border-amber-500/20 flex items-start gap-5">
+             <div className="bg-amber-500 text-white p-2 rounded-xl mt-1 shadow-lg shadow-amber-500/20">
                 <AlertCircleIcon size={20} />
              </div>
              <div className="space-y-1">
-                <h4 className="text-sm font-black text-amber-800 uppercase tracking-widest italic">Aviso de Seguridad Operativa</h4>
-                <p className="text-xs text-amber-700 font-medium leading-relaxed">
+                <h4 className="text-sm font-black text-amber-300 uppercase tracking-widest italic">Aviso de Seguridad Operativa</h4>
+                <p className="text-xs text-amber-400/80 font-medium leading-relaxed">
                   Vas a realizar el arqueo de caja con <strong>{totalPayments} tickets</strong>. Verifica que el dinero físico en el punto de venta coincida con el total de <strong>${totalAmount.toLocaleString('es-CO')}</strong> antes de confirmar el cierre definitivo.
                 </p>
              </div>

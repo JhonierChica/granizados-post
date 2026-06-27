@@ -195,10 +195,10 @@ export function useOrders() {
 
   const getStatusBadge = (status: string): StatusBadge => {
     const badges: Record<string, StatusBadge> = {
-      PENDIENTE: { emoji: '', text: 'Pendiente', class: 'badge-warning' },
-      SERVIDO: { emoji: '', text: 'Servido', class: 'badge-primary' },
+      PENDIENTE: { emoji: '', text: 'Pendiente', class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+      SERVIDO: { emoji: '', text: 'Servido', class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
     };
-    return badges[status] || { emoji: '', text: status, class: 'badge-secondary' };
+    return badges[status] || { emoji: '', text: status, class: 'bg-muted/50 border-border text-muted-foreground' };
   };
 
   const calculateOrderTotal = (items: OrderItem[]): number => {

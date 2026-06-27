@@ -115,7 +115,7 @@ const Menu: React.FC = () => {
             <Button
               onClick={handleAddNew}
               size="lg"
-              className="rounded-xl sm:rounded-2xl font-black h-11 sm:h-14 px-6 sm:px-8 shadow-lg shadow-primary/20 uppercase tracking-widest w-full sm:w-auto flex items-center gap-2"
+              className="w-full sm:w-auto flex items-center gap-2"
             >
               <PlusIcon size={20} /> AGREGAR PLATILLOS
             </Button>
@@ -139,8 +139,8 @@ const Menu: React.FC = () => {
           const items = menuItems.filter((i) => i.categoryId === category.id);
           return (
             <section key={category.id} className="space-y-4">
-              {/* Header de la categoría */}
-              <div className="flex items-center justify-between bg-muted/10 border border-muted/20 rounded-2xl p-4 sm:p-5">
+              {/* Header de la categoria */}
+              <div className="flex items-center justify-between bg-card border border-border/50 rounded-2xl p-4 sm:p-5 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-secondary/10 rounded-xl">
                     <TagIcon size={20} className="text-secondary" />
@@ -157,8 +157,8 @@ const Menu: React.FC = () => {
                 <Button
                   onClick={() => handleEditCategory(category)}
                   variant="secondary"
-                  size="sm"
-                  className="rounded-xl font-black text-xs h-10 px-4 flex items-center gap-1.5"
+                  size="xs"
+                  className="flex items-center gap-1.5"
                 >
                   <EditIcon size={15} /> EDITAR
                 </Button>
@@ -194,8 +194,8 @@ const Menu: React.FC = () => {
                           <button
                             className={`p-2 rounded-xl transition-all ${
                               item.available
-                                ? 'hover:bg-amber-100 text-amber-600'
-                                : 'hover:bg-green-100 text-green-600'
+                                ? 'hover:bg-amber-500/10 text-amber-400 hover:text-amber-300'
+                                : 'hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300'
                             }`}
                             onClick={() => handleToggleAvailability(item)}
                             title={item.available ? 'No disponible' : 'Disponible'}
@@ -287,9 +287,8 @@ const Menu: React.FC = () => {
                     onClick={() => handleEditCategory(category)}
                     variant="primary"
                     size="sm"
-                    className="rounded-xl font-black text-xs h-10 px-5"
                   >
-                    <PlusIcon size={16} /> AGREGAR ÍTEMS
+                    <PlusIcon size={16} /> AGREGAR ITEMS
                   </Button>
                 </div>
               )}
@@ -309,9 +308,9 @@ const Menu: React.FC = () => {
             <Button
               onClick={handleAddNew}
               variant="primary"
-              className="rounded-2xl px-12 h-14 font-black tracking-widest shadow-xl shadow-primary/20 text-white"
+              size="lg"
             >
-              AGREGAR ÍTEMS
+              AGREGAR ITEMS
             </Button>
           </div>
         )}

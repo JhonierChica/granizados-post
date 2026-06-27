@@ -117,8 +117,8 @@ const Categories: React.FC = () => {
           icon={<LayersIcon size={22} />}
           iconColor="text-primary bg-primary/10"
           action={
-            <Button onClick={handleAdd} size="lg" className="rounded-xl sm:rounded-2xl font-black h-11 sm:h-14 px-6 sm:px-8 shadow-lg shadow-primary/20 w-full sm:w-auto">
-              + NUEVA CATEGORÍA
+            <Button onClick={handleAdd} size="lg" className="w-full sm:w-auto">
+              + NUEVA CATEGORIA
             </Button>
           }
         />
@@ -153,7 +153,7 @@ const Categories: React.FC = () => {
                       <EditIcon size={18} />
                     </button>
                     <button 
-                      className={`p-2 rounded-xl transition-all ${isActive ? 'hover:bg-amber-100 text-amber-600' : 'hover:bg-green-100 text-green-600'}`}
+                      className={`p-2 rounded-xl transition-all ${isActive ? 'hover:bg-amber-500/10 text-amber-400 hover:text-amber-300' : 'hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300'}`}
                       onClick={() => handleToggleStatus(category.id, !!isActive)}
                       title={isActive ? 'Desactivar' : 'Activar'}
                     >
@@ -200,7 +200,7 @@ const Categories: React.FC = () => {
             <LayersIcon size={80} className="mx-auto mb-6 opacity-10" />
             <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 text-muted-foreground">El catálogo está vacío</h3>
             <p className="text-muted-foreground font-medium mb-10 max-w-sm mx-auto">Comienza creando tu primera categoría para organizar tu menú de forma profesional.</p>
-            <Button onClick={handleAdd} variant="primary" className="rounded-2xl px-12 h-14 font-black tracking-widest shadow-xl shadow-primary/20">CREAR CATEGORÍA</Button>
+            <Button onClick={handleAdd} variant="primary" size="lg">CREAR CATEGORIA</Button>
           </div>
         )}
 
@@ -224,13 +224,13 @@ const Categories: React.FC = () => {
                 required
               />
               <div className="space-y-2">
-                <label className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Descripción Detallada</label>
+                <label className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Descripcion Detallada</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={(e: any) => handleChange(e)}
-                  placeholder="Detalles que ayuden a identificar los productos de esta categoría..."
-                  className="w-full min-h-30 p-6 bg-muted/50 border-2 border-transparent focus:border-primary focus:bg-background rounded-2xl outline-none transition-all font-medium text-base shadow-inner resize-none"
+                  placeholder="Detalles que ayuden a identificar los productos de esta categoria..."
+                  className="w-full min-h-30 p-5 bg-muted/30 border border-border rounded-xl outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/40 focus:border-ring focus:ring-2 focus:ring-ring/20 resize-none"
                   required
                 />
               </div>

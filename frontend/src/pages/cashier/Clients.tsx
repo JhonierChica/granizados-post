@@ -195,7 +195,7 @@ const Clients: React.FC = () => {
                     <EditIcon size={20} />
                   </button>
                   <button 
-                    className="flex-1 flex items-center justify-center p-3 rounded-2xl bg-muted/40 text-muted-foreground hover:bg-rose-50 hover:text-rose-600 transition-all border border-transparent hover:border-rose-200" 
+                    className="flex-1 flex items-center justify-center p-3 rounded-2xl bg-muted/40 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all border border-transparent hover:border-destructive/20" 
                     onClick={() => handleDelete(client)}
                     title="Eliminar"
                   >
@@ -227,7 +227,7 @@ const Clients: React.FC = () => {
         >
           <div className="space-y-8 py-2 animate-in slide-in-from-bottom-4 duration-300">
              <div className="bg-secondary/5 p-6 rounded-4xl border border-secondary/10 flex items-center gap-6">
-                <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-secondary shadow-xl shadow-secondary/10">
+                <div className="w-20 h-20 bg-secondary/10 rounded-3xl flex items-center justify-center text-secondary shadow-xl shadow-secondary/10">
                    <UserIcon size={40} />
                 </div>
                 <div className="space-y-1">

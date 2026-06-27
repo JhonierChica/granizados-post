@@ -37,7 +37,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   const canDeleteOrder = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER;
 
   return (
-    <Card className="h-full flex flex-col group border-l-4 border-l-primary/10 hover:border-l-primary/40 transition-all duration-500">
+    <Card className="h-full flex flex-col group border-l-4 border-l-primary/30 hover:border-l-primary/60 transition-all duration-500">
       {/* Header — flex-wrap para que nunca se desborde */}
       <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
         <div className="min-w-0">

@@ -41,7 +41,7 @@ const Orders: React.FC = () => {
                 onClick={hook.handleAdd} 
                 disabled={hook.availableTables.length === 0}
                 size="lg"
-                className="hidden sm:flex rounded-xl sm:rounded-2xl font-black h-11 sm:h-14 px-6 sm:px-10 shadow-lg shadow-primary/20 bg-primary text-white border-none group transition-all w-full sm:w-auto"
+                className="hidden sm:flex w-full sm:w-auto"
               >
                 <PlusIcon size={18} className="mr-2 group-hover:rotate-90 transition-transform" />
                 NUEVA COMANDA
@@ -78,8 +78,8 @@ const Orders: React.FC = () => {
 
         {/* Available Tables Alert */}
         {hook.availableTables.length === 0 && (
-          <div className="bg-amber-50 border-2 border-amber-100 p-3 sm:p-4 rounded-xl sm:rounded-2xl flex items-center gap-3 sm:gap-4 text-amber-800 font-bold text-xs sm:text-sm animate-pulse">
-            <div className="bg-amber-500 text-white p-1 rounded-full shrink-0">
+          <div className="bg-amber-500/10 border border-amber-500/20 p-3 sm:p-4 rounded-xl sm:rounded-2xl flex items-center gap-3 sm:gap-4 text-amber-400 font-bold text-xs sm:text-sm">
+            <div className="bg-amber-500/20 text-amber-400 p-1 rounded-full shrink-0">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                 <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 17c-.77 1.333.192 3 1.732 3z"/>
               </svg>
@@ -89,7 +89,7 @@ const Orders: React.FC = () => {
         )}
 
         {/* Filter Section */}
-        <div className="bg-muted/30 p-2 sm:p-3 rounded-2xl sm:rounded-4xl border border-muted flex flex-col gap-3">
+        <div className="bg-muted/20 p-2 sm:p-3 rounded-2xl sm:rounded-4xl border border-border/50 flex flex-col gap-3">
           <div className="flex items-center gap-1.5 px-3 sm:px-4 py-2 text-muted-foreground font-black text-[9px] sm:text-[10px] uppercase tracking-widest border-b border-muted/60">
             <FilterIcon size={12} />
             Filtrar:
@@ -113,7 +113,7 @@ const Orders: React.FC = () => {
                 </button>
               ))}
             </div>
-            <div className="flex items-center gap-2 bg-white/80 border border-primary/10 rounded-2xl px-3 py-2 shadow-sm">
+            <div className="flex items-center gap-2 bg-muted/30 border border-border/50 rounded-2xl px-3 py-2 shadow-sm">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Nombre</span>
               <input
                 value={hook.clientNameFilter}
@@ -157,7 +157,7 @@ const Orders: React.FC = () => {
                 : `No encontramos pedidos con el estado que seleccionaste.`}
             </p>
             {hook.statusFilter !== 'TODOS' && (
-              <Button onClick={() => hook.setStatusFilter('TODOS')} variant="outline" className="rounded-xl px-8 font-black">
+              <Button onClick={() => hook.setStatusFilter('TODOS')} variant="secondary" size="sm">
                 VER TODOS
               </Button>
             )}

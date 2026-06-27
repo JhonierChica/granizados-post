@@ -71,11 +71,11 @@ const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
                   group w-full flex items-center gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl sm:rounded-2xl border-2 transition-all text-left
                   ${newStatus === opt.value 
                     ? `${opt.class} ring-4 ring-primary/5 scale-[1.02] shadow-lg` 
-                    : 'bg-white border-muted/40 text-muted-foreground hover:border-primary/20 hover:bg-muted/5'
+                    : 'bg-card border-border/60 text-muted-foreground hover:border-primary/20 hover:bg-muted'
                   }
                 `}
               >
-                 <div className={`p-2 sm:p-3 rounded-xl transition-all ${newStatus === opt.value ? 'bg-white/40' : 'bg-muted/30 group-hover:bg-primary/5'}`}>
+                 <div className={`p-2 sm:p-3 rounded-xl transition-all ${newStatus === opt.value ? 'bg-primary/20' : 'bg-muted/30 group-hover:bg-primary/5'}`}>
                     <ToggleIcon size={20} className={newStatus === opt.value ? 'text-current' : 'text-muted-foreground'} />
                  </div>
                 
@@ -85,7 +85,7 @@ const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
                 </div>
 
                 {newStatus === opt.value && (
-                  <div className="bg-white/50 p-1 rounded-full text-current shadow-sm animate-in zoom-in duration-300">
+                  <div className="bg-muted/30 p-1 rounded-full text-current shadow-sm animate-in zoom-in duration-300">
                     <CheckCircleIcon size={20} />
                   </div>
                 )}

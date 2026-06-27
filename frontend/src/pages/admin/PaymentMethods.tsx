@@ -164,7 +164,7 @@ const PaymentMethods: React.FC = () => {
                 }
               >
                 <div className="space-y-6">
-                  <div className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${isActive ? 'bg-green-50 border-green-100 text-green-700' : 'bg-muted/50 border-muted text-muted-foreground'}`}>
+                  <div className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${isActive ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-muted/50 border-border text-muted-foreground'}`}>
                     {isActive ? <CheckCircleIcon size={20} /> : <XCircleIcon size={20} />}
                     <div className="flex flex-col">
                       <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Estado Actual</span>

@@ -30,19 +30,19 @@ interface DeliveryStatusOption {
 
 const DELIVERY_STATUS_FILTERS: (DeliveryStatusOption & { value: DeliveryFilter })[] = [
   { value: 'TODOS', label: 'Todos', emoji: <FilterIcon size={14} />, class: 'bg-muted/50 border-muted text-muted-foreground' },
-  { value: 'PENDING', label: 'Pendiente', emoji: <ClockIcon size={14} />, class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  { value: 'DELIVERED', label: 'Entregado', emoji: <CheckCircleIcon size={14} />, class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  { value: 'PENDING', label: 'Pendiente', emoji: <ClockIcon size={14} />, class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+  { value: 'DELIVERED', label: 'Entregado', emoji: <CheckCircleIcon size={14} />, class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
 ];
 
 const DELIVERY_STATUS_OPTIONS: DeliveryStatusOption[] = [
-  { value: 'PENDING', label: 'PENDIENTE', emoji: <ClockIcon size={20} />, class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  { value: 'DELIVERED', label: 'ENTREGADO', emoji: <CheckCircleIcon size={20} />, class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  { value: 'PENDING', label: 'PENDIENTE', emoji: <ClockIcon size={20} />, class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+  { value: 'DELIVERED', label: 'ENTREGADO', emoji: <CheckCircleIcon size={20} />, class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
 ];
 
 const getStatusBadge = (status: string) => {
   const map: Record<string, { text: string; class: string }> = {
-    PENDING:   { text: 'PENDIENTE', class: 'bg-amber-100 border-amber-200 text-amber-700' },
-    DELIVERED: { text: 'ENTREGADO', class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+    PENDING:   { text: 'PENDIENTE', class: 'bg-amber-500/10 border-amber-500/20 text-amber-400' },
+    DELIVERED: { text: 'ENTREGADO', class: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' },
   };
   return map[status] || map.PENDING;
 };
@@ -497,10 +497,10 @@ const Deliveries: React.FC = () => {
               <div className="flex items-center gap-1 px-2 py-1 bg-background border border-muted rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-black uppercase tracking-tighter shadow-sm shrink-0">
                 <TruckIcon size={10} className="text-primary" /> {deliveries.length} TOTAL
               </div>
-              <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-black uppercase tracking-tighter shrink-0">
+              <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 text-amber-400 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-black uppercase tracking-tighter shrink-0">
                 {deliveries.filter(d => d.status === 'PENDING').length} PEND.
               </div>
-              <div className="flex items-center gap-1 px-2 py-1 bg-emerald-100 text-emerald-800 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-black uppercase tracking-tighter shrink-0">
+              <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/10 text-emerald-400 rounded-md sm:rounded-lg text-[8px] sm:text-[10px] font-black uppercase tracking-tighter shrink-0">
                 {deliveries.filter(d => d.status === 'DELIVERED').length} ENT.
               </div>
             </div>
@@ -515,13 +515,13 @@ const Deliveries: React.FC = () => {
               <span className="text-[10px] font-black text-primary uppercase tracking-widest">Reporte de Domicilios</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-white p-4 rounded-2xl border border-muted/50">
+              <div className="bg-card p-4 rounded-2xl border border-border/50 shadow-sm">
                 <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block">Total en Domicilios</span>
                 <span className="text-2xl font-black text-primary tracking-tighter">${totalDomicilios.toLocaleString('es-CO')}</span>
               </div>
-              <div className="bg-white p-4 rounded-2xl border border-muted/50">
+              <div className="bg-card p-4 rounded-2xl border border-border/50 shadow-sm">
                 <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest block">Ganancias Domiciliarios</span>
-                <span className="text-2xl font-black text-amber-600 tracking-tighter">${totalDeliveryFees.toLocaleString('es-CO')}</span>
+                <span className="text-2xl font-black text-secondary tracking-tighter">${totalDeliveryFees.toLocaleString('es-CO')}</span>
               </div>
             </div>
           </div>
@@ -598,7 +598,7 @@ const Deliveries: React.FC = () => {
           {selectedDelivery && (
             <div className="space-y-8 py-2 animate-in slide-in-from-bottom-4 duration-300">
               <div className="flex items-center gap-4 bg-primary/5 p-5 rounded-3xl border border-primary/10">
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm">
+                <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shadow-sm">
                   <DeliveryIcon size={28} />
                 </div>
                 <div>
@@ -619,7 +619,7 @@ const Deliveries: React.FC = () => {
                         w-full flex items-center justify-between p-5 rounded-2xl border-2 font-black text-xs uppercase tracking-tight transition-all
                         ${newDeliveryStatus === opt.value 
                           ? `${opt.class} ring-4 ring-primary/5` 
-                          : 'bg-white border-muted/50 text-muted-foreground hover:bg-muted/5 hover:border-primary/20'
+                          : 'bg-card border-border/60 text-muted-foreground hover:bg-muted hover:border-primary/20'
                         }
                       `}
                     >
@@ -681,7 +681,7 @@ const Deliveries: React.FC = () => {
                           <button
                             key={item.id}
                             onClick={() => handleAddItemByClick(item.id)}
-                            className="w-full flex items-center justify-between p-3 bg-white hover:bg-primary/5 border border-muted/60 hover:border-primary/30 rounded-xl transition-all group active:scale-[0.98]"
+                            className="w-full flex items-center justify-between p-3 bg-card hover:bg-primary/5 border border-border/60 hover:border-primary/30 rounded-xl transition-all group active:scale-[0.98]"
                           >
                             <div className="text-left flex-1 pr-2">
                               <p className="font-black text-[10px] uppercase text-foreground leading-tight truncate">{item.name}</p>
@@ -725,7 +725,7 @@ const Deliveries: React.FC = () => {
                       </Badge>
                     </div>
 
-                    <div className="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto max-h-62.5 lg:max-h-none custom-scrollbar bg-slate-50/30">
+                    <div className="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto max-h-62.5 lg:max-h-none custom-scrollbar bg-muted/20">
                       {editItems.length > 0 ? (
                         editItems.map((item) => {
                           const menuItem = menuItems.find((m) => m.id === item.menuItemId);
@@ -733,15 +733,15 @@ const Deliveries: React.FC = () => {
                           const price = menuItem?.price || 0;
                           const subtotal = price * item.quantity;
                           return (
-                            <div key={item.menuItemId} className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-muted/60 shadow-sm animate-in slide-in-from-right-4 duration-300">
+                            <div key={item.menuItemId} className="flex items-center gap-2 bg-card p-2.5 rounded-xl border border-border/60 shadow-sm animate-in slide-in-from-right-4 duration-300">
                               <div className="flex-1 min-w-0">
                                 <p className="font-black text-[9px] uppercase text-foreground leading-tight truncate">{name}</p>
                                 <p className="text-[8px] font-bold text-muted-foreground italic">${price.toLocaleString('es-CO')}</p>
                               </div>
-                              <div className="flex items-center bg-muted/30 rounded-xl p-0.5 gap-1">
-                                <button type="button" onClick={() => handleEditItemQuantity(item.menuItemId, -1)} className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-white transition-all text-[10px]">-</button>
-                                <span className="w-4 text-center font-black text-[10px]">{item.quantity}</span>
-                                <button type="button" onClick={() => handleEditItemQuantity(item.menuItemId, 1)} className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-white transition-all text-[10px]">+</button>
+                              <div className="flex items-center bg-muted/50 rounded-xl p-0.5 gap-1">
+                                <button type="button" onClick={() => handleEditItemQuantity(item.menuItemId, -1)} className="w-6 h-6 flex items-center justify-center bg-card rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-primary-foreground transition-all text-[10px]">-</button>
+                                <span className="w-4 text-center font-black text-[10px] text-foreground">{item.quantity}</span>
+                                <button type="button" onClick={() => handleEditItemQuantity(item.menuItemId, 1)} className="w-6 h-6 flex items-center justify-center bg-card rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-primary-foreground transition-all text-[10px]">+</button>
                               </div>
                               <div className="text-right min-w-15">
                                 <p className="font-black text-secondary text-[10px]">${subtotal.toLocaleString('es-CO')}</p>
@@ -771,7 +771,7 @@ const Deliveries: React.FC = () => {
                             value={editNotes}
                             onChange={(e) => setEditNotes(e.target.value)}
                             placeholder="Comentarios..."
-                            className="w-full h-12 p-2 bg-white border-2 border-muted/50 rounded-xl outline-none transition-all font-medium text-[10px] shadow-sm resize-none focus:border-primary"
+                            className="w-full h-12 p-2 bg-card border border-border/60 rounded-xl outline-none transition-all font-medium text-[10px] shadow-sm resize-none focus:border-ring text-foreground placeholder:text-muted-foreground/40"
                           />
                         </div>
 
@@ -838,7 +838,7 @@ const Deliveries: React.FC = () => {
                 <div className="p-6 space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white rounded-xl shadow-sm text-primary">
+                      <div className="p-2 bg-primary/10 rounded-xl shadow-sm text-primary">
                         <UserIcon size={16} />
                       </div>
                       <div>
@@ -847,7 +847,7 @@ const Deliveries: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white rounded-xl shadow-sm text-primary">
+                      <div className="p-2 bg-primary/10 rounded-xl shadow-sm text-primary">
                         <ClipboardIcon size={16} />
                       </div>
                       <div>
@@ -892,7 +892,7 @@ const Deliveries: React.FC = () => {
                           type="number"
                           value={deliveryFee || ''}
                           onChange={(e) => setDeliveryFee(parseFloat(e.target.value) || 0)}
-                          className="w-full h-10 pl-7 pr-3 bg-white border-2 border-transparent focus:border-primary rounded-xl outline-none font-black text-sm text-right transition-all shadow-sm"
+                          className="w-full h-10 pl-7 pr-3 bg-card border border-border/60 focus:border-ring rounded-xl outline-none font-black text-sm text-right transition-all shadow-sm text-foreground"
                           placeholder="0"
                           min="0"
                         />
@@ -946,7 +946,7 @@ const Deliveries: React.FC = () => {
                             <select
                               value={line.paymentMethodId || ''}
                               onChange={(e) => updatePaymentLine(line.id, 'paymentMethodId', Number(e.target.value))}
-                              className="w-full h-12 px-4 bg-white/60 border-2 border-transparent focus:border-primary focus:bg-white rounded-xl outline-none font-black text-xs uppercase tracking-tight transition-all appearance-none shadow-inner"
+                              className="w-full h-12 px-4 bg-card border border-border/60 focus:border-ring rounded-xl outline-none font-black text-xs uppercase tracking-tight transition-all appearance-none shadow-inner text-foreground"
                             >
                               <option value="">Seleccione...</option>
                               {paymentMethods.map((method) => (
@@ -967,7 +967,7 @@ const Deliveries: React.FC = () => {
                                 type="number"
                                 value={line.amount || ''}
                                 onChange={(e) => updatePaymentLine(line.id, 'amount', parseFloat(e.target.value) || 0)}
-                                className="w-full h-12 pl-8 pr-4 bg-white/60 border-2 border-transparent focus:border-primary focus:bg-white rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner"
+                                className="w-full h-12 pl-8 pr-4 bg-card border border-border/60 focus:border-ring rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner text-foreground"
                                 placeholder="0"
                                 min="0"
                               />
@@ -979,7 +979,7 @@ const Deliveries: React.FC = () => {
                               <button
                                 type="button"
                                 onClick={() => removePaymentLine(line.id)}
-                                className="h-10 w-10 rounded-full bg-rose-50 text-rose-500 hover:bg-rose-100 hover:text-rose-600 font-black text-sm flex items-center justify-center transition-all"
+                                className="h-10 w-10 rounded-full bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 font-black text-sm flex items-center justify-center transition-all"
                                 title="Eliminar línea"
                               >
                                 ✕
@@ -1001,16 +1001,16 @@ const Deliveries: React.FC = () => {
                                   type="number"
                                   value={line.receivedAmount || ''}
                                   onChange={(e) => updatePaymentLine(line.id, 'receivedAmount', parseFloat(e.target.value) || 0)}
-                                  className={`w-full h-12 pl-8 pr-4 bg-white/60 border-2 rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner ${
+                                  className={`w-full h-12 pl-8 pr-4 bg-card border rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner text-foreground ${
                                     line.receivedAmount > 0 && !lineIsValid
-                                      ? 'border-rose-200 text-rose-600 focus:border-rose-500 bg-rose-50/10'
-                                      : 'border-transparent focus:border-primary focus:bg-white'
+                                      ? 'border-rose-500/30 text-rose-400 focus:border-rose-500 bg-rose-500/5'
+                                      : 'border-border/60 focus:border-ring'
                                   }`}
                                   placeholder="0"
                                   min="0"
                                 />
                                 {lineIsValid && line.receivedAmount > 0 && (
-                                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 animate-in zoom-in">
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400 animate-in zoom-in">
                                     <CheckCircleIcon size={16} />
                                   </div>
                                 )}
@@ -1022,11 +1022,11 @@ const Deliveries: React.FC = () => {
                               )}
                             </div>
 
-                            <div className="flex items-center justify-center bg-amber-50/50 rounded-2xl px-4 py-3 border border-amber-100/50">
+                            <div className="flex items-center justify-center bg-amber-500/10 rounded-2xl px-4 py-3 border border-amber-500/20">
                               <div className="flex items-center gap-2">
-                                <HistoryIcon size={12} className={lineChange > 0 ? 'text-amber-500' : 'text-muted-foreground'} />
+                                <HistoryIcon size={12} className={lineChange > 0 ? 'text-amber-400' : 'text-muted-foreground'} />
                                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Devuelta:</p>
-                                <span className={`text-sm font-black tracking-tighter ${lineChange > 0 ? 'text-amber-600' : 'text-muted-foreground/40'}`}>
+                                <span className={`text-sm font-black tracking-tighter ${lineChange > 0 ? 'text-amber-400' : 'text-muted-foreground/40'}`}>
                                   ${lineChange.toLocaleString('es-CO')}
                                 </span>
                               </div>
@@ -1036,8 +1036,8 @@ const Deliveries: React.FC = () => {
 
                         {/* Transfer badge */}
                         {lineTransfer && line.paymentMethodId > 0 && (
-                          <div className="bg-blue-50 border-2 border-blue-200 p-3 rounded-2xl flex items-center gap-3">
-                            <div className="p-1.5 bg-white rounded-lg shadow-sm text-blue-600">
+                          <div className="bg-blue-500/10 border border-blue-500/20 p-3 rounded-2xl flex items-center gap-3">
+                            <div className="p-1.5 bg-blue-500/20 rounded-lg shadow-sm text-blue-400">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="2" y="4" width="20" height="16" rx="2"></rect>
                                 <line x1="22" y1="9" x2="12" y2="14"></line>
@@ -1045,8 +1045,8 @@ const Deliveries: React.FC = () => {
                               </svg>
                             </div>
                             <div>
-                              <p className="text-[9px] font-black text-blue-700 uppercase tracking-widest">Transferencia</p>
-                              <p className="text-[8px] font-medium text-blue-600/70 italic">Sin manejo de efectivo</p>
+                              <p className="text-[9px] font-black text-blue-300 uppercase tracking-widest">Transferencia</p>
+                              <p className="text-[8px] font-medium text-blue-300/60 italic">Sin manejo de efectivo</p>
                             </div>
                           </div>
                         )}
@@ -1056,16 +1056,16 @@ const Deliveries: React.FC = () => {
                 </div>
 
                 {/* Summary bar */}
-                <div className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${
+                <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${
                   Math.abs(difference) < 0.01
-                    ? 'bg-green-50 border-green-200'
+                    ? 'bg-emerald-500/10 border-emerald-500/20'
                     : difference > 0
-                      ? 'bg-amber-50 border-amber-200'
-                      : 'bg-rose-50 border-rose-200'
+                      ? 'bg-amber-500/10 border-amber-500/20'
+                      : 'bg-rose-500/10 border-rose-500/20'
                 }`}>
                   <div className="flex items-center gap-2">
                     <WalletIcon size={14} className={
-                      Math.abs(difference) < 0.01 ? 'text-green-600' : difference > 0 ? 'text-amber-600' : 'text-rose-600'
+                      Math.abs(difference) < 0.01 ? 'text-emerald-400' : difference > 0 ? 'text-amber-400' : 'text-rose-400'
                     } />
                     <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                       {Math.abs(difference) < 0.01

@@ -1,11 +1,6 @@
 import React, { ReactNode } from 'react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
-} from '../ui/dialog';
+import { XIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import Button from './Button';
 
 interface ModalProps {
@@ -20,36 +15,63 @@ interface ModalProps {
   showActions?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
-  onConfirm, 
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  onConfirm,
   confirmText = 'Guardar',
   confirmDisabled = false,
   size = 'medium',
-  showActions = true 
+  showActions = true,
 }) => {
-  const maxWidths = {
-    'small': 'sm:max-w-sm',
-    'medium': 'sm:max-w-md',
-    'large': 'sm:max-w-2xl',
-    'extra-large': 'sm:max-w-[95vw] lg:max-w-5xl'
+  const maxWidths: Record<string, string> = {
+    small: 'sm:max-w-sm',
+    medium: 'sm:max-w-md',
+    large: 'sm:max-w-2xl',
+    'extra-large': 'sm:max-w-[95vw] lg:max-w-5xl',
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className={maxWidths[size]}>
-        <DialogHeader className="p-6 pb-0 sm:p-0">
-          <DialogTitle className="text-2xl sm:text-xl font-black uppercase tracking-tight">{title}</DialogTitle>
-        </DialogHeader>
-        <div className="flex-1 overflow-y-auto px-6 py-4 sm:px-0 sm:py-4">
-          {children}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Overlay */}
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-200"
+        onClick={onClose}
+      />
+
+      {/* Content */}
+      <div
+        className={cn(
+          'relative z-50 w-full max-h-[100dvh] overflow-y-auto bg-card border border-border rounded-none sm:rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95 fade-in-0 duration-200',
+          'sm:max-h-[calc(100vh-4rem)] sm:max-w-[calc(100%-2rem)]',
+          maxWidths[size],
+        )}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-border/60 shrink-0">
+          <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-foreground">
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Cerrar"
+          >
+            <XIcon size={18} />
+          </button>
         </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">{children}</div>
+
+        {/* Footer */}
         {showActions && (
-          <DialogFooter className="gap-3 p-6 sm:p-4">
-            <Button variant="secondary" onClick={onClose} className="h-14 sm:h-10 font-bold">
+          <div className="flex flex-col-reverse gap-3 border-t border-border/60 px-5 py-4 sm:px-6 sm:py-4 sm:flex-row sm:justify-end shrink-0">
+            <Button variant="secondary" onClick={onClose} size="default">
               Cancelar
             </Button>
             {onConfirm && (
@@ -57,15 +79,15 @@ const Modal: React.FC<ModalProps> = ({
                 variant="primary"
                 onClick={onConfirm}
                 disabled={confirmDisabled}
-                className={`h-14 sm:h-10 font-black transition-opacity ${confirmDisabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+                isLoading={confirmDisabled}
               >
                 {confirmText}
               </Button>
             )}
-          </DialogFooter>
+          </div>
         )}
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

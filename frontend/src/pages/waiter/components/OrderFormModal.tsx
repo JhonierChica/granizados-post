@@ -113,35 +113,35 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
               <button
                 onClick={handleQuickOrder}
-                className="group p-2 sm:p-4 bg-amber-50 border-2 border-transparent hover:border-amber-500 hover:bg-amber-100/50 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
+                className="group p-2 sm:p-4 bg-amber-500/10 border-2 border-transparent hover:border-amber-500/30 hover:bg-amber-500/20 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
               >
-                <div className="p-2 sm:p-3 bg-white rounded-xl text-amber-600 shadow-sm group-hover:scale-110 transition-transform">
+                <div className="p-2 sm:p-3 bg-amber-500/20 rounded-xl text-amber-400 shadow-sm group-hover:scale-110 transition-transform">
                   <FastForwardIcon size={20} />
                 </div>
                 <div>
-                  <span className="block font-black text-sm sm:text-base uppercase tracking-tight text-amber-900">PEDIDO RÁPIDO</span>
-                  <span className="text-[9px] text-amber-700/60 font-medium">Usa nombre del cliente</span>
+                  <span className="block font-black text-sm sm:text-base uppercase tracking-tight text-amber-300">PEDIDO RAPIDO</span>
+                  <span className="text-[9px] text-amber-400/60 font-medium">Usa nombre del cliente</span>
                 </div>
               </button>
 
               <div className="mt-4 max-w-lg mx-auto">
-                <div className="bg-amber-50/60 border-2 border-amber-100 rounded-2xl p-3 sm:p-4 shadow-sm">
+                <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-3 sm:p-4 shadow-sm">
                   <Input
-                    label="Nombre para pedido rápido"
+                    label="Nombre para pedido rapido"
                     name="clientName"
                     value={formData.clientName}
                     onChange={handleChange}
-                    placeholder="Ej. Juan Pérez"
-                    className="h-12 sm:h-14 text-center font-black tracking-widest bg-white/80 border-none focus:ring-4 focus:ring-amber-200/50"
+                    placeholder="Ej. Juan Perez"
+                    className="h-12 sm:h-14 text-center font-black tracking-widest"
                   />
                 </div>
               </div>
 
               <button
                 onClick={() => setClientStep('new')}
-                className="group p-2 sm:p-4 bg-muted/30 border-2 border-transparent hover:border-primary hover:bg-primary/5 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
+                className="group p-2 sm:p-4 bg-muted/20 border-2 border-transparent hover:border-primary/30 hover:bg-primary/5 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
               >
-                <div className="p-2 sm:p-3 bg-white rounded-xl text-primary shadow-sm group-hover:scale-110 transition-transform">
+                <div className="p-2 sm:p-3 bg-primary/20 rounded-xl text-primary shadow-sm group-hover:scale-110 transition-transform">
                   <UserPlusIcon size={20} />
                 </div>
                 <div>
@@ -152,9 +152,9 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
               
               <button
                 onClick={() => setClientStep('existing')}
-                className="group p-2 sm:p-4 bg-muted/30 border-2 border-transparent hover:border-secondary hover:bg-secondary/5 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
+                className="group p-2 sm:p-4 bg-muted/20 border-2 border-transparent hover:border-secondary/30 hover:bg-secondary/5 rounded-2xl sm:rounded-3xl transition-all flex flex-col items-center gap-2 sm:gap-3 text-center"
               >
-                <div className="p-2 sm:p-3 bg-white rounded-xl text-secondary shadow-sm group-hover:scale-110 transition-transform">
+                <div className="p-2 sm:p-3 bg-secondary/20 rounded-xl text-secondary shadow-sm group-hover:scale-110 transition-transform">
                   <SearchIcon size={20} />
                 </div>
                 <div>
@@ -214,26 +214,26 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mx-auto px-4 sm:px-0">
               <button
                 onClick={() => { setOrderType('ESTABLECIMIENTO'); setTimeout(() => setClientStep('order'), 100); }}
-                className="group p-2 sm:p-4 bg-green-50 border-2 border-transparent hover:border-green-500 rounded-2xl transition-all flex flex-row sm:flex-col items-center gap-3 text-left sm:text-center"
+                className="group p-2 sm:p-4 bg-emerald-500/10 border-2 border-transparent hover:border-emerald-500/30 hover:bg-emerald-500/20 rounded-2xl transition-all flex flex-row sm:flex-col items-center gap-3 text-left sm:text-center"
               >
-                <div className="p-2 sm:p-3 bg-white rounded-xl text-green-600 shadow-sm group-hover:scale-110 transition-transform">
+                <div className="p-2 sm:p-3 bg-emerald-500/20 rounded-xl text-emerald-400 shadow-sm group-hover:scale-110 transition-transform">
                   <UtensilsIcon size={20} />
                 </div>
                 <div>
-                  <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-green-800">EN EL LOCAL</span>
-                  <span className="text-[10px] text-green-700/60 font-medium italic">Servicio a la mesa</span>
+                  <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-emerald-300">EN EL LOCAL</span>
+                  <span className="text-[10px] text-emerald-400/60 font-medium italic">Servicio a la mesa</span>
                 </div>
               </button>
               <button
                 onClick={() => { setOrderType('DOMICILIO'); setTimeout(() => setClientStep('order'), 100); }}
-                className="group p-2 sm:p-4 bg-blue-50 border-2 border-transparent hover:border-blue-500 rounded-2xl transition-all flex flex-row sm:flex-col items-center gap-3 text-left sm:text-center"
+                className="group p-2 sm:p-4 bg-blue-500/10 border-2 border-transparent hover:border-blue-500/30 hover:bg-blue-500/20 rounded-2xl transition-all flex flex-row sm:flex-col items-center gap-3 text-left sm:text-center"
               >
-                <div className="p-2 sm:p-3 bg-white rounded-xl text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
+                <div className="p-2 sm:p-3 bg-blue-500/20 rounded-xl text-blue-400 shadow-sm group-hover:scale-110 transition-transform">
                   <MapPinIcon size={20} />
                 </div>
                 <div>
-                  <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-blue-800">DOMICILIO</span>
-                  <span className="text-[10px] text-blue-700/60 font-medium italic">A domicilio</span>
+                  <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-blue-300">DOMICILIO</span>
+                  <span className="text-[10px] text-blue-400/60 font-medium italic">A domicilio</span>
                 </div>
               </button>
             </div>
@@ -261,7 +261,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
             </div>
 
             <div className="flex flex-col items-center gap-4 pt-2">
-              <Button onClick={createNewClientAndProceed} className="w-full sm:w-auto h-14 px-12 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 bg-primary">
+              <Button onClick={createNewClientAndProceed} size="lg" className="w-full sm:w-auto">
                 CONTINUAR AL PEDIDO
               </Button>
               <button onClick={() => setClientStep('selection')} className="text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground flex items-center gap-1 py-2">
@@ -281,8 +281,8 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
               <div className="lg:col-span-5 space-y-6 sm:space-y-8 px-4 sm:px-0">
                 {/* Service Context & Table Selector Row */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={`p-3 sm:p-4 rounded-2xl border-2 flex items-center gap-3 ${orderType === 'ESTABLECIMIENTO' ? 'bg-green-50 border-green-100 text-green-800' : 'bg-blue-50 border-blue-100 text-blue-800'}`}>
-                    <div className="p-2 bg-white rounded-xl shadow-sm shrink-0">
+                  <div className={`p-3 sm:p-4 rounded-2xl border flex items-center gap-3 ${orderType === 'ESTABLECIMIENTO' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' : 'bg-blue-500/10 border-blue-500/20 text-blue-300'}`}>
+                    <div className="p-2 bg-emerald-500/20 rounded-xl shadow-sm shrink-0">
                       {orderType === 'ESTABLECIMIENTO' ? <UtensilsIcon size={18} /> : <MapPinIcon size={18} />}
                     </div>
                     <div className="min-w-0">
@@ -350,7 +350,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                           <button
                             key={item.id}
                             onClick={() => handleItemClick(item)}
-                            className="w-full flex items-center justify-between p-3 bg-white hover:bg-primary/5 border border-muted/60 hover:border-primary/30 rounded-xl transition-all group active:scale-[0.98]"
+                            className="w-full flex items-center justify-between p-3 bg-card hover:bg-primary/5 border border-border/60 hover:border-primary/30 rounded-xl transition-all group active:scale-[0.98]"
                           >
                             <div className="text-left flex-1 pr-2">
                               <p className="font-black text-[10px] uppercase text-foreground leading-tight truncate">{item.name}</p>
@@ -387,7 +387,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
 
               {/* Right Column: Order Summary */}
               <div className="lg:col-span-7 space-y-4 px-4 sm:px-0">
-                <div className="bg-background border-2 border-primary/20 rounded-3xl shadow-xl overflow-hidden flex flex-col h-full lg:max-h-[55vh]">
+                <div className="bg-card border border-primary/20 rounded-3xl shadow-xl overflow-hidden flex flex-col h-full lg:max-h-[55vh]">
                   <div className="bg-primary p-3 sm:p-4 text-white flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-md">
@@ -403,14 +403,14 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                     </Badge>
                   </div>
 
-                  <div className="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto max-h-62.5 lg:max-h-none custom-scrollbar bg-slate-50/30">
+                  <div className="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto max-h-62.5 lg:max-h-none custom-scrollbar bg-muted/20">
                     {selectedItems.length > 0 ? (
                       selectedItems.map((item, index) => {
                         const itemPrice = item.price || getMenuItemPrice(item.menuItemId);
                         const itemName = item.name || getMenuItemName(item.menuItemId);
                         const subtotal = itemPrice * item.quantity;
                         return (
-                          <div key={index} className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-muted/60 shadow-sm animate-in slide-in-from-right-4 duration-300">
+                          <div key={index} className="flex items-center gap-2 bg-card p-2.5 rounded-xl border border-border/60 shadow-sm animate-in slide-in-from-right-4 duration-300">
                             <div className="flex-1 min-w-0">
                               <p className="font-black text-[9px] uppercase text-foreground leading-tight truncate">{itemName}</p>
                               {item.presentationName && (
@@ -418,10 +418,10 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                               )}
                               <p className="text-[8px] font-bold text-muted-foreground italic">${itemPrice.toLocaleString('es-CO')}</p>
                             </div>
-                            <div className="flex items-center bg-muted/30 rounded-xl p-0.5 gap-1">
-                              <button type="button" onClick={() => handleQuantityChange(index, Math.max(1, item.quantity - 1))} className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-white transition-all text-[10px]">-</button>
-                              <span className="w-4 text-center font-black text-[10px]">{item.quantity}</span>
-                              <button type="button" onClick={() => handleQuantityChange(index, item.quantity + 1)} className="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-white transition-all text-[10px]">+</button>
+                            <div className="flex items-center bg-muted/50 rounded-xl p-0.5 gap-1">
+                              <button type="button" onClick={() => handleQuantityChange(index, Math.max(1, item.quantity - 1))} className="w-6 h-6 flex items-center justify-center bg-card rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-primary-foreground transition-all text-[10px]">-</button>
+                              <span className="w-4 text-center font-black text-[10px] text-foreground">{item.quantity}</span>
+                              <button type="button" onClick={() => handleQuantityChange(index, item.quantity + 1)} className="w-6 h-6 flex items-center justify-center bg-card rounded-lg shadow-sm text-primary font-black hover:bg-primary hover:text-primary-foreground transition-all text-[10px]">+</button>
                             </div>
                             <div className="text-right min-w-15">
                               <p className="font-black text-secondary text-[10px]">${subtotal.toLocaleString('es-CO')}</p>
@@ -451,7 +451,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                           value={formData.notes}
                           onChange={handleChange}
                           placeholder="Comentarios..."
-                          className="w-full h-12 p-2 bg-white border-2 border-muted/50 rounded-xl outline-none transition-all font-medium text-[10px] shadow-sm resize-none focus:border-primary"
+                          className="w-full h-12 p-2 bg-card border border-border/60 rounded-xl outline-none transition-all font-medium text-[10px] shadow-sm resize-none focus:border-ring text-foreground placeholder:text-muted-foreground/40"
                         />
                       </div>
 
@@ -479,7 +479,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
         {/* ─── Presentation Picker ─────────────────── */}
         {pickerItem && pickerItem.presentations && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setPickerItem(null)}>
-            <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4 animate-in zoom-in-90 duration-200" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-card border border-border rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4 animate-in zoom-in-90 duration-200" onClick={(e) => e.stopPropagation()}>
               <div className="text-center">
                 <h4 className="font-black text-lg uppercase tracking-tight">{pickerItem.name}</h4>
                 <p className="text-xs text-muted-foreground font-medium italic mt-1">Elegí una presentación:</p>
