@@ -12,6 +12,7 @@ export const USER_ROLES = {
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
+  DASHBOARD: '/dashboard',
   
   // Admin
   ADMIN_PROFILES: '/admin/profiles',

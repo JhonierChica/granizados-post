@@ -1,8 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ROUTES, USER_ROLES } from '../utils/constants';
-import { normalizeProfileCode } from '../utils/roles';
+import { ROUTES } from '../utils/constants';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
@@ -51,21 +50,7 @@ const Login: React.FC = () => {
       const result = await login(credentials.username, credentials.password);
       
       if (result.success && result.user) {
-        const userRole = normalizeProfileCode(result.user.role);
-        
-        switch (userRole) {
-          case USER_ROLES.ADMIN:
-            navigate(ROUTES.ADMIN_PROFILES);
-            break;
-          case USER_ROLES.WAITER:
-            navigate(ROUTES.WAITER_ORDERS);
-            break;
-          case USER_ROLES.CASHIER:
-            navigate(ROUTES.CASHIER_TABLES);
-            break;
-          default:
-            navigate(ROUTES.ADMIN_PROFILES);
-        }
+        navigate(ROUTES.DASHBOARD);
       } else {
         setError(result.error || 'Usuario o contraseña incorrectos');
       }
@@ -85,13 +70,11 @@ const Login: React.FC = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
         
         <div className="relative z-10 text-center space-y-12 max-w-lg">
-          <div className="bg-card p-6 rounded-6xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] inline-block transform hover:rotate-2 hover:scale-[1.02] transition-all duration-700 border-2 border-secondary/30">
-            <img 
-              src="/logo-bombonera.png" 
-              alt="La Bombonera" 
-              className="h-56 w-auto object-contain"
-            />
-          </div>
+          <img 
+            src="/logo-bombonera.png" 
+            alt="La Bombonera" 
+            className="h-64 w-auto object-contain drop-shadow-2xl"
+          />
           <div className="space-y-4">
             <h1 className="text-6xl font-black text-white tracking-tighter leading-tight drop-shadow-[0_4px_20px_rgba(245,158,11,0.3)]">
               La <span className="text-secondary">Bombonera</span>
@@ -110,7 +93,7 @@ const Login: React.FC = () => {
         
         <div className="w-full max-w-md space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 relative z-10">
           <div className="lg:hidden text-center space-y-6 mb-12">
-            <img src="/logo-bombonera.png" alt="La Bombonera" className="h-28 w-auto mx-auto shadow-xl rounded-2xl" />
+            <img src="/logo-bombonera.png" alt="La Bombonera" className="h-32 w-auto mx-auto drop-shadow-2xl" />
             <h2 className="text-4xl font-black text-primary tracking-tighter">La Bombonera</h2>
           </div>
 

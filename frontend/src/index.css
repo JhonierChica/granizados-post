@@ -8,37 +8,30 @@
   --font-mono: 'JetBrains Mono', monospace;
   --radius: 0.75rem;
 
-  /* 🌴 Bombonera Tropical — Caribe, Refresco, Sabor, Energía */
-  --color-background: oklch(0.985 0.01 85);
-  --color-foreground: oklch(0.15 0.015 85);
+  /* Dark tropical premium */
+  --color-background: oklch(0.13 0.015 85);
+  --color-foreground: oklch(0.95 0 0);
+  --color-card: oklch(0.18 0.015 85);
+  --color-card-foreground: oklch(0.9 0 0);
+  --color-popover: oklch(0.18 0.015 85);
+  --color-popover-foreground: oklch(0.9 0 0);
 
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.15 0.015 85);
-
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.15 0.015 85);
-
-  /* 🦜 Turquesa — Agua de coco, mar Caribe, frescura */
-  --color-primary: oklch(0.62 0.14 185);
+  --color-primary: oklch(0.62 0.14 185);    /* Turquoise */
   --color-primary-foreground: oklch(0.985 0 0);
 
-  /* 🥭 Mango — Dulzura tropical, vibrante */
-  --color-secondary: oklch(0.73 0.17 78);
+  --color-secondary: oklch(0.73 0.17 78);   /* Mango */
   --color-secondary-foreground: oklch(0.15 0.03 85);
 
-  /* 🟣 Pasión — Granadilla, maracuyá, contraste */
-  --color-accent: oklch(0.55 0.22 285);
+  --color-accent: oklch(0.55 0.22 285);     /* Passion purple */
   --color-accent-foreground: oklch(0.985 0 0);
 
-  /* 🔴 Coral — Pitaya, ajuste suave */
   --color-destructive: oklch(0.6 0.2 27);
   --color-destructive-foreground: oklch(0.985 0 0);
 
-  --color-muted: oklch(0.965 0.008 85);
-  --color-muted-foreground: oklch(0.5 0.01 85);
-
-  --color-border: oklch(0.9 0.01 85);
-  --color-input: oklch(0.9 0.01 85);
+  --color-muted: oklch(0.22 0.01 85);
+  --color-muted-foreground: oklch(0.6 0.01 85);
+  --color-border: oklch(0.25 0.01 85);
+  --color-input: oklch(0.25 0.01 85);
   --color-ring: oklch(0.62 0.14 185);
 }
 

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 // Admin pages
 import Profiles from './pages/admin/Profiles';
@@ -168,7 +169,8 @@ const App: React.FC = () => {
             }
           />
 
-          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.LOGIN} replace />} />
+          <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
         </Routes>
       </Router>
