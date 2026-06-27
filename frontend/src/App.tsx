@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -32,7 +33,8 @@ import { Toaster } from 'sonner';
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Toaster 
+      <ThemeProvider>
+        <Toaster 
         position="top-center" 
         expand={true} 
         richColors 
@@ -174,6 +176,7 @@ const App: React.FC = () => {
           <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
         </Routes>
       </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
