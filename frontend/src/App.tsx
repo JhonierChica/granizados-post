@@ -4,8 +4,6 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-
 // Admin pages
 import Profiles from './pages/admin/Profiles';
 import Positions from './pages/admin/Positions';
@@ -171,8 +169,7 @@ const App: React.FC = () => {
             }
           />
 
-          <Route path={ROUTES.DASHBOARD} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.DASHBOARD} replace />} />
+          <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.LOGIN} replace />} />
           <Route path="*" element={<Navigate to={ROUTES.LOGIN} replace />} />
         </Routes>
       </Router>

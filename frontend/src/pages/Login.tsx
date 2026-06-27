@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ROUTES } from '../utils/constants';
+import { ROUTES, USER_ROLES } from '../utils/constants';
+import { normalizeProfileCode } from '../utils/roles';
 import { Input } from '../components/ui/input';
 import Button from '../components/common/Button';
 import { EyeIcon, EyeOffIcon, X } from 'lucide-react';
@@ -65,7 +66,20 @@ const Login: React.FC = () => {
       const result = await login(credentials.username, credentials.password);
 
       if (result.success && result.user) {
-        navigate(ROUTES.DASHBOARD);
+        const userRole = normalizeProfileCode(result.user.role);
+        switch (userRole) {
+          case USER_ROLES.ADMIN:
+            navigate(ROUTES.ADMIN_PROFILES);
+            break;
+          case USER_ROLES.WAITER:
+            navigate(ROUTES.WAITER_ORDERS);
+            break;
+          case USER_ROLES.CASHIER:
+            navigate(ROUTES.CASHIER_TABLES);
+            break;
+          default:
+            navigate(ROUTES.ADMIN_PROFILES);
+        }
       } else {
         setError(result.error || 'Usuario o contraseña incorrectos');
       }

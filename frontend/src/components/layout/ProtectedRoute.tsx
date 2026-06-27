@@ -34,9 +34,10 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     const required = normalizeProfileCode(requiredRole as string);
     
     if (userRole !== required) {
-      // Redirigir al dashboard
-      if (userRole === USER_ROLES.WAITER || userRole === USER_ROLES.CASHIER) {
-        return <Navigate to={ROUTES.DASHBOARD} replace />;
+      if (userRole === USER_ROLES.WAITER) {
+        return <Navigate to={ROUTES.WAITER_ORDERS} replace />;
+      } else if (userRole === USER_ROLES.CASHIER) {
+        return <Navigate to={ROUTES.CASHIER_TABLES} replace />;
       } else {
         return <Navigate to={ROUTES.LOGIN} replace />;
       }

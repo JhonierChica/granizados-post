@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { ROUTES } from '../../utils/constants';
+import { ROUTES, USER_ROLES } from '../../utils/constants';
 import { normalizeProfileCode } from '../../utils/roles';
 import { LogOut, Sun, Moon, Menu } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -52,7 +52,12 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           </button>
 
           <button
-            onClick={() => navigate(ROUTES.DASHBOARD)}
+            onClick={() => {
+              const role = normalizeProfileCode(user?.role);
+              if (role === USER_ROLES.WAITER) navigate(ROUTES.WAITER_ORDERS);
+              else if (role === USER_ROLES.CASHIER) navigate(ROUTES.CASHIER_TABLES);
+              else navigate(ROUTES.ADMIN_PROFILES);
+            }}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <img
