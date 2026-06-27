@@ -4,7 +4,9 @@ import com.bombonera.modules.clients.model.Client;
 import com.bombonera.modules.clients.repository.ClientRepository;
 import com.bombonera.modules.deliveries.dto.CreateDeliveryRequest;
 import com.bombonera.modules.deliveries.service.DeliveryService;
+import com.bombonera.modules.menu.model.ItemPresentation;
 import com.bombonera.modules.menu.model.MenuItem;
+import com.bombonera.modules.menu.repository.ItemPresentationRepository;
 import com.bombonera.modules.menu.repository.MenuItemRepository;
 import com.bombonera.modules.orders.dto.*;
 import com.bombonera.modules.orders.event.OrderCreatedEvent;
@@ -41,6 +43,7 @@ public class OrderService {
     private final ClientRepository clientRepository;
     private final RestaurantTableRepository tableRepository;
     private final MenuItemRepository menuItemRepository;
+    private final ItemPresentationRepository itemPresentationRepository;
     private final UserRepository userRepository;
     private final DeliveryService deliveryService;
     private final ApplicationEventPublisher publisher;
@@ -49,6 +52,7 @@ public class OrderService {
                        ClientRepository clientRepository,
                        RestaurantTableRepository tableRepository,
                        MenuItemRepository menuItemRepository,
+                       ItemPresentationRepository itemPresentationRepository,
                        UserRepository userRepository,
                        DeliveryService deliveryService,
                        EntityManager entityManager,
@@ -57,6 +61,7 @@ public class OrderService {
         this.clientRepository = clientRepository;
         this.tableRepository = tableRepository;
         this.menuItemRepository = menuItemRepository;
+        this.itemPresentationRepository = itemPresentationRepository;
         this.userRepository = userRepository;
         this.deliveryService = deliveryService;
         this.entityManager = entityManager;
@@ -106,7 +111,8 @@ public class OrderService {
             if (!menuItem.getAvailable()) {
                 throw new RuntimeException("Menu item is not available: " + menuItem.getName());
             }
-            totalAmount += menuItem.getPrice() * itemRequest.getQuantity();
+            float unitPrice = getUnitPrice(menuItem, itemRequest.getPresentationId());
+            totalAmount += unitPrice * itemRequest.getQuantity();
         }
 
         // Crear la orden SIN items primero
@@ -129,12 +135,21 @@ public class OrderService {
         for (OrderItemRequest itemRequest : request.getItems()) {
             MenuItem menuItem = menuItemMap.get(itemRequest.getMenuItemId());
 
+            float unitPrice = getUnitPrice(menuItem, itemRequest.getPresentationId());
+
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(savedOrder);
             orderItem.setMenuItem(menuItem);
             orderItem.setQuantity(itemRequest.getQuantity());
-            orderItem.setUnitPrice(menuItem.getPrice());
+            orderItem.setUnitPrice(unitPrice);
             orderItem.setSpecialInstructions(itemRequest.getSpecialInstructions());
+
+            // Presentación
+            if (itemRequest.getPresentationId() != null) {
+                orderItem.setPresentationId(itemRequest.getPresentationId());
+                itemPresentationRepository.findById(itemRequest.getPresentationId())
+                        .ifPresent(p -> orderItem.setPresentationName(p.getName()));
+            }
 
             savedOrder.addItem(orderItem);
         }
@@ -252,15 +267,24 @@ public class OrderService {
                     throw new RuntimeException("Menu item not found with id: " + itemRequest.getMenuItemId());
                 }
 
+                float unitPrice = getUnitPrice(menuItem, itemRequest.getPresentationId());
+
                 OrderItem orderItem = new OrderItem();
                 orderItem.setOrder(order); // order ya existe y tiene ID
                 orderItem.setMenuItem(menuItem);
                 orderItem.setQuantity(itemRequest.getQuantity());
-                orderItem.setUnitPrice(menuItem.getPrice());
+                orderItem.setUnitPrice(unitPrice);
                 orderItem.setSpecialInstructions(itemRequest.getSpecialInstructions());
 
+                // Presentación
+                if (itemRequest.getPresentationId() != null) {
+                    orderItem.setPresentationId(itemRequest.getPresentationId());
+                    itemPresentationRepository.findById(itemRequest.getPresentationId())
+                            .ifPresent(p -> orderItem.setPresentationName(p.getName()));
+                }
+
                 // Calcular subtotal del item
-                float itemSubtotal = menuItem.getPrice() * itemRequest.getQuantity();
+                float itemSubtotal = unitPrice * itemRequest.getQuantity();
                 totalAmount += itemSubtotal;
 
                 order.addItem(orderItem);
@@ -357,6 +381,20 @@ public class OrderService {
         response.setMenuItemPrice(BigDecimal.valueOf(item.getUnitPrice()));
         response.setQuantity(item.getQuantity());
         response.setSpecialInstructions(item.getSpecialInstructions());
+        response.setPresentationName(item.getPresentationName());
         return response;
+    }
+
+    /**
+     * Obtiene el precio unitario: si hay presentationId usa el precio
+     * de la presentación, si no usa el precio base del MenuItem.
+     */
+    private float getUnitPrice(MenuItem menuItem, Long presentationId) {
+        if (presentationId != null) {
+            return itemPresentationRepository.findById(presentationId)
+                    .map(ItemPresentation::getPrice)
+                    .orElse(menuItem.getPrice());
+        }
+        return menuItem.getPrice();
     }
 }

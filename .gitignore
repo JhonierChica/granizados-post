@@ -19,5 +19,8 @@ frontend/.vite/
 .env
 .env.local
 
+# Agent skills
+.atl/
+
 # OS
 Thumbs.db

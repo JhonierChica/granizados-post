@@ -30,6 +30,12 @@ public class OrderItem {
     @Column(name = "precio_unitario", nullable = false)
     private Float unitPrice; // Usar Float porque la BD usa REAL
 
+    @Column(name = "id_presentacion", nullable = true)
+    private Long presentationId;
+
+    @Column(name = "presentacion", nullable = true, length = 50)
+    private String presentationName;
+
     @Column(name = "estado", nullable = false, length = 1)
     private String status = "A"; // A=Activo, C=Cancelado
 

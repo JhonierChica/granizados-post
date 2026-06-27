@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import Modal from '../../../components/common/Modal';
 import Button from '../../../components/common/Button';
 import Input from '../../../components/common/Input';
@@ -42,7 +42,7 @@ interface OrderFormModalProps {
   setSelectedCategory: (cat: string) => void;
   selectedItems: OrderItem[];
   getFilteredMenuItems: () => MenuItem[];
-  handleAddItem: (id: number) => void;
+  handleAddItem: (id: number, presentation?: { id: number; name: string; price: number }) => void;
   handleRemoveItem: (index: number) => void;
   handleQuantityChange: (index: number, qty: number | string) => void;
   getMenuItemName: (id: number) => string;
@@ -80,6 +80,15 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
   calculateOrderTotal,
 }) => {
   const showOrderForm = ((!editingOrder && clientStep === 'order' && existingClient) || editingOrder);
+  const [pickerItem, setPickerItem] = useState<MenuItem | null>(null);
+
+  const handleItemClick = (item: MenuItem) => {
+    if (item.presentations && item.presentations.length > 0) {
+      setPickerItem(item);
+    } else {
+      handleAddItem(item.id);
+    }
+  };
 
   return (
     <Modal
@@ -340,7 +349,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                         getFilteredMenuItems().map((item) => (
                           <button
                             key={item.id}
-                            onClick={() => handleAddItem(item.id)}
+                            onClick={() => handleItemClick(item)}
                             className="w-full flex items-center justify-between p-3 bg-white hover:bg-primary/5 border border-muted/60 hover:border-primary/30 rounded-xl transition-all group active:scale-[0.98]"
                           >
                             <div className="text-left flex-1 pr-2">
@@ -348,8 +357,16 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                               <p className="text-[8px] font-bold text-muted-foreground italic line-clamp-1">{item.description}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="font-black text-primary text-[10px] sm:text-xs">${item.price.toLocaleString('es-CO')}</span>
-                              <div className="p-1.5 bg-muted rounded-lg text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">
+                              {item.presentations && item.presentations.length > 0 ? (
+                                <span className="font-black text-secondary text-[10px] sm:text-xs">
+                                  ${Math.min(...item.presentations.map(p => p.price)).toLocaleString('es-CO')}+
+                                </span>
+                              ) : (
+                                <span className="font-black text-primary text-[10px] sm:text-xs">
+                                  ${item.price.toLocaleString('es-CO')}
+                                </span>
+                              )}
+                              <div className={`p-1.5 rounded-lg transition-colors ${item.presentations && item.presentations.length > 0 ? 'bg-secondary/10 text-secondary group-hover:bg-secondary group-hover:text-white' : 'bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-white'}`}>
                                 <PlusIcon size={10} />
                               </div>
                             </div>
@@ -396,6 +413,9 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                           <div key={index} className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-muted/60 shadow-sm animate-in slide-in-from-right-4 duration-300">
                             <div className="flex-1 min-w-0">
                               <p className="font-black text-[9px] uppercase text-foreground leading-tight truncate">{itemName}</p>
+                              {item.presentationName && (
+                                <p className="text-[7px] font-black text-secondary italic truncate">{item.presentationName.toUpperCase()}</p>
+                              )}
                               <p className="text-[8px] font-bold text-muted-foreground italic">${itemPrice.toLocaleString('es-CO')}</p>
                             </div>
                             <div className="flex items-center bg-muted/30 rounded-xl p-0.5 gap-1">
@@ -455,6 +475,47 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
             </div>
           </div>
         ) : null}
+
+        {/* ─── Presentation Picker ─────────────────── */}
+        {pickerItem && pickerItem.presentations && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setPickerItem(null)}>
+            <div className="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 space-y-4 animate-in zoom-in-90 duration-200" onClick={(e) => e.stopPropagation()}>
+              <div className="text-center">
+                <h4 className="font-black text-lg uppercase tracking-tight">{pickerItem.name}</h4>
+                <p className="text-xs text-muted-foreground font-medium italic mt-1">Elegí una presentación:</p>
+              </div>
+
+              <div className="space-y-2">
+                {pickerItem.presentations
+                  .filter((p) => p.available)
+                  .map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        handleAddItem(pickerItem.id, { id: p.id, name: p.name, price: p.price });
+                        setPickerItem(null);
+                      }}
+                      className="w-full flex items-center justify-between p-4 bg-muted/10 hover:bg-primary/10 border-2 border-muted/40 hover:border-primary/40 rounded-2xl transition-all group"
+                    >
+                      <span className="font-black text-sm uppercase tracking-wide group-hover:text-primary transition-colors">
+                        {p.name}
+                      </span>
+                      <span className="font-black text-lg text-secondary">
+                        ${p.price.toLocaleString('es-CO')}
+                      </span>
+                    </button>
+                  ))}
+              </div>
+
+              <button
+                onClick={() => setPickerItem(null)}
+                className="w-full text-center py-3 text-[10px] font-black text-muted-foreground uppercase tracking-widest hover:text-foreground transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );

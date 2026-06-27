@@ -1,7 +1,5 @@
-// Usa el hostname actual del navegador para que funcione desde cualquier dispositivo
-// PC: localhost:8081 | Mobile/LAN: {IP}:8081
-const BACKEND_HOST = window.location.hostname || 'localhost';
-export const API_BASE_URL = `http://${BACKEND_HOST}:8081/api`;
+// API a través del proxy de Vite — funciona en localhost y en red
+export const API_BASE_URL = '/api';
 export const API_URL = API_BASE_URL; // Mantener compatibilidad por las dudas
 export const APP_NAME = 'La Bombonera';
 

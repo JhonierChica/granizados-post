@@ -1,5 +1,6 @@
 package com.bombonera.modules.menu.controller;
 
+import com.bombonera.modules.menu.dto.BulkMenuItemsRequest;
 import com.bombonera.modules.menu.dto.CreateMenuItemRequest;
 import com.bombonera.modules.menu.dto.MenuItemResponse;
 import com.bombonera.modules.menu.dto.UpdateMenuItemRequest;
@@ -30,6 +31,14 @@ public class MenuItemController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PostMapping("/bulk")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<MenuItemResponse>> bulkCreateMenuItems(
+            @RequestBody BulkMenuItemsRequest request) {
+        List<MenuItemResponse> responses = menuItemService.bulkSaveMenuItems(request.getItems());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responses);
     }
 
     @GetMapping

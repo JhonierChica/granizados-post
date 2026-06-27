@@ -24,8 +24,8 @@ class WebSocketService {
   private readonly wsUrl: string;
 
   constructor() {
-    const host = window.location.hostname || 'localhost';
-    this.wsUrl = `ws://${host}:8080/ws`;
+    // Conecta al mismo host:port que la página — Vite proxy redirige al backend
+    this.wsUrl = `ws://${window.location.host}/ws`;
   }
 
   connect(): void {

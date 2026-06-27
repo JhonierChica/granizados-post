@@ -16,4 +16,5 @@ public class OrderItemResponse {
     private BigDecimal menuItemPrice;
     private Integer quantity;
     private String specialInstructions;
+    private String presentationName;
 }

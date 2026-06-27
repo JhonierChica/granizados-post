@@ -105,6 +105,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
                     {item.quantity}
                   </span>
                   <span className="text-[10px] sm:text-[11px] font-bold text-foreground/80 uppercase tracking-tight truncate">{itemName}</span>
+                      {item.presentationName && (
+                        <span className="text-[7px] font-black text-secondary/70 italic shrink-0 ml-1">{item.presentationName}</span>
+                      )}
                 </div>
                 <span className="font-mono text-[10px] font-black text-foreground/60 shrink-0 ml-2">${subtotal.toLocaleString('es-CO')}</span>
               </div>

@@ -11,4 +11,5 @@ public class OrderItemRequest {
     private Long menuItemId;
     private Integer quantity;
     private String specialInstructions;
+    private Long presentationId;
 }

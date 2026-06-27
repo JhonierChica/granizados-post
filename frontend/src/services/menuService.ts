@@ -27,6 +27,18 @@ export const menuService = {
     return response.data;
   },
 
+  bulkSave: async (items: Array<{
+    id?: number;
+    name: string;
+    description?: string;
+    price: number;
+    categoryId: number;
+    available?: boolean;
+  }>): Promise<MenuItem[]> => {
+    const response = await apiClient.post<MenuItem[]>('/menu/bulk', { items });
+    return response.data;
+  },
+
   getMenuItemsByCategory: async (categoryId: number): Promise<MenuItem[]> => {
     const response = await apiClient.get<MenuItem[]>(`/menu/category/${categoryId}`);
     return response.data;

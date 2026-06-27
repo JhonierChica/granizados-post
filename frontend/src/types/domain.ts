@@ -70,6 +70,13 @@ export interface Category {
   orderNumber?: number;
 }
 
+export interface ItemPresentation {
+  id: number;
+  name: string;
+  price: number;
+  available: boolean;
+}
+
 export interface MenuItem {
   id: number;
   name: string;
@@ -82,6 +89,7 @@ export interface MenuItem {
   active?: boolean;
   status?: boolean;
   categoryName?: string;
+  presentations?: ItemPresentation[];
 }
 
 export interface Table {
@@ -125,6 +133,8 @@ export interface OrderItem {
   name?: string;
   notes?: string;
   categoryName?: string;
+  presentationId?: number;
+  presentationName?: string;
 }
 
 export interface Payment {

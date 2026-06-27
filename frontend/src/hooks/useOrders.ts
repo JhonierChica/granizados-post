@@ -375,11 +375,16 @@ export function useOrders() {
   };
 
   // ===================== MENU ITEMS =====================
-  const handleAddItem = (menuItemId: number) => {
+  const handleAddItem = (menuItemId: number, presentation?: { id: number; name: string; price: number }) => {
     const menuItem = menuItems.find((item) => item.id === menuItemId);
     if (!menuItem) return;
 
-    const existingIndex = selectedItems.findIndex((item) => item.menuItemId === menuItem.id);
+    const unitPrice = presentation ? presentation.price : menuItem.price;
+
+    // Buscar si ya existe el mismo item CON la misma presentación
+    const existingIndex = selectedItems.findIndex(
+      (item) => item.menuItemId === menuItem.id && item.presentationId === (presentation?.id || undefined)
+    );
     if (existingIndex >= 0) {
       const newItems = [...selectedItems];
       newItems[existingIndex].quantity += 1;
@@ -391,12 +396,18 @@ export function useOrders() {
           menuItemId: menuItem.id,
           quantity: 1,
           name: menuItem.name,
-          price: menuItem.price,
+          price: unitPrice,
           categoryName: menuItem.categoryName,
+          presentationId: presentation?.id,
+          presentationName: presentation?.name,
         },
       ]);
     }
-    toast.success(`${menuItem.name.toUpperCase()} AGREGADO`, {
+
+    const displayName = presentation
+      ? `${menuItem.name.toUpperCase()} (${presentation.name})`
+      : menuItem.name.toUpperCase();
+    toast.success(`${displayName} AGREGADO`, {
       description: "Se añadió correctamente a la lista de la comanda",
       icon: '✅',
       duration: 1500,

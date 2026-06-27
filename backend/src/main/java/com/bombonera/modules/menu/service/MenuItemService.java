@@ -2,14 +2,19 @@ package com.bombonera.modules.menu.service;
 
 import com.bombonera.modules.categories.model.Category;
 import com.bombonera.modules.categories.repository.CategoryRepository;
+import com.bombonera.modules.menu.dto.BulkMenuItemsRequest;
 import com.bombonera.modules.menu.dto.CreateMenuItemRequest;
+import com.bombonera.modules.menu.dto.ItemPresentationResponse;
 import com.bombonera.modules.menu.dto.MenuItemResponse;
 import com.bombonera.modules.menu.dto.UpdateMenuItemRequest;
+import com.bombonera.modules.menu.model.ItemPresentation;
 import com.bombonera.modules.menu.model.MenuItem;
+import com.bombonera.modules.menu.repository.ItemPresentationRepository;
 import com.bombonera.modules.menu.repository.MenuItemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,10 +24,14 @@ public class MenuItemService {
 
     private final MenuItemRepository menuItemRepository;
     private final CategoryRepository categoryRepository;
+    private final ItemPresentationRepository itemPresentationRepository;
 
-    public MenuItemService(MenuItemRepository menuItemRepository, CategoryRepository categoryRepository) {
+    public MenuItemService(MenuItemRepository menuItemRepository,
+                           CategoryRepository categoryRepository,
+                           ItemPresentationRepository itemPresentationRepository) {
         this.menuItemRepository = menuItemRepository;
         this.categoryRepository = categoryRepository;
+        this.itemPresentationRepository = itemPresentationRepository;
     }
 
     public MenuItemResponse createMenuItem(CreateMenuItemRequest request) {
@@ -141,7 +150,73 @@ public class MenuItemService {
         menuItemRepository.save(menuItem);
     }
 
+    public List<MenuItemResponse> bulkSaveMenuItems(List<BulkMenuItemsRequest.MenuItemEntry> entries) {
+        List<MenuItemResponse> responses = new ArrayList<>();
+        for (BulkMenuItemsRequest.MenuItemEntry entry : entries) {
+            MenuItemResponse saved;
+            if (entry.getId() != null) {
+                UpdateMenuItemRequest updateReq = new UpdateMenuItemRequest(
+                        entry.getName(),
+                        entry.getDescription(),
+                        entry.getPrice(),
+                        entry.getCategoryId(),
+                        entry.getAvailable()
+                );
+                saved = updateMenuItem(entry.getId(), updateReq);
+            } else {
+                CreateMenuItemRequest createReq = new CreateMenuItemRequest(
+                        entry.getName(),
+                        entry.getDescription(),
+                        entry.getPrice(),
+                        entry.getCategoryId()
+                );
+                saved = createMenuItem(createReq);
+                if (entry.getAvailable() != null && !entry.getAvailable()) {
+                    UpdateMenuItemRequest disableReq = new UpdateMenuItemRequest(
+                            null, null, null, null, false
+                    );
+                    saved = updateMenuItem(saved.getId(), disableReq);
+                }
+            }
+
+            // Guardar presentaciones si se enviaron
+            if (entry.getPresentations() != null) {
+                savePresentations(saved.getId(), entry.getPresentations());
+            }
+
+            responses.add(mapToResponse(menuItemRepository.findById(saved.getId())
+                    .orElseThrow(() -> new RuntimeException("Menu item not found"))));
+        }
+        return responses;
+    }
+
+    private void savePresentations(Long menuItemId, List<BulkMenuItemsRequest.ItemPresentationEntry> entries) {
+        MenuItem menuItem = menuItemRepository.findById(menuItemId)
+                .orElseThrow(() -> new RuntimeException("Menu item not found: " + menuItemId));
+        itemPresentationRepository.deleteByMenuItemId(menuItemId);
+        for (BulkMenuItemsRequest.ItemPresentationEntry entry : entries) {
+            if (entry.getName() == null || entry.getName().isBlank()) continue;
+            ItemPresentation presentation = new ItemPresentation();
+            presentation.setMenuItem(menuItem);
+            presentation.setName(entry.getName());
+            presentation.setPriceFromBigDecimal(entry.getPrice() != null ? entry.getPrice() : java.math.BigDecimal.ZERO);
+            presentation.setAvailable(entry.getAvailable() != null ? entry.getAvailable() : true);
+            itemPresentationRepository.save(presentation);
+        }
+    }
+
     private MenuItemResponse mapToResponse(MenuItem menuItem) {
+        List<ItemPresentationResponse> presentations = itemPresentationRepository
+                .findByMenuItemId(menuItem.getId())
+                .stream()
+                .map(p -> ItemPresentationResponse.builder()
+                        .id(p.getId())
+                        .name(p.getName())
+                        .price(p.getPriceAsBigDecimal())
+                        .available(p.getAvailable())
+                        .build())
+                .collect(Collectors.toList());
+
         return MenuItemResponse.builder()
                 .id(menuItem.getId())
                 .name(menuItem.getName())
@@ -159,6 +234,7 @@ public class MenuItemService {
                 .calories(menuItem.getCalories())
                 .createdAt(menuItem.getCreatedAt())
                 .updatedAt(menuItem.getUpdatedAt())
+                .presentations(presentations.isEmpty() ? null : presentations)
                 .build();
     }
 }
