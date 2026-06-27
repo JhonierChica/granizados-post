@@ -79,14 +79,13 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#0A0A0A] overflow-hidden selection:bg-primary/30 selection:text-primary">
       {/* Panel Izquierdo: Branding — Vibra Bombonera */}
-      <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-gradient-to-br from-[#DC2626] via-[#E63946] to-[#B91C1C] relative overflow-hidden">
-        {/* Fondo decorativo — llamas tenues */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#FFB703]/10 rounded-full -mr-48 -mt-48 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-125 h-125 bg-[#00B4D8]/10 rounded-full -ml-64 -mb-64 blur-3xl" />
+      <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-gradient-to-br from-primary via-primary/80 to-primary/60 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 rounded-full -mr-48 -mt-48 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-125 h-125 bg-accent/10 rounded-full -ml-64 -mb-64 blur-3xl" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
         
         <div className="relative z-10 text-center space-y-12 max-w-lg">
-          <div className="bg-[#0A0A0A] p-6 rounded-6xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] inline-block transform hover:rotate-2 hover:scale-[1.02] transition-all duration-700 border-2 border-[#FFB703]/30">
+          <div className="bg-card p-6 rounded-6xl shadow-[0_20px_60px_rgba(0,0,0,0.4)] inline-block transform hover:rotate-2 hover:scale-[1.02] transition-all duration-700 border-2 border-secondary/30">
             <img 
               src="/logo-bombonera.png" 
               alt="La Bombonera" 
@@ -94,11 +93,11 @@ const Login: React.FC = () => {
             />
           </div>
           <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white tracking-tighter leading-tight drop-shadow-[0_4px_20px_rgba(255,183,3,0.3)]">
-              La <span className="text-[#FFB703]">Bombonera</span>
+            <h1 className="text-6xl font-black text-white tracking-tighter leading-tight drop-shadow-[0_4px_20px_rgba(245,158,11,0.3)]">
+              La <span className="text-secondary">Bombonera</span>
             </h1>
             <p className="text-white/80 text-2xl font-medium tracking-tight">
-              🔥 Granizados que rompen la cancha.
+              Granizados que refrescan tu día.
             </p>
           </div>
         </div>
@@ -106,14 +105,13 @@ const Login: React.FC = () => {
 
       {/* Panel Derecho: Formulario */}
       <div className="flex flex-col justify-center items-center p-6 md:p-12 relative">
-        {/* Partículas tenues de fondo */}
-        <div className="absolute top-20 right-20 w-64 h-64 bg-[#00B4D8]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#E63946]/5 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-20 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
         
         <div className="w-full max-w-md space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 relative z-10">
           <div className="lg:hidden text-center space-y-6 mb-12">
             <img src="/logo-bombonera.png" alt="La Bombonera" className="h-28 w-auto mx-auto shadow-xl rounded-2xl" />
-            <h2 className="text-4xl font-black text-[#E63946] tracking-tighter">La Bombonera</h2>
+            <h2 className="text-4xl font-black text-primary tracking-tighter">La Bombonera</h2>
           </div>
 
           <div className="space-y-3 text-center lg:text-left">
@@ -121,14 +119,14 @@ const Login: React.FC = () => {
             <p className="text-white/50 font-medium text-lg">Accedé al panel de gestión.</p>
           </div>
 
-          {error && (
-            <div className="bg-[#DC2626]/10 border-2 border-[#DC2626]/30 p-5 rounded-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-300 backdrop-blur-sm">
-              <div className="bg-[#DC2626] text-white p-1 rounded-full">
+            {error && (
+            <div className="bg-destructive/10 border-2 border-destructive/30 p-5 rounded-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-300 backdrop-blur-sm">
+              <div className="bg-destructive text-white p-1 rounded-full">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                   <path d="M18 6L6 18M6 6l12 12"/>
                 </svg>
               </div>
-              <p className="text-[#DC2626] text-sm font-black uppercase tracking-wider">{error}</p>
+              <p className="text-destructive text-sm font-black uppercase tracking-wider">{error}</p>
             </div>
           )}
 
@@ -141,7 +139,7 @@ const Login: React.FC = () => {
                 value={credentials.username}
                 onChange={handleChange}
                 placeholder="Nombre de usuario"
-                className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-[#E63946] focus-visible:ring-[#E63946]/20 transition-all text-lg font-bold text-white placeholder:text-white/30"
+                className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-primary focus-visible:ring-primary/20 transition-all text-lg font-bold text-white placeholder:text-white/30"
                 disabled={loading}
                 labelClassName="text-white/60"
               />
@@ -153,14 +151,14 @@ const Login: React.FC = () => {
                   value={credentials.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-[#E63946] focus-visible:ring-[#E63946]/20 transition-all text-lg font-bold text-white placeholder:text-white/30 pr-14"
+                  className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-primary focus-visible:ring-primary/20 transition-all text-lg font-bold text-white placeholder:text-white/30 pr-14"
                   disabled={loading}
                   labelClassName="text-white/60"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-10.5 p-2 text-white/40 hover:text-[#FFB703] transition-colors"
+                  className="absolute right-4 top-10.5 p-2 text-white/40 hover:text-secondary transition-colors"
                 >
                   {showPassword ? <EyeOffIcon size={24} /> : <EyeIcon size={24} />}
                 </button>
@@ -170,17 +168,17 @@ const Login: React.FC = () => {
             <Button
               type="submit"
               variant="primary"
-              className="w-full h-16 rounded-2xl text-xl font-black shadow-2xl shadow-[#E63946]/30 hover:shadow-[#E63946]/50 transform active:scale-[0.97] transition-all duration-300 uppercase tracking-widest bg-[#E63946] hover:bg-[#DC2626] text-white"
+              className="w-full h-16 rounded-2xl text-xl font-black shadow-2xl shadow-primary/30 hover:shadow-primary/50 transform active:scale-[0.97] transition-all duration-300 uppercase tracking-widest bg-primary hover:bg-primary/80 text-white"
               isLoading={loading}
             >
-              🔥 Iniciar Gestión
+              Iniciar Gestión
             </Button>
           </form>
 
           <footer className="pt-12 text-center">
             <div className="flex items-center justify-center gap-4 text-white/20 font-black text-[10px] uppercase tracking-[0.3em]">
               <div className="h-px w-12 bg-white/10" />
-              ⚽ BOMBONERA POS v1.0
+              LA BOMBONERA
               <div className="h-px w-12 bg-white/10" />
             </div>
           </footer>
