@@ -2,9 +2,9 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../utils/constants';
+import { Input } from '../components/ui/input';
 import Button from '../components/common/Button';
-import Input from '../components/common/Input';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, X } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState({
@@ -14,25 +14,40 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const { login, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  // ── Loading screen ──────────────────────────────────────────────
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-foreground space-y-6">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-7 relative overflow-hidden">
+        {/* Ambient glows */}
+        <div className="absolute top-[-15%] right-[-10%] w-[50%] h-[50%] bg-secondary/[0.03] rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-15%] left-[-10%] w-[50%] h-[50%] bg-primary/[0.04] rounded-full blur-[120px]" />
+
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
+          }}
+        />
+
         <img
           src="/logo-bombonera.png"
           alt="La Bombonera"
-          className="h-24 w-auto animate-pulse"
+          className="h-32 w-auto object-contain drop-shadow-2xl animate-[gentle-pulse_2s_ease-in-out_infinite]"
         />
-        <p className="text-white/60 text-lg font-medium animate-pulse">
-          Verificando sesión...
+        <p className="text-white/30 text-base font-medium tracking-wide">
+          Verificando sesión…
         </p>
       </div>
     );
   }
 
+  // ── Handlers ────────────────────────────────────────────────────
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCredentials({
       ...credentials,
@@ -48,123 +63,197 @@ const Login: React.FC = () => {
 
     try {
       const result = await login(credentials.username, credentials.password);
-      
+
       if (result.success && result.user) {
         navigate(ROUTES.DASHBOARD);
       } else {
         setError(result.error || 'Usuario o contraseña incorrectos');
       }
-    } catch (err) {
+    } catch {
       setError('Error al conectar con el servidor');
     } finally {
       setLoading(false);
     }
   };
 
+  // ── Login screen ────────────────────────────────────────────────
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-foreground overflow-hidden selection:bg-primary/30 selection:text-primary">
-      {/* Panel Izquierdo: Branding — Vibra Bombonera */}
-      <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-gradient-to-br from-primary via-primary/80 to-primary/60 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 rounded-full -mr-48 -mt-48 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-125 h-125 bg-accent/10 rounded-full -ml-64 -mb-64 blur-3xl" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-        
-        <div className="relative z-10 text-center space-y-12 max-w-lg">
-          <img 
-            src="/logo-bombonera.png" 
-            alt="La Bombonera" 
-            className="h-64 w-auto object-contain drop-shadow-2xl"
-          />
-          <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white tracking-tighter leading-tight drop-shadow-[0_4px_20px_rgba(245,158,11,0.3)]">
-              La <span className="text-secondary">Bombonera</span>
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-primary/20 selection:text-primary">
+      {/* ── Ambient glow accents ── */}
+      <div className="absolute top-[-25%] right-[-15%] w-[80%] h-[80%] bg-amber-500/[0.04] rounded-full blur-[160px]" />
+      <div className="absolute bottom-[-25%] left-[-15%] w-[70%] h-[70%] bg-primary/[0.05] rounded-full blur-[140px]" />
+      <div className="absolute top-[40%] left-[20%] w-[40%] h-[40%] bg-secondary/[0.03] rounded-full blur-[100px]" />
+
+      {/* ── Dot grid texture ── */}
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+        }}
+      />
+
+      {/* ── Content ── */}
+      <div className="relative z-10 w-full max-w-md flex flex-col items-center">
+        {/* ── Logo — floating, no container ── */}
+        <img
+          src="/logo-bombonera.png"
+          alt="La Bombonera"
+          className="
+            h-48 sm:h-60 md:h-72
+            w-auto object-contain
+            drop-shadow-[0_20px_60px_rgba(245,158,11,0.18)]
+            mb-[-1.5rem] sm:mb-[-2rem]
+            relative z-20
+            animate-[float_4s_ease-in-out_infinite]
+            select-none
+          "
+          draggable={false}
+        />
+
+        {/* ── Glassmorphism card ── */}
+        <div
+          className="
+            w-full
+            bg-black/25 backdrop-blur-2xl
+            border border-white/[0.06]
+            rounded-[2rem] sm:rounded-[2.5rem]
+            p-7 sm:p-10
+            shadow-[0_20px_80px_rgba(0,0,0,0.55),inset_0_0_0_1px_rgba(255,255,255,0.03)]
+          "
+        >
+          {/* ── Title ── */}
+          <div className="text-center space-y-2 mb-9">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">
+              <span className="bg-gradient-to-r from-secondary via-amber-400 to-secondary bg-clip-text text-transparent">
+                La Bombonera
+              </span>
             </h1>
-            <p className="text-white/80 text-2xl font-medium tracking-tight">
+            <p className="text-white/35 text-sm sm:text-base font-medium tracking-wide">
               Granizados que refrescan tu día.
             </p>
           </div>
-        </div>
-      </div>
 
-      {/* Panel Derecho: Formulario */}
-      <div className="flex flex-col justify-center items-center p-6 md:p-12 relative">
-        <div className="absolute top-20 right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
-        
-        <div className="w-full max-w-md space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 relative z-10">
-          <div className="lg:hidden text-center space-y-6 mb-12">
-            <img src="/logo-bombonera.png" alt="La Bombonera" className="h-32 w-auto mx-auto drop-shadow-2xl" />
-            <h2 className="text-4xl font-black text-primary tracking-tighter">La Bombonera</h2>
-          </div>
-
-          <div className="space-y-3 text-center lg:text-left">
-            <h3 className="text-5xl font-black tracking-tighter text-white">Ingresar</h3>
-            <p className="text-white/50 font-medium text-lg">Accedé al panel de gestión.</p>
-          </div>
-
-            {error && (
-            <div className="bg-destructive/10 border-2 border-destructive/30 p-5 rounded-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-300 backdrop-blur-sm">
-              <div className="bg-destructive text-white p-1 rounded-full">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
+          {/* ── Error alert ── */}
+          {error && (
+            <div className="mb-6 bg-destructive/5 border border-destructive/15 rounded-2xl p-4 flex items-center gap-3 backdrop-blur-sm animate-in fade-in zoom-in-95 duration-300">
+              <div className="shrink-0 w-8 h-8 rounded-full bg-destructive/15 flex items-center justify-center">
+                <X size={15} className="text-destructive" strokeWidth={2.5} />
               </div>
-              <p className="text-destructive text-sm font-black uppercase tracking-wider">{error}</p>
+              <p className="text-destructive/85 text-sm font-semibold leading-snug">
+                {error}
+              </p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="space-y-6">
+          {/* ── Form ── */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Username */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/25">
+                Usuario
+              </label>
               <Input
-                label="Usuario"
                 name="username"
                 type="text"
                 value={credentials.username}
                 onChange={handleChange}
                 placeholder="Nombre de usuario"
-                className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-primary focus-visible:ring-primary/20 transition-all text-lg font-bold text-white placeholder:text-white/30"
                 disabled={loading}
-                labelClassName="text-white/60"
+                autoComplete="username"
+                className="
+                  h-14 px-5
+                  rounded-2xl
+                  bg-white/[0.04]
+                  border-white/[0.07]
+                  text-base font-semibold text-white
+                  placeholder:text-white/15
+                  focus-visible:border-primary/40
+                  focus-visible:ring-primary/15
+                  transition-all duration-300
+                "
               />
-              <div className="relative group">
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <label className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/25">
+                Contraseña
+              </label>
+              <div className="relative">
                 <Input
-                  label="Contraseña"
                   name="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={credentials.password}
                   onChange={handleChange}
                   placeholder="••••••••"
-                  className="h-16 px-6 rounded-2xl border-2 bg-white/5 border-white/10 focus:border-primary focus-visible:ring-primary/20 transition-all text-lg font-bold text-white placeholder:text-white/30 pr-14"
                   disabled={loading}
-                  labelClassName="text-white/60"
+                  autoComplete="current-password"
+                  className="
+                    h-14 px-5 pr-14
+                    rounded-2xl
+                    bg-white/[0.04]
+                    border-white/[0.07]
+                    text-base font-semibold text-white
+                    placeholder:text-white/15
+                    focus-visible:border-primary/40
+                    focus-visible:ring-primary/15
+                    transition-all duration-300
+                  "
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-10.5 p-2 text-white/40 hover:text-secondary transition-colors"
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    p-2 rounded-xl
+                    text-white/15 hover:text-secondary
+                    transition-colors duration-200
+                  "
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 >
-                  {showPassword ? <EyeOffIcon size={24} /> : <EyeIcon size={24} />}
+                  {showPassword ? (
+                    <EyeOffIcon size={20} strokeWidth={1.8} />
+                  ) : (
+                    <EyeIcon size={20} strokeWidth={1.8} />
+                  )}
                 </button>
               </div>
             </div>
 
+            {/* Submit */}
             <Button
               type="submit"
               variant="primary"
-              className="w-full h-16 rounded-2xl text-xl font-black shadow-2xl shadow-primary/30 hover:shadow-primary/50 transform active:scale-[0.97] transition-all duration-300 uppercase tracking-widest bg-primary hover:bg-primary/80 text-white"
               isLoading={loading}
+              className="
+                w-full h-14
+                rounded-2xl
+                !text-base !font-black !uppercase !tracking-[0.2em]
+                bg-gradient-to-r from-primary to-primary/80
+                hover:from-primary/90 hover:to-primary
+                shadow-[0_0_30px_rgba(12,183,183,0.25)]
+                hover:shadow-[0_0_50px_rgba(12,183,183,0.4)]
+                text-white
+                transition-all duration-500
+                active:scale-[0.98]
+                mt-1
+              "
             >
               Iniciar Gestión
             </Button>
           </form>
 
-          <footer className="pt-12 text-center">
-            <div className="flex items-center justify-center gap-4 text-white/20 font-black text-[10px] uppercase tracking-[0.3em]">
-              <div className="h-px w-12 bg-white/10" />
+          {/* ── Footer divider ── */}
+          <div className="mt-10 pt-6 border-t border-white/[0.04]">
+            <div className="flex items-center justify-center gap-3 text-white/[0.08] font-black text-[10px] uppercase tracking-[0.35em]">
+              <div className="h-px w-8 bg-white/[0.05]" />
               LA BOMBONERA
-              <div className="h-px w-12 bg-white/10" />
+              <div className="h-px w-8 bg-white/[0.05]" />
             </div>
-          </footer>
+          </div>
         </div>
       </div>
     </div>
