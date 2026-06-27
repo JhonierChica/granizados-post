@@ -37,7 +37,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   const canDeleteOrder = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER;
 
   return (
-    <Card className="h-full flex flex-col group border-b-8 border-b-primary/5 hover:border-b-primary/40 transition-all duration-500">
+    <Card className="h-full flex flex-col group border-l-4 border-l-primary/10 hover:border-l-primary/40 transition-all duration-500">
       {/* Header — flex-wrap para que nunca se desborde */}
       <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
         <div className="min-w-0">
@@ -55,11 +55,11 @@ const OrderCard: React.FC<OrderCardProps> = ({
                   const ampm = hour24 >= 12 ? 'PM' : 'AM';
                   return `${hour12}:${minute} ${ampm}`;
                 })()
-              : 'Sin fecha'} — TDS
+              : 'Sin fecha'}
           </p>
         </div>
         <Badge className={`rounded-lg font-black text-[8px] sm:text-[9px] uppercase tracking-wider px-2 py-0.5 flex items-center gap-1 shadow-sm shrink-0 ${statusBadge.class}`}>
-          {statusBadge.emoji} {statusBadge.text}
+          {statusBadge.text}
         </Badge>
       </div>
 
@@ -68,7 +68,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
         <div className="flex-1 bg-muted/30 px-2.5 py-2 rounded-lg border border-muted/50 min-w-0">
           <span className="text-[7px] sm:text-[8px] font-black text-muted-foreground uppercase tracking-widest block">Mesa</span>
           <p className="font-black text-foreground text-[11px] sm:text-xs truncate">
-            {order.orderType === 'DOMICILIO' ? '🏍️ Domicilio' : `🪑 Mesa ${order.tableNumber || 'N/A'}`}
+            {order.orderType === 'DOMICILIO' ? 'Domicilio' : `Mesa ${order.tableNumber || 'N/A'}`}
           </p>
         </div>
         <div className="flex-1 bg-muted/30 px-2.5 py-2 rounded-lg border border-muted/50 min-w-0">
@@ -128,9 +128,9 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </div>
 
         {order.notes && (
-          <div className="p-2.5 bg-amber-50/50 border border-amber-100 rounded-lg flex gap-2">
-            <InfoIcon size={14} className="text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-[10px] text-amber-800/80 font-medium leading-relaxed italic wrap-break-word">
+          <div className="p-2.5 bg-secondary/5 border border-secondary/10 rounded-lg flex gap-2">
+            <InfoIcon size={14} className="text-secondary shrink-0 mt-0.5" />
+            <p className="text-[10px] text-foreground/70 font-medium leading-relaxed italic wrap-break-word">
               {order.notes}
             </p>
           </div>
@@ -147,7 +147,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
           <EditIcon size={16} />
         </button>
         <button 
-          className="flex-1 flex items-center justify-center h-10 rounded-lg bg-muted/40 text-muted-foreground hover:bg-amber-100 hover:text-amber-600 transition-all active:scale-95" 
+          className="flex-1 flex items-center justify-center h-10 rounded-lg bg-muted/40 text-muted-foreground hover:bg-secondary/10 hover:text-secondary transition-all active:scale-95" 
           onClick={() => onToggleStatus(order)} 
           title="Estado"
         >

@@ -58,13 +58,13 @@ const WaiterTables: React.FC = () => {
   const getStatusInfo = (tableStatus: string) => {
     switch (tableStatus) {
       case 'AVAILABLE':
-        return { label: 'DISPONIBLE', emoji: '🟢', class: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: <CheckCircleIcon size={16} /> };
+        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-50 text-emerald-700 border-emerald-100', icon: <CheckCircleIcon size={16} /> };
       case 'OCCUPIED':
-        return { label: 'OCUPADA', emoji: '🔴', class: 'bg-rose-50 text-rose-700 border-rose-100', icon: <XCircleIcon size={16} /> };
+        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-50 text-rose-700 border-rose-100', icon: <XCircleIcon size={16} /> };
       case 'RESERVED':
-        return { label: 'RESERVADA', emoji: '🟡', class: 'bg-amber-50 text-amber-700 border-amber-100', icon: <ClockIcon size={16} /> };
+        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-50 text-amber-700 border-amber-100', icon: <ClockIcon size={16} /> };
       default:
-        return { label: tableStatus, emoji: '⚪', class: 'bg-muted text-muted-foreground border-muted', icon: <TableIcon size={16} /> };
+        return { label: tableStatus, emoji: '', class: 'bg-muted text-muted-foreground border-muted', icon: <TableIcon size={16} /> };
     }
   };
 
@@ -120,7 +120,7 @@ const WaiterTables: React.FC = () => {
                       <h3 className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground leading-none">MESA {table.tableNumber}</h3>
                     </div>
                     <Badge className={`rounded-lg sm:rounded-xl font-black text-[8px] sm:text-[9px] uppercase tracking-wider px-2 py-1 sm:px-3 sm:py-1.5 flex items-center gap-1.5 sm:gap-2 shadow-sm border-2 ${statusInfo.class}`}>
-                      {statusInfo.emoji} {statusInfo.label}
+                      {statusInfo.icon} {statusInfo.label}
                     </Badge>
                   </div>
 
@@ -184,9 +184,9 @@ const WaiterTables: React.FC = () => {
               <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Cambiar estado operativo:</label>
               <div className="grid grid-cols-1 gap-3">
                 {[
-                  { id: TABLE_STATUS.AVAILABLE, label: 'MARCAR COMO DISPONIBLE', emoji: '🟢', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-                  { id: TABLE_STATUS.OCCUPIED, label: 'MARCAR COMO OCUPADA', emoji: '🔴', class: 'bg-rose-50 text-rose-700 border-rose-200' },
-                  { id: TABLE_STATUS.RESERVED, label: 'MARCAR COMO RESERVADA', emoji: '🟡', class: 'bg-amber-50 text-amber-700 border-amber-200' }
+                  { id: TABLE_STATUS.AVAILABLE, label: 'MARCAR COMO DISPONIBLE', icon: <CheckCircleIcon size={24} />, class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+                  { id: TABLE_STATUS.OCCUPIED, label: 'MARCAR COMO OCUPADA', icon: <XCircleIcon size={24} />, class: 'bg-rose-50 text-rose-700 border-rose-200' },
+                  { id: TABLE_STATUS.RESERVED, label: 'MARCAR COMO RESERVADA', icon: <ClockIcon size={24} />, class: 'bg-amber-50 text-amber-700 border-amber-200' }
                 ].map((opt) => (
                   <button
                     key={opt.id}
@@ -196,7 +196,7 @@ const WaiterTables: React.FC = () => {
                       ${status === opt.id ? `${opt.class} ring-4 ring-secondary/5` : 'bg-white border-muted/50 text-muted-foreground hover:bg-muted/5'}
                     `}
                   >
-                    <span className="text-2xl leading-none">{opt.emoji}</span>
+                    <span className="text-2xl leading-none">{opt.icon}</span>
                     <span className="flex-1">{opt.label}</span>
                     {status === opt.id && (
                       <div className="bg-white/50 p-1 rounded-full text-current">

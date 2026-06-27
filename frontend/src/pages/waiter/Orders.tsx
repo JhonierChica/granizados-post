@@ -5,7 +5,7 @@ import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Loading from '../../components/common/Loading';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
-import { OrdersIcon, PlusIcon, FilterIcon, ClipboardListIcon } from '../../components/common/Icons';
+import { OrdersIcon, PlusIcon, FilterIcon, ClipboardListIcon, ClockIcon, CheckCircleIcon } from '../../components/common/Icons';
 import { ORDER_STATUS } from '../../utils/constants';
 import { useOrders } from '../../hooks/useOrders';
 
@@ -17,9 +17,9 @@ import { Badge } from '../../components/ui/badge';
 import { cn } from '@/lib/utils';
 
 const STATUS_FILTERS = [
-  { value: 'TODOS', label: 'Todos', icon: '📋' },
-  { value: ORDER_STATUS.PENDING, label: 'Pendiente', icon: '🟡' },
-  { value: ORDER_STATUS.DELIVERED, label: 'Servido', icon: '✅' },
+  { value: 'TODOS', label: 'Todos', icon: <FilterIcon size={14} /> },
+  { value: ORDER_STATUS.PENDING, label: 'Pendiente', icon: <ClockIcon size={14} /> },
+  { value: ORDER_STATUS.DELIVERED, label: 'Servido', icon: <CheckCircleIcon size={14} /> },
 ];
 
 const Orders: React.FC = () => {
@@ -108,7 +108,7 @@ const Orders: React.FC = () => {
                     }
                   `}
                 >
-                  <span className="text-base leading-none">{opt.icon}</span>
+                    <span className="text-muted-foreground">{opt.icon}</span>
                   {opt.label}
                 </button>
               ))}
@@ -210,7 +210,7 @@ const Orders: React.FC = () => {
           isOpen={hook.showPaymentConfirm}
           onClose={() => hook.setShowPaymentConfirm(false)}
           onConfirm={hook.handleConfirmPaymentStart}
-          title="💰 CONFIRMAR CIERRE"
+          title="CONFIRMAR CIERRE"
           message={`¿Vas a proceder con el cobro del Pedido #${hook.paymentOrder?.id || ''}? Valor: $${(hook.paymentOrder?.total || 0).toLocaleString('es-CO')}`}
         />
 

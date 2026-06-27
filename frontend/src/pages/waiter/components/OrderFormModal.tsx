@@ -221,7 +221,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                 </div>
                 <div>
                   <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-green-800">EN EL LOCAL</span>
-                  <span className="text-[10px] text-green-700/60 font-medium italic">Servicio a la mesa 🪑</span>
+                  <span className="text-[10px] text-green-700/60 font-medium italic">Servicio a la mesa</span>
                 </div>
               </button>
               <button
@@ -233,7 +233,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                 </div>
                 <div>
                   <span className="block font-black text-base sm:text-lg uppercase tracking-tight text-blue-800">DOMICILIO</span>
-                  <span className="text-[10px] text-blue-700/60 font-medium italic">Fuera del restaurante 🏍️</span>
+                  <span className="text-[10px] text-blue-700/60 font-medium italic">A domicilio</span>
                 </div>
               </button>
             </div>
@@ -535,9 +535,9 @@ const ClientBanner: React.FC<{ client: Client }> = ({ client }) => (
         <span className="block text-[7px] sm:text-[9px] font-black uppercase tracking-[0.3em] opacity-70">Cliente:</span>
         <h4 className="text-xs sm:text-base font-black uppercase tracking-tight leading-none truncate max-w-40 sm:max-w-none">{client.name}</h4>
         <div className="flex items-center gap-2 mt-1 opacity-80">
-          <span className="text-[7px] sm:text-[9px] font-bold flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded-md border border-white/20 uppercase">
-            🆔 {client.identificationNumber || 'S/N'}
-          </span>
+                          <span className="text-[7px] sm:text-[9px] font-bold flex items-center gap-1 bg-white/10 px-1.5 py-0.5 rounded-md border border-white/20 uppercase">
+                            ID: {client.identificationNumber || 'S/N'}
+                          </span>
         </div>
       </div>
     </div>

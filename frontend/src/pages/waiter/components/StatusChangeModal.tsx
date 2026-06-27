@@ -16,8 +16,8 @@ interface StatusChangeModalProps {
 }
 
 const STATUS_OPTIONS = [
-  { value: ORDER_STATUS.PENDING, label: 'PENDIENTE', emoji: '🟡', class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  { value: ORDER_STATUS.DELIVERED, label: 'YA SERVIDO', emoji: '✅', class: 'bg-indigo-100 border-indigo-200 text-indigo-700' },
+  { value: ORDER_STATUS.PENDING, label: 'PENDIENTE', emoji: '', class: 'bg-amber-100 border-amber-200 text-amber-700' },
+  { value: ORDER_STATUS.DELIVERED, label: 'YA SERVIDO', emoji: '', class: 'bg-indigo-100 border-indigo-200 text-indigo-700' },
 ];
 
 const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
@@ -51,14 +51,14 @@ const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
            <div className="text-right space-y-1">
               <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Estado Actual</span>
               <Badge className={`rounded-xl font-black text-[9px] uppercase tracking-wider px-3 py-1 flex items-center gap-2 ${currentBadge.class}`}>
-                {currentBadge.emoji} {currentBadge.text}
+                {currentBadge.text}
               </Badge>
            </div>
         </div>
 
         <div className="space-y-4">
           <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1 flex items-center gap-2">
-            <ToggleIcon size={14} className="text-primary" /> Seleccionar nuevo estado para cocina:
+            <ToggleIcon size={14} className="text-primary" /> Seleccionar nuevo estado:
           </label>
           
           <div className="grid grid-cols-1 gap-2 sm:gap-3">
@@ -75,9 +75,9 @@ const StatusChangeModal: React.FC<StatusChangeModalProps> = ({
                   }
                 `}
               >
-                <div className={`p-2 sm:p-3 rounded-xl transition-all ${newStatus === opt.value ? 'bg-white/40' : 'bg-muted/30 group-hover:bg-primary/5'}`}>
-                   <span className="text-lg sm:text-xl leading-none">{opt.emoji}</span>
-                </div>
+                 <div className={`p-2 sm:p-3 rounded-xl transition-all ${newStatus === opt.value ? 'bg-white/40' : 'bg-muted/30 group-hover:bg-primary/5'}`}>
+                    <ToggleIcon size={20} className={newStatus === opt.value ? 'text-current' : 'text-muted-foreground'} />
+                 </div>
                 
                 <div className="flex-1">
                   <span className="block font-black text-xs sm:text-sm uppercase tracking-tight">{opt.label}</span>

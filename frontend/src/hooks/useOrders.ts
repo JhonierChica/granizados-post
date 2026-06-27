@@ -195,8 +195,8 @@ export function useOrders() {
 
   const getStatusBadge = (status: string): StatusBadge => {
     const badges: Record<string, StatusBadge> = {
-      PENDIENTE: { emoji: '🟡', text: 'Pendiente', class: 'badge-warning' },
-      SERVIDO: { emoji: '✅', text: 'Servido', class: 'badge-primary' },
+      PENDIENTE: { emoji: '', text: 'Pendiente', class: 'badge-warning' },
+      SERVIDO: { emoji: '', text: 'Servido', class: 'badge-primary' },
     };
     return badges[status] || { emoji: '', text: status, class: 'badge-secondary' };
   };
@@ -409,7 +409,7 @@ export function useOrders() {
       : menuItem.name.toUpperCase();
     toast.success(`${displayName} AGREGADO`, {
       description: "Se añadió correctamente a la lista de la comanda",
-      icon: '✅',
+      icon: undefined,
       duration: 1500,
     });
   };
