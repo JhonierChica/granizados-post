@@ -20,9 +20,9 @@ interface DeliveryCardProps {
   onInitiatePayment: (delivery: Delivery) => void;
 }
 
-const DELIVERY_STATUS_MAP: Record<string, { emoji: string; text: string; class: string }> = {
-  PENDING:    { emoji: '⏳', text: 'PENDIENTE',    class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  DELIVERED:  { emoji: '✅', text: 'ENTREGADO',    class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+const DELIVERY_STATUS_MAP: Record<string, { text: string; class: string }> = {
+  PENDING:    { text: 'PENDIENTE',    class: 'bg-amber-100 border-amber-200 text-amber-700' },
+  DELIVERED:  { text: 'ENTREGADO',    class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
 };
 
 const DeliveryCard: React.FC<DeliveryCardProps> = ({
@@ -67,7 +67,7 @@ const DeliveryCard: React.FC<DeliveryCardProps> = ({
           </p>
         </div>
         <Badge className={`rounded-lg font-black text-[8px] sm:text-[9px] uppercase tracking-wider px-2 py-0.5 flex items-center gap-1 shadow-sm shrink-0 ${statusInfo.class}`}>
-          {statusInfo.emoji} {statusInfo.text}
+          {statusInfo.text}
         </Badge>
       </div>
 

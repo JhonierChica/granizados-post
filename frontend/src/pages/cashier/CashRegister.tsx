@@ -386,10 +386,10 @@ const CashRegister: React.FC = () => {
                       onChange={(e) => setFilterType(e.target.value as FilterType)}
                       className="w-full h-12 px-5 bg-muted/30 border-2 border-transparent focus:border-primary rounded-xl outline-none font-black text-xs uppercase appearance-none transition-all cursor-pointer"
                     >
-                      <option value="all">📁 Reporte Histórico</option>
-                      <option value="daily">📅 Auditoría Diaria</option>
-                      <option value="monthly">📆 Balance Mensual</option>
-                      <option value="annual">📊 Resumen Anual</option>
+                      <option value="all">Reporte Histórico</option>
+                      <option value="daily">Auditoría Diaria</option>
+                      <option value="monthly">Balance Mensual</option>
+                      <option value="annual">Resumen Anual</option>
                     </select>
                     <FilterIcon size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
                  </div>
@@ -638,25 +638,25 @@ const CashRegister: React.FC = () => {
              </div>
 
              <div className="grid grid-cols-1 gap-4">
-                <ExportOption 
-                  type="last" 
-                  current={exportType} 
-                  onSelect={setExportType} 
-                  label="Último Cierre Auditado" 
-                  emoji="🕐"
-                  sub={closes.length > 0 ? `${formatDateTime(closes[0].closingDate)} — ${closes[0].closedBy}` : 'Sin registros'} 
-                />
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ExportOption type="daily" current={exportType} onSelect={setExportType} label="Cierre Diario" emoji="📅">
-                    {exportType === 'daily' && <input type="date" value={exportDate} onChange={(e) => setExportDate(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs" />}
-                  </ExportOption>
-                  <ExportOption type="monthly" current={exportType} onSelect={setExportType} label="Reporte Mensual" emoji="📆">
-                    {exportType === 'monthly' && <input type="month" value={exportMonth} onChange={(e) => setExportMonth(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs uppercase" />}
-                  </ExportOption>
-                </div>
+                  <ExportOption 
+                    type="last" 
+                    current={exportType} 
+                    onSelect={setExportType} 
+                    label="Último Cierre Auditado" 
+                    emoji={<ClockIcon size={20} />}
+                    sub={closes.length > 0 ? `${formatDateTime(closes[0].closingDate)} — ${closes[0].closedBy}` : 'Sin registros'} 
+                  />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ExportOption type="daily" current={exportType} onSelect={setExportType} label="Cierre Diario" emoji={<CalendarIcon size={20} />}>
+                      {exportType === 'daily' && <input type="date" value={exportDate} onChange={(e) => setExportDate(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs" />}
+                    </ExportOption>
+                    <ExportOption type="monthly" current={exportType} onSelect={setExportType} label="Reporte Mensual" emoji={<CalendarIcon size={20} />}>
+                      {exportType === 'monthly' && <input type="month" value={exportMonth} onChange={(e) => setExportMonth(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs uppercase" />}
+                    </ExportOption>
+                  </div>
 
-                <ExportOption type="annual" current={exportType} onSelect={setExportType} label="Balance Consolidado Anual" emoji="📊">
+                  <ExportOption type="annual" current={exportType} onSelect={setExportType} label="Balance Consolidado Anual" emoji={<FileTextIcon size={20} />}>
                   {exportType === 'annual' && (
                     <select value={exportYear} onChange={(e) => setExportYear(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-black text-xs">
                       {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
@@ -688,7 +688,7 @@ interface ExportOptionProps {
   current: ExportType;
   onSelect: (t: ExportType) => void;
   label: string;
-  emoji: string;
+  emoji: ReactNode;
   sub?: string;
   children?: ReactNode;
 }

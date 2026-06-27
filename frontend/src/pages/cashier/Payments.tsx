@@ -76,11 +76,11 @@ const Payments: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'PENDIENTE':
-        return <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">🟡 PENDIENTE</Badge>;
+        return <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">PENDIENTE</Badge>;
       case 'COMPLETADO':
-        return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">✅ COMPLETADO</Badge>;
+        return <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">COMPLETADO</Badge>;
       case 'CANCELADO':
-        return <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">🔴 CANCELADO</Badge>;
+        return <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">CANCELADO</Badge>;
       default:
         return <Badge className="bg-muted text-muted-foreground border-muted text-[9px] font-black uppercase px-2 py-0.5 rounded-lg">{status}</Badge>;
     }
@@ -234,10 +234,10 @@ const Payments: React.FC = () => {
                         onChange={(e) => setFilterMethodId(e.target.value)}
                         className="w-full h-12 px-5 bg-muted/30 border-2 border-transparent focus:border-emerald-500 rounded-xl outline-none font-black text-xs uppercase appearance-none transition-all cursor-pointer"
                       >
-                        <option value="all">💳 Todos los Métodos</option>
+                        <option value="all">Todos los Métodos</option>
                         {paymentMethods.map(method => (
                           <option key={method.id} value={method.id.toString()}>
-                            ✨ {method.name.toUpperCase()}
+                            {method.name.toUpperCase()}
                           </option>
                         ))}
                       </select>
@@ -304,9 +304,9 @@ const Payments: React.FC = () => {
                         </div>
                         <div className="space-y-1">
                            <p className="text-[9px] font-black text-muted-foreground uppercase opacity-40 tracking-widest">Medio</p>
-                           <p className="font-bold text-foreground text-xs uppercase tracking-tight flex items-center gap-1.5 bg-muted/30 px-3 py-1 rounded-xl">
-                              💳 {(payment as any).paymentMethodName || 'EFECTIVO'}
-                           </p>
+                            <p className="font-bold text-foreground text-xs uppercase tracking-tight flex items-center gap-1.5 bg-muted/30 px-3 py-1 rounded-xl">
+                               <PaymentIcon size={14} className="text-muted-foreground" /> {(payment as any).paymentMethodName || 'EFECTIVO'}
+                            </p>
                         </div>
                         <div className="space-y-1 hidden lg:block">
                            <p className="text-[9px] font-black text-muted-foreground uppercase opacity-40 tracking-widest">Timestamp</p>
@@ -361,7 +361,7 @@ const Payments: React.FC = () => {
           isOpen={showCashCloseConfirm}
           onClose={() => setShowCashCloseConfirm(false)}
           onConfirm={handleCashClose}
-          title="🔐 VALIDAR CIERRE FISCAL"
+          title="VALIDAR CIERRE FISCAL"
           message={`¿Confirma el arqueo definitivo de la jornada? Se consolidarán ${totalPayments} movimientos por un valor total de $${totalAmount.toLocaleString('es-CO')}. Esta operación notificará a gerencia y reiniciará el flujo de caja.`}
         />
       </div>

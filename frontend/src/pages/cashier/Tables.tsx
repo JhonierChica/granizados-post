@@ -119,13 +119,13 @@ const TablesList: React.FC = () => {
   const getStatusInfo = (tableStatus: string) => {
     switch (tableStatus) {
       case 'AVAILABLE':
-        return { label: 'DISPONIBLE', emoji: '🟢', class: 'bg-emerald-100 border-emerald-200 text-emerald-800' };
+        return { label: 'DISPONIBLE', emoji: '', class: 'bg-emerald-100 border-emerald-200 text-emerald-800' };
       case 'OCCUPIED':
-        return { label: 'OCUPADA', emoji: '🔴', class: 'bg-rose-100 border-rose-200 text-rose-800' };
+        return { label: 'OCUPADA', emoji: '', class: 'bg-rose-100 border-rose-200 text-rose-800' };
       case 'RESERVED':
-        return { label: 'RESERVADA', emoji: '🟡', class: 'bg-amber-100 border-amber-200 text-amber-800' };
+        return { label: 'RESERVADA', emoji: '', class: 'bg-amber-100 border-amber-200 text-amber-800' };
       default:
-        return { label: 'FUERA DE SERVICIO', emoji: '⚫', class: 'bg-muted border-muted-foreground/20 text-muted-foreground' };
+        return { label: 'FUERA DE SERVICIO', emoji: '', class: 'bg-muted border-muted-foreground/20 text-muted-foreground' };
     }
   };
 
@@ -167,9 +167,9 @@ const TablesList: React.FC = () => {
                         </div>
                         <h3 className="text-2xl font-black tracking-tighter text-foreground">MESA {table.tableNumber}</h3>
                      </div>
-                     <Badge className={`rounded-xl font-black text-[9px] uppercase tracking-wider px-3 py-1.5 flex items-center gap-2 shadow-sm border ${statusInfo.class}`}>
-                        {statusInfo.emoji} {statusInfo.label}
-                     </Badge>
+                      <Badge className={`rounded-xl font-black text-[9px] uppercase tracking-wider px-3 py-1.5 flex items-center gap-2 shadow-sm border ${statusInfo.class}`}>
+                         {statusInfo.label}
+                      </Badge>
                   </div>
 
                   {/* Icon Representation */}

@@ -6,7 +6,7 @@ import Layout from '../../components/layout/Layout';
 import Modal from '../../components/common/Modal';
 import Loading from '../../components/common/Loading';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
-import { TruckIcon, FilterIcon, DeliveryIcon, CheckCircleIcon, WalletIcon, ReceiptIcon, UserIcon, ClipboardIcon, TrendingUpIcon, ShoppingCartIcon, TrashIcon, ChevronLeftIcon, InfoIcon, SearchIcon, FastForwardIcon, HistoryIcon } from '../../components/common/Icons';
+import { TruckIcon, FilterIcon, DeliveryIcon, CheckCircleIcon, WalletIcon, ReceiptIcon, UserIcon, ClipboardIcon, TrendingUpIcon, ShoppingCartIcon, TrashIcon, ChevronLeftIcon, InfoIcon, SearchIcon, FastForwardIcon, HistoryIcon, ClockIcon } from '../../components/common/Icons';
 import { deliveryService } from '../../services/deliveryService';
 import { orderService } from '../../services/orderService';
 import { paymentService } from '../../services/paymentService';
@@ -24,25 +24,25 @@ type DeliveryFilter = 'TODOS' | DeliveryStatus;
 interface DeliveryStatusOption {
   value: string;
   label: string;
-  emoji: string;
+  emoji: React.ReactNode;
   class: string;
 }
 
 const DELIVERY_STATUS_FILTERS: (DeliveryStatusOption & { value: DeliveryFilter })[] = [
-  { value: 'TODOS', label: 'Todos', emoji: '📋', class: 'bg-muted/50 border-muted text-muted-foreground' },
-  { value: 'PENDING', label: 'Pendiente', emoji: '⏳', class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  { value: 'DELIVERED', label: 'Entregado', emoji: '✅', class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  { value: 'TODOS', label: 'Todos', emoji: <FilterIcon size={14} />, class: 'bg-muted/50 border-muted text-muted-foreground' },
+  { value: 'PENDING', label: 'Pendiente', emoji: <ClockIcon size={14} />, class: 'bg-amber-100 border-amber-200 text-amber-700' },
+  { value: 'DELIVERED', label: 'Entregado', emoji: <CheckCircleIcon size={14} />, class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
 ];
 
 const DELIVERY_STATUS_OPTIONS: DeliveryStatusOption[] = [
-  { value: 'PENDING', label: 'PENDIENTE', emoji: '⏳', class: 'bg-amber-100 border-amber-200 text-amber-700' },
-  { value: 'DELIVERED', label: 'ENTREGADO', emoji: '✅', class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  { value: 'PENDING', label: 'PENDIENTE', emoji: <ClockIcon size={20} />, class: 'bg-amber-100 border-amber-200 text-amber-700' },
+  { value: 'DELIVERED', label: 'ENTREGADO', emoji: <CheckCircleIcon size={20} />, class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
 ];
 
 const getStatusBadge = (status: string) => {
-  const map: Record<string, { emoji: string; text: string; class: string }> = {
-    PENDING:   { emoji: '⏳', text: 'PENDIENTE', class: 'bg-amber-100 border-amber-200 text-amber-700' },
-    DELIVERED: { emoji: '✅', text: 'ENTREGADO', class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
+  const map: Record<string, { text: string; class: string }> = {
+    PENDING:   { text: 'PENDIENTE', class: 'bg-amber-100 border-amber-200 text-amber-700' },
+    DELIVERED: { text: 'ENTREGADO', class: 'bg-emerald-100 border-emerald-200 text-emerald-700' },
   };
   return map[status] || map.PENDING;
 };
@@ -545,7 +545,7 @@ const Deliveries: React.FC = () => {
                   }
                 `}
               >
-                <span className="text-sm leading-none">{opt.emoji}</span>
+                  <span className="text-muted-foreground">{opt.emoji}</span>
                 {opt.label}
               </button>
             ))}
@@ -798,7 +798,7 @@ const Deliveries: React.FC = () => {
           isOpen={showDeleteConfirm}
           onClose={() => { setShowDeleteConfirm(false); setDeliveryToDelete(null); }}
           onConfirm={handleDeleteConfirm}
-          title="🗑️ ELIMINAR PEDIDO"
+          title="ELIMINAR PEDIDO"
           message={`¿Estás seguro de eliminar el Pedido #${deliveryToDelete?.orderId || ''}? Se eliminará también el envío asociado. Esta acción no se puede deshacer.`}
         />
 
@@ -807,7 +807,7 @@ const Deliveries: React.FC = () => {
           isOpen={showPaymentConfirm}
           onClose={() => setShowPaymentConfirm(false)}
           onConfirm={handleConfirmPaymentStart}
-          title="💰 REGISTRAR COBRO"
+          title="REGISTRAR COBRO"
           message={`¿Vas a liquidar el Pedido #${paymentOrder?.id || ''}? Total a recaudar: $${Number(paymentOrder?.total || 0).toLocaleString('es-CO')} (sin incluir domicilio)`}
         />
 
@@ -852,7 +852,7 @@ const Deliveries: React.FC = () => {
                       </div>
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Servicio</p>
-                        <p className="font-black text-xs uppercase truncate max-w-30">🏍️ Domicilio</p>
+                        <p className="font-black text-xs uppercase truncate max-w-30">Domicilio</p>
                       </div>
                     </div>
                   </div>
@@ -885,7 +885,7 @@ const Deliveries: React.FC = () => {
 
                     {/* Total Domicilio — input inline */}
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">💵 Domicilio</span>
+                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest shrink-0">Domicilio</span>
                       <div className="relative flex-1 max-w-36">
                         <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-black opacity-30 text-sm">$</div>
                         <input
@@ -1017,7 +1017,7 @@ const Deliveries: React.FC = () => {
                               </div>
                               {!lineIsValid && line.receivedAmount > 0 && (
                                 <p className="text-[8px] font-black text-rose-500 uppercase tracking-widest ml-1 animate-pulse italic">
-                                  ⚠️ Insuficiente
+                                  Insuficiente
                                 </p>
                               )}
                             </div>
