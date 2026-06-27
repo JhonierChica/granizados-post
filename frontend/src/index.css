@@ -1,42 +1,45 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 @theme inline {
-  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Poppins', 'Nunito', system-ui, sans-serif;
+  --font-nunito: 'Nunito', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
   --radius: 0.75rem;
 
-  /* 🌟 Bombonera Theme — Fútbol, Fuego, Neón, Colombia */
-  --color-background: oklch(0.985 0.005 75);
-  --color-foreground: oklch(0.15 0.015 75);
+  /* 🌴 Bombonera Tropical — Caribe, Refresco, Sabor, Energía */
+  --color-background: oklch(0.985 0.01 85);
+  --color-foreground: oklch(0.15 0.015 85);
 
   --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.15 0.015 75);
+  --color-card-foreground: oklch(0.15 0.015 85);
 
   --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.15 0.015 75);
+  --color-popover-foreground: oklch(0.15 0.015 85);
 
-  /* 🔴 Rojo Intenso — Camiseta de Ronaldo, fuego, energía */
-  --color-primary: oklch(0.55 0.2 27);
+  /* 🦜 Turquesa — Agua de coco, mar Caribe, frescura */
+  --color-primary: oklch(0.62 0.14 185);
   --color-primary-foreground: oklch(0.985 0 0);
 
-  /* 🟡 Amarillo Dorado — Borde del logo, bandera de Colombia */
-  --color-secondary: oklch(0.75 0.16 80);
-  --color-secondary-foreground: oklch(0.15 0.03 75);
+  /* 🥭 Mango — Dulzura tropical, vibrante */
+  --color-secondary: oklch(0.73 0.17 78);
+  --color-secondary-foreground: oklch(0.15 0.03 85);
 
-  /* 🔵 Azul Eléctrico — Camiseta de Messi, efectos neón */
-  --color-accent: oklch(0.6 0.16 230);
+  /* 🟣 Pasión — Granadilla, maracuyá, contraste */
+  --color-accent: oklch(0.55 0.22 285);
   --color-accent-foreground: oklch(0.985 0 0);
 
-  /* 🟠 Naranja Fuego — Llamas, tipografía "LA" */
-  --color-destructive: oklch(0.6 0.2 38);
+  /* 🔴 Coral — Pitaya, ajuste suave */
+  --color-destructive: oklch(0.6 0.2 27);
   --color-destructive-foreground: oklch(0.985 0 0);
 
-  --color-muted: oklch(0.965 0.005 75);
-  --color-muted-foreground: oklch(0.5 0.01 75);
+  --color-muted: oklch(0.965 0.008 85);
+  --color-muted-foreground: oklch(0.5 0.01 85);
 
-  --color-border: oklch(0.9 0.01 75);
-  --color-input: oklch(0.9 0.01 75);
-  --color-ring: oklch(0.55 0.2 27);
+  --color-border: oklch(0.9 0.01 85);
+  --color-input: oklch(0.9 0.01 85);
+  --color-ring: oklch(0.62 0.14 185);
 }
 
 @layer base {
@@ -47,10 +50,9 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Selection — rojo intenso */
   ::selection {
-    background: oklch(0.55 0.2 27 / 0.25);
-    color: oklch(0.55 0.2 27);
+    background: var(--color-primary / 0.25);
+    color: var(--color-primary);
   }
 }
 
@@ -72,21 +74,37 @@
   }
 }
 
-/* Custom Scrollbar — rojo tenue */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.95 0.005 75);
+  background: var(--color-muted);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.55 0.2 27 / 0.3);
+  background: var(--color-primary / 0.3);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.55 0.2 27 / 0.5);
+  background: var(--color-primary / 0.5);
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
 }
