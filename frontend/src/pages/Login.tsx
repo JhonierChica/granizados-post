@@ -21,7 +21,7 @@ const Login: React.FC = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0A0A0A] space-y-6">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-foreground space-y-6">
         <img
           src="/logo-bombonera.png"
           alt="La Bombonera"
@@ -77,7 +77,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-[#0A0A0A] overflow-hidden selection:bg-primary/30 selection:text-primary">
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-foreground overflow-hidden selection:bg-primary/30 selection:text-primary">
       {/* Panel Izquierdo: Branding — Vibra Bombonera */}
       <div className="hidden lg:flex flex-col justify-center items-center p-12 bg-gradient-to-br from-primary via-primary/80 to-primary/60 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 rounded-full -mr-48 -mt-48 blur-3xl" />
