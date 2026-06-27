@@ -21,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <header className="hidden md:flex sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
           <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center gap-4">
-              <h1 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">⚽ Bombonera POS</h1>
+              <h1 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">La Bombonera</h1>
             </div>
           </div>
         </header>
