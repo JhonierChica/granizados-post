@@ -132,7 +132,7 @@ const CashRegister: React.FC = () => {
 
         if (close.itemSales) {
           close.itemSales.forEach(item => {
-            const existingItem = acc.itemSales!.find(i => i.name === item.name && i.categoryName === item.categoryName);
+            const existingItem = acc.itemSales!.find(i => i.name === item.name && i.categoryName === item.categoryName && i.presentationName === item.presentationName);
             if (existingItem) {
               existingItem.quantity += item.quantity;
               existingItem.total += item.total;
@@ -172,7 +172,7 @@ const CashRegister: React.FC = () => {
     // Header
     doc.setFontSize(22);
     doc.setTextColor(33, 41, 54);
-    doc.text("LA TERRAZA DEL SINU", 105, 20, { align: 'center' });
+    doc.text("LA BOMBONERA GRANIZADOS", 105, 20, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setTextColor(100);
@@ -230,57 +230,115 @@ const CashRegister: React.FC = () => {
 
       let currentY = (doc as any).lastAutoTable.finalY || 130;
 
-      // Item Sales Summary Table by Category
+      // Item Sales Summary — formato agrupado por categoría → sabor → presentación
       if (close.itemSales && close.itemSales.length > 0) {
         doc.setFontSize(14);
         doc.setTextColor(33, 41, 54);
         doc.text("DESGLOSE DE VENTAS POR CATEGORÍA", 14, currentY + 15);
         currentY += 20;
 
-        const groupedItems = close.itemSales.reduce((acc, item) => {
+        // 1) Agrupar items por categoría
+        const groupedByCategory = close.itemSales.reduce((acc, item) => {
           const cat = item.categoryName || 'Otros';
           if (!acc[cat]) acc[cat] = [];
           acc[cat].push(item);
           return acc;
         }, {} as Record<string, any[]>);
 
-        Object.entries(groupedItems).forEach(([category, items]) => {
-          const categoryTotal = items.reduce((sum, item) => sum + item.total, 0);
-          doc.setFontSize(12);
-          doc.setTextColor(33, 41, 54);
-          doc.text(category.toUpperCase(), 14, currentY + 10);
+        Object.entries(groupedByCategory).forEach(([category, categoryItems]) => {
+          // 2) Dentro de cada categoría, agrupar por sabor (name)
+          const groupedByFlavor = categoryItems.reduce((acc, item) => {
+            if (!acc[item.name]) acc[item.name] = [];
+            acc[item.name].push(item);
+            return acc;
+          }, {} as Record<string, any[]>);
 
-          autoTable(doc, {
-            startY: currentY + 15,
-            head: [['Producto', 'Cant.', 'V. Unitario', 'Subtotal']],
-            body: items.map(item => [
-              item.name,
-              item.quantity,
-              formatCurrency(item.unitPrice),
-              formatCurrency(item.total)
-            ]),
-            theme: 'striped',
-            headStyles: { fillColor: [71, 85, 105], textColor: [255, 255, 255] },
-            margin: { left: 14 },
+          const catTotal = categoryItems.reduce((sum, i) => sum + i.total, 0);
+
+          // --- Category header (dark bar) ---
+          if (currentY > 240) { doc.addPage(); currentY = 20; }
+          doc.setFillColor(33, 41, 54);
+          doc.rect(14, currentY, 182, 7, 'F');
+          doc.setTextColor(255, 255, 255);
+          doc.setFontSize(9);
+          doc.setFont('helvetica', 'bold');
+          doc.text(category.toUpperCase(), 18, currentY + 5);
+          currentY += 11;
+          doc.setTextColor(33, 41, 54);
+
+          // --- Each flavor ---
+          Object.entries(groupedByFlavor).forEach(([flavor, flavorItems]) => {
+            if (currentY > 250) { doc.addPage(); currentY = 20; }
+
+            const flavorTotal = flavorItems.reduce((sum, i) => sum + i.total, 0);
+
+            // Flavor name
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text(flavor, 18, currentY + 3);
+            currentY += 7;
+
+            // Presentation rows table
+            autoTable(doc, {
+              startY: currentY,
+              head: [['Presentación', 'Cant.', 'V. Unitario', 'Subtotal']],
+              body: flavorItems.map(item => [
+                item.presentationName || '—',
+                String(item.quantity),
+                formatCurrency(item.unitPrice),
+                formatCurrency(item.total),
+              ]),
+              theme: 'plain',
+              headStyles: {
+                fillColor: [71, 85, 105],
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+                fontSize: 7,
+              },
+              styles: { fontSize: 8, cellPadding: { top: 2, bottom: 2, left: 2, right: 2 } },
+              margin: { left: 18 },
+              tableLineWidth: 0,
+              tableLineColor: [220, 220, 220],
+            });
+
+            currentY = (doc as any).lastAutoTable.finalY || currentY + 2;
+
+            // Flavor subtotal line
+            doc.setDrawColor(210, 210, 210);
+            doc.line(18, currentY + 1, 196, currentY + 1);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Subtotal ${flavor}: ${formatCurrency(flavorTotal)}`, 196, currentY + 5, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            currentY += 9;
           });
 
-          currentY = (doc as any).lastAutoTable.finalY || currentY + 40;
-          
-          // Add category subtotal
+          // --- Category total ---
+          if (currentY > 265) { doc.addPage(); currentY = 20; }
+          doc.setDrawColor(33, 41, 54);
+          doc.setLineWidth(0.6);
+          doc.line(14, currentY, 196, currentY);
           doc.setFontSize(10);
           doc.setFont('helvetica', 'bold');
-          doc.text(`Subtotal ${category}: ${formatCurrency(categoryTotal)}`, 14, currentY + 7);
+          doc.text(`TOTAL ${category.toUpperCase()}: ${formatCurrency(catTotal)}`, 14, currentY + 6);
           doc.setFont('helvetica', 'normal');
-          currentY += 15;
+          doc.setLineWidth(0.2);
+          currentY += 12;
         });
 
-        // Total Operativo al final de todos los items
-        doc.setFontSize(12);
+        // --- Total Operativo (doble línea) ---
+        if (currentY > 270) { doc.addPage(); currentY = 20; }
+        const finalTotal = close.itemSales.reduce((sum, i) => sum + i.total, 0);
+        doc.setDrawColor(33, 41, 54);
+        doc.setLineWidth(1.2);
+        doc.line(14, currentY, 196, currentY);
+        doc.setFontSize(13);
         doc.setTextColor(33, 41, 54);
-        const finalTotal = close.itemSales.reduce((sum, item) => sum + item.total, 0);
-        currentY += 15;
-        doc.text(`TOTAL OPERATIVO: ${formatCurrency(finalTotal)}`, 14, currentY);
-        currentY += 10; // Extra space after total
+        doc.setFont('helvetica', 'bold');
+        doc.text(`TOTAL OPERATIVO: ${formatCurrency(finalTotal)}`, 14, currentY + 8);
+        doc.setFont('helvetica', 'normal');
+        doc.setLineWidth(0.2);
+        currentY += 14;
       }
 
       if (close.notes) {
@@ -309,7 +367,7 @@ const CashRegister: React.FC = () => {
             <button
               onClick={() => setShowExportModal(true)}
               disabled={closes.length === 0}
-              className="h-12 sm:h-14 px-5 sm:px-8 bg-foreground text-background rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 sm:gap-3 hover:bg-foreground/90 transition-all shadow-xl active:scale-95 disabled:opacity-50 w-full sm:w-auto justify-center"
+              className="h-12 sm:h-14 px-5 sm:px-8 bg-primary text-primary-foreground rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 sm:gap-3 hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 active:scale-95 disabled:opacity-50 w-full sm:w-auto justify-center"
             >
               <DownloadIcon size={18} /> REPORTE PDF
             </button>
@@ -357,27 +415,27 @@ const CashRegister: React.FC = () => {
               </div>
            </Card>
 
-           <Card className={`border-2 relative group ${totalDifference < 0 ? 'bg-rose-50 border-rose-100' : 'bg-emerald-50 border-emerald-100'}`}>
-              <div className="space-y-3">
-                 <div className={`flex items-center gap-3 ${totalDifference < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                    <div className={`p-2 rounded-xl ${totalDifference < 0 ? 'bg-rose-100' : 'bg-emerald-100'}`}>
-                       {totalDifference < 0 ? <TrendingDownIcon size={18} /> : <TrendingUpIcon size={18} />}
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Diferencia Neta</span>
-                 </div>
-                 <div className="flex items-baseline gap-2">
-                    <span className={`text-xs font-black uppercase opacity-40 ${totalDifference < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>$</span>
-                    <span className={`text-3xl font-black tracking-tighter ${totalDifference < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
-                       {totalDifference.toLocaleString('es-CO')}
-                    </span>
-                 </div>
-              </div>
-           </Card>
+            <Card className={`border-2 relative group ${totalDifference < 0 ? 'bg-rose-500/10 border-rose-500/20' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+               <div className="space-y-3">
+                  <div className={`flex items-center gap-3 ${totalDifference < 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                     <div className={`p-2 rounded-xl ${totalDifference < 0 ? 'bg-rose-500/15' : 'bg-emerald-500/15'}`}>
+                        {totalDifference < 0 ? <TrendingDownIcon size={18} /> : <TrendingUpIcon size={18} />}
+                     </div>
+                     <span className="text-[10px] font-black uppercase tracking-widest opacity-70">Diferencia Neta</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                     <span className={`text-xs font-black uppercase opacity-40 ${totalDifference < 0 ? 'text-rose-400' : 'text-emerald-400'}`}>$</span>
+                     <span className={`text-3xl font-black tracking-tighter ${totalDifference < 0 ? 'text-rose-500' : 'text-emerald-500'}`}>
+                        {totalDifference.toLocaleString('es-CO')}
+                     </span>
+                  </div>
+               </div>
+            </Card>
         </div>
 
         {/* Filters and List */}
         <div className="space-y-4 sm:space-y-6">
-           <div className="bg-white p-4 sm:p-6 rounded-3xl sm:rounded-5xl border-2 border-muted/40 shadow-sm flex flex-col sm:flex-row items-end gap-3 sm:gap-6 transition-all hover:border-primary/20">
+            <div className="bg-card p-4 sm:p-6 rounded-3xl sm:rounded-5xl border-2 border-muted/40 shadow-sm flex flex-col sm:flex-row items-end gap-3 sm:gap-6 transition-all hover:border-primary/20">
               <div className="flex flex-col gap-2 flex-1 w-full md:w-auto">
                  <label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Segmentación</label>
                  <div className="relative">
@@ -431,11 +489,11 @@ const CashRegister: React.FC = () => {
            {/* Results List */}
            <div className="grid grid-cols-1 gap-4">
               {filteredCloses.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => { setSelectedClose(item); setShowDetailModal(true); }}
-                  className="group bg-white p-4 sm:p-5 rounded-3xl sm:rounded-5xl border-2 border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 cursor-pointer flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 active:scale-[0.99]"
-                >
+                 <div
+                   key={item.id}
+                   onClick={() => { setSelectedClose(item); setShowDetailModal(true); }}
+                   className="group bg-card p-4 sm:p-5 rounded-3xl sm:rounded-5xl border-2 border-transparent hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 cursor-pointer flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 active:scale-[0.99]"
+                 >
                    <div className="flex items-center gap-6 flex-1">
                       <div className="w-16 h-16 bg-muted/40 rounded-3xl flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-inner">
                          <CashRegisterIcon size={28} />
@@ -472,9 +530,9 @@ const CashRegister: React.FC = () => {
 
               {filteredCloses.length === 0 && (
                 <div className="text-center py-40 bg-muted/10 rounded-8xl border-2 border-dashed border-muted shadow-inner animate-in fade-in zoom-in duration-700">
-                   <div className="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-muted">
-                      <FileTextIcon size={40} className="text-muted-foreground opacity-20" />
-                   </div>
+                    <div className="bg-card border border-muted w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-muted">
+                       <FileTextIcon size={40} className="text-muted-foreground opacity-20" />
+                    </div>
                    <h3 className="text-2xl font-black uppercase tracking-tighter text-muted-foreground mb-2">Historial Vacío</h3>
                    <p className="text-muted-foreground/60 font-medium italic max-w-xs mx-auto">No se encontraron cierres de caja registrados bajo los criterios de filtrado actuales.</p>
                 </div>
@@ -487,9 +545,9 @@ const CashRegister: React.FC = () => {
           {selectedClose && (
             <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 py-2">
                <div className="bg-primary/5 p-6 rounded-5xl border border-primary/10 flex items-center gap-6">
-                  <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center text-primary shadow-xl shadow-primary/10">
-                     <CashRegisterIcon size={40} />
-                  </div>
+                   <div className="w-20 h-20 bg-card border border-muted rounded-3xl flex items-center justify-center text-primary shadow-xl shadow-primary/10">
+                      <CashRegisterIcon size={40} />
+                   </div>
                   <div className="space-y-1">
                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] opacity-60">ID Transacción</p>
                      <h3 className="text-3xl font-black tracking-tighter uppercase leading-none">CIERRE #{selectedClose.id}</h3>
@@ -534,15 +592,15 @@ const CashRegister: React.FC = () => {
                   </div>
                </div>
 
-               <div className={`p-8 rounded-6xl border-4 flex flex-col items-center justify-center relative overflow-hidden group ${ (Number(selectedClose.difference) || 0) < 0 ? 'bg-rose-50 border-rose-100' : 'bg-emerald-50 border-emerald-100' }`}>
-                  <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 transition-transform group-hover:scale-150">
-                     <WalletIcon size={80} />
-                  </div>
-                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mb-1">Diferencia Final</p>
-                  <h4 className={`text-5xl font-black tracking-widest ${ (Number(selectedClose.difference) || 0) < 0 ? 'text-rose-600' : 'text-emerald-600' }`}>
-                     {selectedClose.difference.toLocaleString('es-CO')}
-                  </h4>
-               </div>
+                <div className={`p-8 rounded-6xl border-4 flex flex-col items-center justify-center relative overflow-hidden group ${ (Number(selectedClose.difference) || 0) < 0 ? 'bg-rose-500/10 border-rose-500/20' : 'bg-emerald-500/10 border-emerald-500/20' }`}>
+                   <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 transition-transform group-hover:scale-150">
+                      <WalletIcon size={80} />
+                   </div>
+                   <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.4em] mb-1">Diferencia Final</p>
+                   <h4 className={`text-5xl font-black tracking-widest ${ (Number(selectedClose.difference) || 0) < 0 ? 'text-rose-500' : 'text-emerald-500' }`}>
+                      {selectedClose.difference.toLocaleString('es-CO')}
+                   </h4>
+                </div>
 
                {selectedClose.notes && (
                  <div className="space-y-3 px-2">
@@ -581,7 +639,7 @@ const CashRegister: React.FC = () => {
                               {formatCurrency(categoryTotal)}
                             </span>
                           </div>
-                          <div className="bg-white rounded-2xl border-2 border-muted/40 overflow-hidden shadow-sm">
+                          <div className="bg-card rounded-2xl border-2 border-muted/40 overflow-hidden shadow-sm">
                              <table className="w-full text-left border-collapse">
                                 <thead className="bg-muted/20">
                                    <tr>
@@ -593,7 +651,7 @@ const CashRegister: React.FC = () => {
                                 <tbody className="divide-y divide-muted/40">
                                    {items.map((item, idx) => (
                                       <tr key={idx} className="hover:bg-muted/5 transition-colors">
-                                         <td className="px-4 py-2.5 text-xs font-bold text-foreground">{item.name}</td>
+                                          <td className="px-4 py-2.5 text-xs font-bold text-foreground">{item.presentationName ? `${item.name} (${item.presentationName})` : item.name}</td>
                                          <td className="px-4 py-2.5 text-xs font-black text-center">
                                             <span className="px-2 py-0.5 bg-muted rounded-lg">{item.quantity}</span>
                                          </td>
@@ -649,16 +707,16 @@ const CashRegister: React.FC = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ExportOption type="daily" current={exportType} onSelect={setExportType} label="Cierre Diario" emoji={<CalendarIcon size={20} />}>
-                      {exportType === 'daily' && <input type="date" value={exportDate} onChange={(e) => setExportDate(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs" />}
+                      {exportType === 'daily' && <input type="date" value={exportDate} onChange={(e) => setExportDate(e.target.value)} className="mt-3 h-12 px-4 bg-background border-2 border-input rounded-xl font-bold text-xs" />}
                     </ExportOption>
                     <ExportOption type="monthly" current={exportType} onSelect={setExportType} label="Reporte Mensual" emoji={<CalendarIcon size={20} />}>
-                      {exportType === 'monthly' && <input type="month" value={exportMonth} onChange={(e) => setExportMonth(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-bold text-xs uppercase" />}
+                      {exportType === 'monthly' && <input type="month" value={exportMonth} onChange={(e) => setExportMonth(e.target.value)} className="mt-3 h-12 px-4 bg-background border-2 border-input rounded-xl font-bold text-xs uppercase" />}
                     </ExportOption>
                   </div>
 
                   <ExportOption type="annual" current={exportType} onSelect={setExportType} label="Balance Consolidado Anual" emoji={<FileTextIcon size={20} />}>
                   {exportType === 'annual' && (
-                    <select value={exportYear} onChange={(e) => setExportYear(e.target.value)} className="mt-3 h-12 px-4 bg-white border-2 border-slate-200 rounded-xl font-black text-xs">
+                    <select value={exportYear} onChange={(e) => setExportYear(e.target.value)} className="mt-3 h-12 px-4 bg-background border-2 border-input rounded-xl font-black text-xs">
                       {yearOptions.map((y) => <option key={y} value={y}>{y}</option>)}
                     </select>
                   )}
@@ -669,8 +727,8 @@ const CashRegister: React.FC = () => {
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Impacto del Reporte</p>
                 <h4 className="text-lg font-black tracking-tight">{getExportLabel()} — {getExportCloses().length} Documentos</h4>
                 <button 
-                  onClick={handleGeneratePDF} 
-                  className="mt-4 w-full h-14 bg-white text-primary rounded-2xl font-black text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                   onClick={handleGeneratePDF} 
+                   className="mt-4 w-full h-14 bg-primary-foreground text-primary rounded-2xl font-black text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
                    DESCARGAR AHORA
                 </button>
@@ -698,11 +756,11 @@ const ExportOption: React.FC<ExportOptionProps> = ({ type, current, onSelect, la
     onClick={() => onSelect(type)}
     className={`
       p-5 border-2 rounded-4xl cursor-pointer transition-all duration-300 relative overflow-hidden group
-      ${current === type ? 'border-primary bg-primary/5 shadow-inner' : 'border-muted/60 hover:border-primary/20 bg-white hover:shadow-lg hover:shadow-primary/5'}
+      ${current === type ? 'border-primary bg-primary/5 shadow-inner' : 'border-muted/60 hover:border-primary/20 bg-card hover:shadow-lg hover:shadow-primary/5'}
     `}
   >
     <div className="flex items-center gap-4 relative z-10">
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${current === type ? 'bg-primary text-white' : 'bg-muted/40 text-muted-foreground'}`}>
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${current === type ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground'}`}>
         {emoji}
       </div>
       <div className="flex-1">
@@ -710,7 +768,7 @@ const ExportOption: React.FC<ExportOptionProps> = ({ type, current, onSelect, la
         {sub && <span className="block text-[10px] font-bold text-muted-foreground/60 italic mt-0.5">{sub}</span>}
         {children}
       </div>
-      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${current === type ? 'border-primary bg-primary text-white' : 'border-muted/60'}`}>
+      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${current === type ? 'border-primary bg-primary text-primary-foreground' : 'border-muted/60'}`}>
          {current === type && <CheckCircleIcon size={14} className="animate-in zoom-in" />}
       </div>
     </div>

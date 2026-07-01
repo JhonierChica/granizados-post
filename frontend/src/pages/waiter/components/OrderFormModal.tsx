@@ -406,7 +406,7 @@ const OrderFormModal: React.FC<OrderFormModalProps> = ({
                   <div className="p-2 sm:p-3 flex-1 space-y-2 overflow-y-auto max-h-62.5 lg:max-h-none custom-scrollbar bg-muted/20">
                     {selectedItems.length > 0 ? (
                       selectedItems.map((item, index) => {
-                        const itemPrice = item.price || getMenuItemPrice(item.menuItemId);
+                        const itemPrice = item.price ?? item.menuItemPrice ?? getMenuItemPrice(item.menuItemId);
                         const itemName = item.name || getMenuItemName(item.menuItemId);
                         const subtotal = itemPrice * item.quantity;
                         return (

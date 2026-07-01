@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,6 +87,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
+                .sorted(Comparator.comparing(User::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -93,6 +95,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponse> getActiveUsers() {
         return userRepository.findByActiveTrue().stream()
+                .sorted(Comparator.comparing(User::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

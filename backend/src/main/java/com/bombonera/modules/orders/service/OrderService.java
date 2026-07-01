@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,8 +155,8 @@ public class OrderService {
             savedOrder.addItem(orderItem);
         }
 
-        // No es necesario save() nuevamente - los items se persisten automáticamente
-        // por CascadeType.ALL cuando termina la transacción
+        // Flush para generar IDs de los items antes de armar la respuesta
+        entityManager.flush();
         
         // Si el pedido es de tipo DOMICILIO, crear automáticamente el registro en deliveries
         if ("DOMICILIO".equals(savedOrder.getOrderType())) {
@@ -188,6 +189,7 @@ public class OrderService {
     public List<OrderResponse> getAllOrders() {
         // Solo retornar pedidos de tipo ESTABLECIMIENTO para el módulo Orders
         return orderRepository.findByOrderType("ESTABLECIMIENTO").stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -196,6 +198,7 @@ public class OrderService {
     public List<OrderResponse> getAllOrdersForPayments() {
         // Retornar TODAS las órdenes (ESTABLECIMIENTO y DOMICILIO) para el módulo de pagos
         return orderRepository.findAll().stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -203,6 +206,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByStatus(Order.OrderStatus status) {
         return orderRepository.findByStatus(status).stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -210,6 +214,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByClient(Long clientId) {
         return orderRepository.findByClientId(clientId).stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -217,6 +222,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByTable(Long tableId) {
         return orderRepository.findByTableId(tableId).stream()
+                .sorted(Comparator.comparing(Order::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -294,6 +300,9 @@ public class OrderService {
             order.setTotalAmount(totalAmount);
         }
 
+        // Flush para generar IDs de items antes de armar la respuesta
+        entityManager.flush();
+        
         // No es necesario save() explícito - @Transactional lo maneja
         OrderResponse response = mapToResponse(order);
         publisher.publishEvent(new OrderUpdatedEvent(this, response));
@@ -381,6 +390,7 @@ public class OrderService {
         response.setMenuItemPrice(BigDecimal.valueOf(item.getUnitPrice()));
         response.setQuantity(item.getQuantity());
         response.setSpecialInstructions(item.getSpecialInstructions());
+        response.setPresentationId(item.getPresentationId());
         response.setPresentationName(item.getPresentationName());
         return response;
     }

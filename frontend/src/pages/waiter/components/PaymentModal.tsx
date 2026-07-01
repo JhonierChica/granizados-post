@@ -68,7 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const calcPersonTotal = useCallback((person: PersonSplit) => {
     const items = paymentOrder?.items || [];
     return items.reduce((sum, item, idx) => {
-      const key = `${item.menuItemId ?? item.id ?? idx}`;
+      const key = `${item.menuItemId}-${item.presentationId ?? 'base'}-${idx}`;
       const qty = person.selections[key] || 0;
       if (qty <= 0) return sum;
       const price = item.menuItemPrice || item.unitPrice || item.price || 0;
@@ -254,7 +254,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     const qty = item.quantity || 1;
                     return (
                       <div key={idx} className="flex justify-between items-center py-1 text-[10px] font-bold text-muted-foreground uppercase italic px-1">
-                         <span>{item.menuItemName || 'Producto'} <span className="text-primary not-italic">x{qty}</span></span>
+                          <span>{item.menuItemName || 'Producto'}{item.presentationName ? ` (${item.presentationName})` : ''} <span className="text-primary not-italic">x{qty}</span></span>
                          <span className="font-black text-foreground/70">${(price * qty).toLocaleString('es-CO')}</span>
                       </div>
                     );
@@ -365,7 +365,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     </div>
                   ) : (
                     items.map((item, idx) => {
-                      const key = `${item.menuItemId ?? item.id ?? idx}`;
+                      const key = `${item.menuItemId}-${item.presentationId ?? 'base'}-${idx}`;
                       const price = item.menuItemPrice || item.unitPrice || item.price || 0;
                       const qty = item.quantity || 1;
                       const selectedQty = activePerson.selections[key] || 0;
@@ -374,6 +374,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                         <div key={key} className="flex items-center justify-between gap-4 bg-background/60 rounded-2xl px-4 py-2.5">
                           <div className="min-w-0">
                             <p className="text-[10px] font-black uppercase truncate">{item.menuItemName || item.name || 'Producto'}</p>
+                            {item.presentationName && <p className="text-[9px] font-bold text-muted-foreground/60 truncate">{item.presentationName}</p>}
                             <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest">Disponibles: {remainQty}</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -430,7 +431,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             )}
 
             {/* Assignation summary */}
-            <div className={`flex items-center justify-between rounded-2xl px-4 py-3 ${allItemsAssigned ? 'bg-green-50 border border-green-200' : 'bg-amber-50 border border-amber-200'}`}>
+            <div className={`flex items-center justify-between rounded-2xl px-4 py-3 bg-muted/20 border ${allItemsAssigned ? 'border-green-400/40' : 'border-amber-400/40'}`}>
               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Total asignado</p>
               <div className="flex items-center gap-2">
                 <p className={`text-sm font-black ${allItemsAssigned ? 'text-green-700' : 'text-amber-700'}`}>
@@ -492,7 +493,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       <select
                         value={line.paymentMethodId || ''}
                         onChange={(e) => updateLine(line.id, 'paymentMethodId', Number(e.target.value))}
-                        className="w-full h-12 px-4 bg-white/60 border-2 border-transparent focus:border-primary focus:bg-white rounded-xl outline-none font-black text-xs uppercase tracking-tight transition-all appearance-none shadow-inner"
+                        className="w-full h-12 px-4 bg-theme-input border-2 border-foreground/10 focus:border-primary focus:bg-background rounded-xl outline-none font-black text-xs uppercase tracking-tight text-foreground transition-all appearance-none shadow-inner"
                       >
                         <option value="">Seleccione...</option>
                         {paymentMethods.map((method) => (
@@ -514,7 +515,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                           type="number"
                           value={line.amount || ''}
                           onChange={(e) => updateLine(line.id, 'amount', parseFloat(e.target.value) || 0)}
-                          className="w-full h-12 pl-8 pr-4 bg-white/60 border-2 border-transparent focus:border-primary focus:bg-white rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner"
+                          className="w-full h-12 pl-8 pr-4 bg-theme-input border-2 border-foreground/10 focus:border-primary focus:bg-background rounded-xl outline-none font-black text-lg tracking-tighter text-foreground transition-all shadow-inner"
                           placeholder="0"
                           min="0"
                         />
@@ -550,10 +551,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                             type="number"
                             value={line.receivedAmount || ''}
                             onChange={(e) => updateLine(line.id, 'receivedAmount', parseFloat(e.target.value) || 0)}
-                            className={`w-full h-12 pl-8 pr-4 bg-white/60 border-2 rounded-xl outline-none font-black text-lg tracking-tighter transition-all shadow-inner ${
+                            className={`w-full h-12 pl-8 pr-4 bg-theme-input border-2 rounded-xl outline-none font-black text-lg tracking-tighter text-foreground transition-all shadow-inner ${
                               line.receivedAmount > 0 && !lineIsValid
                                 ? 'border-rose-200 text-rose-600 focus:border-rose-500 bg-rose-50/10'
-                                : 'border-transparent focus:border-primary focus:bg-white'
+                                : 'border-foreground/10 focus:border-primary focus:bg-background'
                             }`}
                             placeholder="0"
                             min="0"
@@ -572,11 +573,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       </div>
 
                       {/* Change display */}
-                      <div className="flex items-center justify-center bg-amber-50/50 rounded-2xl px-4 py-3 border border-amber-100/50">
+                      <div className="flex items-center justify-center bg-muted/30 rounded-2xl px-4 py-3 border border-muted/40">
                         <div className="flex items-center gap-2">
-                          <HistoryIcon size={12} className={lineChange > 0 ? 'text-amber-500' : 'text-muted-foreground'} />
-                          <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Devuelta:</p>
-                          <span className={`text-sm font-black tracking-tighter ${lineChange > 0 ? 'text-amber-600' : 'text-muted-foreground/40'}`}>
+                          <HistoryIcon size={12} className={lineChange > 0 ? 'text-amber-500' : 'text-muted-foreground/60'} />
+                          <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Devuelta:</p>
+                          <span className={`text-sm font-black tracking-tighter ${lineChange > 0 ? 'text-amber-600' : 'text-muted-foreground/60'}`}>
                             ${lineChange.toLocaleString('es-CO')}
                           </span>
                         </div>
@@ -606,12 +607,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           </div>
 
           {/* Summary bar */}
-          <div className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all ${
+          <div className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all bg-muted/20 ${
             Math.abs(difference) < 0.01
-              ? 'bg-green-50 border-green-200'
+              ? 'border-green-400/40'
               : difference > 0
-                ? 'bg-amber-50 border-amber-200'
-                : 'bg-rose-50 border-rose-200'
+                ? 'border-amber-400/40'
+                : 'border-rose-400/40'
           }`}>
             <div className="flex items-center gap-2">
               <WalletIcon size={14} className={

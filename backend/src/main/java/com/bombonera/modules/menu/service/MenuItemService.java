@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,7 @@ public class MenuItemService {
     @Transactional(readOnly = true)
     public List<MenuItemResponse> getAllMenuItems() {
         return menuItemRepository.findAll().stream()
+                .sorted(Comparator.comparing(MenuItem::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -60,6 +62,7 @@ public class MenuItemService {
     @Transactional(readOnly = true)
     public List<MenuItemResponse> getAvailableMenuItems() {
         return menuItemRepository.findByAvailableTrue().stream()
+                .sorted(Comparator.comparing(MenuItem::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

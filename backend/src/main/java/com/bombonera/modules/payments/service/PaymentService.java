@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.text.Normalizer;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +76,7 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public List<PaymentResponse> getAllPayments() {
         return paymentRepository.findAll().stream()
+                .sorted(Comparator.comparing(Payment::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -102,6 +104,7 @@ public class PaymentService {
             // Devolver pagos con fecha posterior al cierre
             return paymentRepository.findByPaymentDateGreaterThan(lastCloseDate).stream()
                     .filter(p -> "C".equals(p.getStatus()))
+                    .sorted(Comparator.comparing(Payment::getId).reversed())
                     .map(this::mapToResponse)
                     .collect(Collectors.toList());
         }
@@ -109,6 +112,7 @@ public class PaymentService {
         // Si no hay cierres previos, devolver todos los pagos completados de hoy
         return paymentRepository.findByPaymentDate(today).stream()
                 .filter(p -> "C".equals(p.getStatus()))
+                .sorted(Comparator.comparing(Payment::getId).reversed())
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -191,6 +195,8 @@ public class PaymentService {
                     itemDto.setMenuItemName(item.getMenuItem().getName());
                     itemDto.setMenuItemPrice(java.math.BigDecimal.valueOf(item.getUnitPrice()));
                     itemDto.setQuantity(item.getQuantity());
+                    itemDto.setPresentationId(item.getPresentationId());
+                    itemDto.setPresentationName(item.getPresentationName());
                     return itemDto;
                 })
                 .collect(Collectors.toList()));

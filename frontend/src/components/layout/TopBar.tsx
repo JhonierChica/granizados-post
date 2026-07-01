@@ -38,14 +38,14 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
   const roleLabel = roleLabels[userRole] || userRole;
 
   return (
-    <header className="fixed top-0 left-0 md:left-60 right-0 h-16 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 transition-all duration-300">
+    <header className="fixed top-0 left-0 md:left-60 right-0 h-16 z-50 bg-theme-glass backdrop-blur-md border-b border-theme-subtle transition-all duration-300">
       <div className="h-full px-3 sm:px-6 flex items-center justify-between">
         {/* Left: hamburger (mobile) + brand */}
         <div className="flex items-center gap-2">
           {/* Hamburger — mobile only */}
           <button
             onClick={onMenuClick}
-            className="md:hidden p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200"
+            className="md:hidden p-2 rounded-xl hover:bg-theme-muted text-theme-muted hover:text-theme transition-all duration-200"
             title="Menú"
           >
             <Menu size={20} />
@@ -65,7 +65,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
               alt="La Bombonera"
               className="h-8 w-auto"
             />
-            <span className="hidden sm:block text-xs font-black text-foreground/80 uppercase tracking-[0.15em] truncate">
+            <span className="hidden sm:block text-xs font-black text-theme-subtle uppercase tracking-[0.15em] truncate">
               La Bombonera
             </span>
           </button>
@@ -78,7 +78,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-all duration-200"
+            className="p-2 rounded-xl hover:bg-theme-muted text-theme-muted hover:text-theme transition-all duration-200"
             title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
@@ -91,7 +91,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
 
           {/* Username + Role */}
           <div className="hidden sm:flex flex-col items-end">
-            <span className="text-xs font-bold text-foreground leading-tight">
+            <span className="text-xs font-bold text-theme leading-tight">
               {user?.username || 'Usuario'}
             </span>
             <span
@@ -107,7 +107,7 @@ const TopBar: React.FC<TopBarProps> = ({ onMenuClick }) => {
           {/* Logout button */}
           <button
             onClick={handleLogout}
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-destructive transition-all duration-200"
+            className="p-2 rounded-xl hover:bg-theme-muted text-theme-muted hover:text-destructive transition-all duration-200"
             title="Cerrar sesión"
           >
             <LogOut size={18} />

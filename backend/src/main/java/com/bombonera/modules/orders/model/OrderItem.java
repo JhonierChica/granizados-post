@@ -11,15 +11,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@IdClass(OrderItemId.class)
 public class OrderItem {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_detalle")
+    private Long id;
+
     @ManyToOne
     @JoinColumn(name = "id_pedido", nullable = false)
     private Order order;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "id_menu", nullable = false)
     private MenuItem menuItem;
@@ -42,16 +44,6 @@ public class OrderItem {
     // Campos adicionales no mapeados a BD
     @Transient
     private String specialInstructions;
-    
-    // Método helper para compatibilidad - ID virtual para sistemas que lo necesiten
-    @Transient
-    public Long getId() {
-        // Retorna un hash único basado en order y menuItem IDs
-        if (order != null && menuItem != null && order.getId() != null && menuItem.getId() != null) {
-            return Long.valueOf(String.valueOf(order.getId()) + String.format("%05d", menuItem.getId()));
-        }
-        return null;
-    }
     
     // Método helper para compatibilidad
     public Boolean getActive() {

@@ -6,6 +6,7 @@ import com.bombonera.modules.permissions.repository.PermissionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ public class PermissionService {
     @Transactional(readOnly = true)
     public List<PermissionResponse> getAllPermissions() {
         return permissionRepository.findAll().stream()
+                .sorted(Comparator.comparing(Permission::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -29,6 +31,7 @@ public class PermissionService {
     @Transactional(readOnly = true)
     public List<PermissionResponse> getActivePermissions() {
         return permissionRepository.findByActiveTrue().stream()
+                .sorted(Comparator.comparing(Permission::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

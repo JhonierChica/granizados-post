@@ -9,6 +9,7 @@ import com.bombonera.modules.positions.repository.PositionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,7 @@ public class PositionService {
     @Transactional(readOnly = true)
     public List<PositionResponse> getAllPositions() {
         return positionRepository.findAll().stream()
+                .sorted(Comparator.comparing(Position::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -87,6 +89,7 @@ public class PositionService {
     @Transactional(readOnly = true)
     public List<PositionResponse> getActivePositions() {
         return positionRepository.findByActiveTrue().stream()
+                .sorted(Comparator.comparing(Position::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -94,6 +97,7 @@ public class PositionService {
     @Transactional(readOnly = true)
     public List<PositionResponse> getPositionsByDepartment(String department) {
         return positionRepository.findByDepartment(department).stream()
+                .sorted(Comparator.comparing(Position::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

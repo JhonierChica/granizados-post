@@ -8,6 +8,7 @@ import com.bombonera.modules.categories.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream()
+                .sorted(Comparator.comparing(Category::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

@@ -279,19 +279,19 @@ const Payments: React.FC = () => {
                            {/* Item Details - Compact Card Style */}
                            {payment.items && payment.items.length > 0 && (
                              <div className="flex flex-wrap gap-1.5 mt-2.5 animate-in fade-in slide-in-from-left-2 duration-500">
-                               {payment.items.map((item, idx) => (
-                                 <div key={idx} className="bg-muted/40 hover:bg-card hover:shadow-md hover:scale-105 transition-all px-2.5 py-1 rounded-lg border border-border/60 flex items-center gap-2 group/item">
-                                   <div className="flex items-center justify-center bg-primary/10 text-primary w-4 h-4 rounded-md text-[8px] font-black">
-                                     {item.quantity}
-                                   </div>
-                                   <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tight group-hover/item:text-foreground">
-                                     {item.menuItemName || (item as any).name}
-                                   </span>
-                                   <span className="text-[8px] font-bold text-emerald-600/60 bg-emerald-50 px-1 rounded-sm">
-                                      ${((item.menuItemPrice || (item as any).price || 0)).toLocaleString('es-CO')}
-                                   </span>
-                                 </div>
-                               ))}
+                                {payment.items.map((item, idx) => (
+                                  <div key={idx} className="bg-muted/40 hover:bg-card hover:shadow-md hover:scale-105 transition-all px-2.5 py-1 rounded-lg border border-border/60 flex items-center gap-2 group/item">
+                                    <div className="flex items-center justify-center bg-primary/10 text-primary w-4 h-4 rounded-md text-[8px] font-black">
+                                      {item.quantity}
+                                    </div>
+                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tight group-hover/item:text-foreground">
+                                      {item.menuItemName || (item as any).name}{item.presentationName ? ` (${item.presentationName})` : ''}
+                                    </span>
+                                    <span className="text-[8px] font-bold text-emerald-600/60 bg-emerald-50 px-1 rounded-sm">
+                                       ${((item.menuItemPrice || (item as any).price || 0)).toLocaleString('es-CO')}
+                                    </span>
+                                  </div>
+                                ))}
                              </div>
                            )}
                         </div>

@@ -267,24 +267,32 @@ public class CashRegisterCloseService {
                 for (OrderItem item : payment.getOrder().getItems()) {
                     if (item.getMenuItem() != null && "A".equals(item.getStatus())) {
                         String itemName = item.getMenuItem().getName();
+                        String presentationName = item.getPresentationName();
                         String categoryName = item.getMenuItem().getCategory() != null ? 
                                 item.getMenuItem().getCategory().getName() : "Sin Categoría";
                         BigDecimal unitPrice = item.getUnitPrice() != null ? 
                                 BigDecimal.valueOf(item.getUnitPrice()) : BigDecimal.ZERO;
                         int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
 
-                        if (summaryMap.containsKey(itemName)) {
-                            ItemSalesSummaryDTO summary = summaryMap.get(itemName);
+                        // Usar clave compuesta: nombre del item + presentación (si existe)
+                        // para separar items con mismo nombre pero distinta presentación
+                        String summaryKey = presentationName != null && !presentationName.isBlank()
+                                ? itemName + "|" + presentationName
+                                : itemName;
+
+                        if (summaryMap.containsKey(summaryKey)) {
+                            ItemSalesSummaryDTO summary = summaryMap.get(summaryKey);
                             summary.setQuantity(summary.getQuantity() + quantity);
                             summary.setTotal(summary.getTotal().add(unitPrice.multiply(BigDecimal.valueOf(quantity))));
                         } else {
                             ItemSalesSummaryDTO summary = new ItemSalesSummaryDTO();
                             summary.setName(itemName);
                             summary.setCategoryName(categoryName);
+                            summary.setPresentationName(presentationName);
                             summary.setQuantity(quantity);
                             summary.setUnitPrice(unitPrice);
                             summary.setTotal(unitPrice.multiply(BigDecimal.valueOf(quantity)));
-                            summaryMap.put(itemName, summary);
+                            summaryMap.put(summaryKey, summary);
                         }
                     }
                 }

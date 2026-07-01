@@ -45,8 +45,8 @@ const App: React.FC = () => {
             fontWeight: '900',
             textTransform: 'uppercase',
             letterSpacing: '0.025em',
-            border: '2px solid rgba(0,0,0,0.1)',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+            border: '2px solid var(--border)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)'
           },
         }}
       />
@@ -114,7 +114,7 @@ const App: React.FC = () => {
           <Route
             path={ROUTES.WAITER_ORDERS}
             element={
-              <ProtectedRoute requiredRole={USER_ROLES.WAITER}>
+              <ProtectedRoute>
                 <Orders />
               </ProtectedRoute>
             }

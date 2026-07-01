@@ -8,6 +8,7 @@ import com.bombonera.modules.tables.repository.RestaurantTableRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ public class RestaurantTableService {
     @Transactional(readOnly = true)
     public List<TableResponse> getAllTables() {
         return tableRepository.findAll().stream()
+                .sorted(Comparator.comparing(RestaurantTable::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -49,6 +51,7 @@ public class RestaurantTableService {
     @Transactional(readOnly = true)
     public List<TableResponse> getActiveTables() {
         return tableRepository.findByIsActiveTrue().stream()
+                .sorted(Comparator.comparing(RestaurantTable::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -56,6 +59,7 @@ public class RestaurantTableService {
     @Transactional(readOnly = true)
     public List<TableResponse> getTablesByStatus(RestaurantTable.TableStatus status) {
         return tableRepository.findByStatusAndIsActiveTrue(status).stream()
+                .sorted(Comparator.comparing(RestaurantTable::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

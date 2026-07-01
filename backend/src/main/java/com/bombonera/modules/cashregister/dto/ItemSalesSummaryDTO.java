@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 public class ItemSalesSummaryDTO {
     private String name;
     private String categoryName;
+    private String presentationName;
     private Integer quantity;
     private BigDecimal unitPrice;
     private BigDecimal total;

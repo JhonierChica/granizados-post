@@ -105,7 +105,6 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
                 icon: <CashRegisterIcon size={20} />,
               },
               { path: ROUTES.CASHIER_CLIENTS, label: 'Clientes', icon: <ClientsIcon size={20} /> },
-              { path: ROUTES.CASHIER_TABLES, label: 'Mesas', icon: <TableIcon size={20} /> },
             ],
             groups: [
               {
@@ -118,21 +117,15 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
                 ],
               },
               {
-                id: 'personal',
-                label: 'Personal',
-                icon: <TeamIcon size={20} />,
-                items: [
-                  { path: ROUTES.ADMIN_EMPLOYEES, label: 'Empleados', icon: <EmployeeIcon size={14} /> },
-                  { path: ROUTES.ADMIN_POSITIONS, label: 'Cargos', icon: <BriefcaseIcon size={14} /> },
-                  { path: ROUTES.ADMIN_PROFILES, label: 'Perfiles', icon: <ProfileIcon size={14} /> },
-                  { path: ROUTES.ADMIN_USERS, label: 'Usuarios', icon: <UsersIcon size={14} /> },
-                ],
-              },
-              {
                 id: 'configuracion',
                 label: 'Configuración',
                 icon: <SettingsIcon size={20} />,
                 items: [
+                  { path: ROUTES.CASHIER_TABLES, label: 'Mesas', icon: <TableIcon size={14} /> },
+                  { path: ROUTES.ADMIN_EMPLOYEES, label: 'Empleados', icon: <EmployeeIcon size={14} /> },
+                  { path: ROUTES.ADMIN_POSITIONS, label: 'Cargos', icon: <BriefcaseIcon size={14} /> },
+                  { path: ROUTES.ADMIN_PROFILES, label: 'Perfiles', icon: <ProfileIcon size={14} /> },
+                  { path: ROUTES.ADMIN_USERS, label: 'Usuarios', icon: <UsersIcon size={14} /> },
                   {
                     path: ROUTES.ADMIN_PAYMENT_METHODS,
                     label: 'Métodos de Pago',
@@ -193,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
           ${
             active
               ? 'bg-primary/15 text-primary font-bold shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              : 'text-theme-muted hover:bg-theme-muted hover:text-theme'
           }
         `}
       >
@@ -235,13 +228,13 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
         {/* Mobile overlay backdrop */}
         {mobileOpen && (
           <div
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
+            className="fixed inset-0 bg-theme-glass backdrop-blur-sm z-40 md:hidden animate-in fade-in duration-200"
             onClick={onCloseMobile}
           />
         )}
 
         <aside
-          className={`fixed left-0 top-0 bottom-0 z-50 md:z-40 bg-card border-r border-border flex flex-col overflow-hidden transition-all duration-300
+          className={`fixed left-0 top-0 bottom-0 z-50 md:z-40 bg-theme-card border-r border-theme flex flex-col overflow-hidden transition-all duration-300
             ${collapsed ? 'w-[4.5rem]' : 'w-64'}
             ${
               mobileOpen
@@ -251,7 +244,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
           `}
         >
           {/* ── Header: Logo + brand + collapse toggle ── */}
-          <div className="h-16 flex items-center justify-between px-4 border-b border-border shrink-0">
+          <div className="h-16 flex items-center justify-between px-4 border-b border-theme shrink-0">
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="p-1 rounded-lg bg-primary/10 shrink-0">
                 <img
@@ -266,7 +259,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
                     La Bombonera
                   </span>
                   <span className="text-secondary font-extrabold text-[9px] uppercase leading-tight">
-                    Bebidas
+                    Granizados
                   </span>
                 </div>
               )}
@@ -283,7 +276,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
 
             {/* Close button (mobile) */}
             <button
-              className="p-1.5 bg-muted rounded-lg md:hidden shrink-0"
+              className="p-1.5 bg-theme-muted rounded-lg md:hidden shrink-0"
               onClick={onCloseMobile}
             >
               <CollapseIcon size={18} className="rotate-180" />
@@ -292,7 +285,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
 
           {/* ── User section ── */}
           {user && !collapsed && (
-            <div className="px-4 py-3 border-b border-border bg-muted/20 flex items-center gap-3 shrink-0">
+            <div className="px-4 py-3 border-b border-theme bg-theme-muted-subtle flex items-center gap-3 shrink-0">
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-black text-base shadow-md shadow-primary/15 shrink-0">
                 {user.username?.charAt(0).toUpperCase() || '?'}
               </div>
@@ -348,7 +341,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
 
                 {/* Group children */}
                 {!collapsed && expandedGroups[group.id] && (
-                  <div className="ml-4 pl-3 border-l-2 border-muted/40 space-y-0.5 my-1 animate-in fade-in slide-in-from-left-2 duration-200">
+                    <div className="ml-4 pl-3 border-l-2 border-theme-subtle space-y-0.5 my-1 animate-in fade-in slide-in-from-left-2 duration-200">
                     {group.items.map((item) => (
                       <button
                         key={item.path}
@@ -357,7 +350,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
                           ${
                             isItemActive(item.path)
                               ? 'text-primary bg-primary/10'
-                              : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
+                              : 'text-theme-muted hover:text-theme hover:bg-theme-muted'
                           }
                         `}
                       >
@@ -372,7 +365,7 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
           </nav>
 
           {/* ── Logout ── */}
-          <div className="p-3 border-t border-border shrink-0">
+          <div className="p-3 border-t border-theme shrink-0">
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all duration-200 font-extrabold text-[10px] uppercase tracking-[0.10em]"

@@ -8,6 +8,7 @@ import com.bombonera.modules.paymentmethods.repository.PaymentMethodRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class PaymentMethodService {
     @Transactional(readOnly = true)
     public List<PaymentMethodResponse> getAllPaymentMethods() {
         return paymentMethodRepository.findAll().stream()
+                .sorted(Comparator.comparing(PaymentMethod::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -45,6 +47,7 @@ public class PaymentMethodService {
     @Transactional(readOnly = true)
     public List<PaymentMethodResponse> getActivePaymentMethods() {
         return paymentMethodRepository.findByStatus("A").stream()
+                .sorted(Comparator.comparing(PaymentMethod::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

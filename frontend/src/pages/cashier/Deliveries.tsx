@@ -866,7 +866,7 @@ const Deliveries: React.FC = () => {
                       const qty = item.quantity || 1;
                       return (
                         <div key={idx} className="flex justify-between items-center py-1 text-[10px] font-bold text-muted-foreground uppercase italic px-1">
-                          <span>{item.menuItemName || 'Producto'} <span className="text-primary not-italic">x{qty}</span></span>
+                          <span>{item.menuItemName || 'Producto'}{item.presentationName ? ` (${item.presentationName})` : ''} <span className="text-primary not-italic">x{qty}</span></span>
                           <span className="font-black text-foreground/70">${(price * qty).toLocaleString('es-CO')}</span>
                         </div>
                       );

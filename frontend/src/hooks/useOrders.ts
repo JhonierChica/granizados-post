@@ -204,7 +204,7 @@ export function useOrders() {
   const calculateOrderTotal = (items: OrderItem[]): number => {
     if (!items || items.length === 0) return 0;
     return items.reduce((sum, item) => {
-      const price = item.price || getMenuItemPrice(item.menuItemId);
+      const price = item.price ?? item.menuItemPrice ?? getMenuItemPrice(item.menuItemId);
       return sum + price * item.quantity;
     }, 0);
   };

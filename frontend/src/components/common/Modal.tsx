@@ -46,19 +46,19 @@ const Modal: React.FC<ModalProps> = ({
       {/* Content */}
       <div
         className={cn(
-          'relative z-50 w-full max-h-[100dvh] overflow-y-auto bg-card border border-border rounded-none sm:rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95 fade-in-0 duration-200',
+          'relative z-50 w-full max-h-[100dvh] overflow-y-auto bg-theme-card border border-theme rounded-none sm:rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95 fade-in-0 duration-200',
           'sm:max-h-[calc(100vh-4rem)] sm:max-w-[calc(100%-2rem)]',
           maxWidths[size],
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-border/60 shrink-0">
-          <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-foreground">
+        <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-5 border-b border-theme-subtle shrink-0">
+          <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-theme">
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            className="p-2 rounded-xl hover:bg-theme-muted text-theme-muted hover:text-theme transition-colors"
             aria-label="Cerrar"
           >
             <XIcon size={18} />
@@ -70,7 +70,7 @@ const Modal: React.FC<ModalProps> = ({
 
         {/* Footer */}
         {showActions && (
-          <div className="flex flex-col-reverse gap-3 border-t border-border/60 px-5 py-4 sm:px-6 sm:py-4 sm:flex-row sm:justify-end shrink-0">
+          <div className="flex flex-col-reverse gap-3 border-t border-theme-subtle px-5 py-4 sm:px-6 sm:py-4 sm:flex-row sm:justify-end shrink-0">
             <Button variant="secondary" onClick={onClose} size="default">
               Cancelar
             </Button>

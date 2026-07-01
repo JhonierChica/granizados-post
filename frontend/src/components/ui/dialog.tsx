@@ -51,7 +51,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed z-50 grid w-full gap-4 bg-card text-sm text-card-foreground shadow-2xl duration-200 outline-none",
+          "fixed z-50 grid w-full gap-4 bg-theme-card text-sm text-theme-card shadow-2xl duration-200 outline-none",
           "top-0 left-0 h-full max-w-none translate-x-0 translate-y-0 rounded-none p-0 flex flex-col", // Fullscreen mobile
           "sm:top-1/2 sm:left-1/2 sm:h-auto sm:max-h-[calc(100vh-4rem)] sm:max-w-[calc(100%-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:p-4 sm:flex sm:flex-col", // Desktop default
           "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
@@ -59,7 +59,7 @@ function DialogContent({
         )}
         {...props}
       >
-        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 sm:p-0 bg-card">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 sm:p-0 bg-theme-card">
           {children}
         </div>
         {showCloseButton && (
@@ -86,7 +86,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 bg-card", className)}
+      className={cn("flex flex-col gap-2 bg-theme-card", className)}
       {...props}
     />
   )
@@ -104,7 +104,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-col-reverse gap-3 border-t border-border/60 bg-card p-6 sm:p-4 sm:flex-row sm:justify-end sm:rounded-b-xl shrink-0",
+        "flex flex-col-reverse gap-3 border-t border-theme-subtle bg-theme-card p-6 sm:p-4 sm:flex-row sm:justify-end sm:rounded-b-xl shrink-0",
         className
       )}
       {...props}
@@ -140,7 +140,7 @@ function DialogDescription({
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn(
-        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
+        "text-sm text-theme-muted *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-theme",
         className
       )}
       {...props}

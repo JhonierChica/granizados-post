@@ -117,7 +117,7 @@ const Menu: React.FC = () => {
               size="lg"
               className="w-full sm:w-auto flex items-center gap-2"
             >
-              <PlusIcon size={20} /> AGREGAR PLATILLOS
+              <PlusIcon size={20} /> AGREGAR ITEMS
             </Button>
           }
         />
@@ -130,7 +130,7 @@ const Menu: React.FC = () => {
               Sin categorías
             </h3>
             <p className="text-muted-foreground font-medium mb-10 max-w-sm mx-auto">
-              Primero creá categorías desde la sección de Categorías para poder agregar platillos.
+              Primero creá categorías desde la sección de Categorías para poder agregar los items del menu.
             </p>
           </div>
         )}
@@ -166,115 +166,81 @@ const Menu: React.FC = () => {
 
               {/* Items de la categoría */}
               {items.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                   {items.map((item) => (
-                    <Card
+                    <div
                       key={item.id}
-                      className="group overflow-hidden border-t-4 border-t-secondary/20 hover:border-t-secondary transition-all"
-                      title={
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center gap-3 font-black">
-                            <div
-                              className={`p-2 rounded-xl ${
-                                item.available
-                                  ? 'bg-primary/10 text-primary'
-                                  : 'bg-muted text-muted-foreground'
-                              }`}
-                            >
-                              <UtensilsIcon size={20} />
-                            </div>
-                            <span className="text-lg leading-tight uppercase line-clamp-1">
-                              {item.name}
-                            </span>
-                          </div>
-                        </div>
-                      }
-                      actions={
-                        <div className="flex gap-2">
-                          <button
-                            className={`p-2 rounded-xl transition-all ${
-                              item.available
-                                ? 'hover:bg-amber-500/10 text-amber-400 hover:text-amber-300'
-                                : 'hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300'
-                            }`}
-                            onClick={() => handleToggleAvailability(item)}
-                            title={item.available ? 'No disponible' : 'Disponible'}
-                          >
-                            <ToggleIcon size={18} />
-                          </button>
-                          <button
-                            className="p-2 hover:bg-destructive/10 rounded-xl transition-all text-destructive"
-                            onClick={() => handleDelete(item)}
-                            title="Eliminar"
-                          >
-                            <DeleteIcon size={18} />
-                          </button>
-                        </div>
-                      }
+                      className={`
+                        relative bg-card rounded-2xl border border-border/60 overflow-hidden
+                        hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/5
+                        transition-all duration-200 group
+                        ${item.available ? 'border-l-4 border-l-secondary/30' : 'border-l-4 border-l-muted opacity-60'}
+                      `}
                     >
-                      <div className="space-y-6">
-                        {/* Precio: si tiene presentaciones muestra el rango, si no el precio único */}
-                        <div className="flex items-center justify-between bg-secondary/5 border border-secondary/10 p-4 rounded-2xl">
-                          <div className="flex items-center gap-2 text-xs font-black text-secondary uppercase tracking-widest">
-                            <WalletIcon size={16} />
-                            {item.presentations && item.presentations.length > 0 ? 'Desde' : 'Precio'}
-                          </div>
-                          <span className="text-2xl font-black text-secondary tracking-tighter">
-                            {item.presentations && item.presentations.length > 0
-                              ? `$${Math.min(...item.presentations.map(p => p.price)).toLocaleString('es-CO')}`
-                              : `$${(Number(item.price) || 0).toLocaleString('es-CO')}`
-                            }
-                          </span>
-                        </div>
-
-                        {/* Lista de presentaciones si tiene */}
-                        {item.presentations && item.presentations.length > 0 && (
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-2">
-                              <TagIcon size={14} className="text-muted-foreground" />
-                              <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Tallas / Presentaciones</span>
+                      {/* Header compacto */}
+                      <div className="p-3 pb-2">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className={`shrink-0 p-1.5 rounded-lg ${item.available ? 'bg-secondary/10 text-secondary' : 'bg-muted text-muted-foreground'}`}>
+                              <UtensilsIcon size={14} />
                             </div>
-                            <div className="flex flex-wrap gap-1.5">
-                              {item.presentations.map((p) => (
-                                <Badge
-                                  key={p.id}
-                                  variant={p.available ? 'outline' : 'destructive'}
-                                  className="rounded-lg font-bold text-[9px] px-2 py-0.5"
-                                >
-                                  {p.name.toUpperCase()} — ${p.price.toLocaleString('es-CO')}
-                                </Badge>
-                              ))}
+                            <div className="min-w-0 flex-1">
+                              <h4 className="text-[11px] font-black uppercase tracking-tight truncate leading-tight">{item.name}</h4>
+                              <p className="text-[10px] font-black text-secondary tracking-tight">${item.presentations && item.presentations.length > 0
+                                ? Math.min(...item.presentations.map(p => p.price)).toLocaleString('es-CO')
+                                : (Number(item.price) || 0).toLocaleString('es-CO')}</p>
                             </div>
                           </div>
-                        )}
-
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2">
-                            <InfoIcon size={14} className="text-muted-foreground" />
-                            <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
-                              Ingredientes / Notas
-                            </span>
+                          {/* Acciones compactas */}
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              onClick={() => handleToggleAvailability(item)}
+                              className={`p-1.5 rounded-lg transition-all ${item.available ? 'hover:bg-amber-500/10 text-amber-400' : 'hover:bg-emerald-500/10 text-emerald-400'}`}
+                              title={item.available ? 'Desactivar' : 'Activar'}
+                            >
+                              <ToggleIcon size={13} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item)}
+                              className="p-1.5 hover:bg-destructive/10 rounded-lg transition-all text-destructive/60 hover:text-destructive"
+                              title="Eliminar"
+                            >
+                              <DeleteIcon size={13} />
+                            </button>
                           </div>
-                          <p className="text-xs text-foreground/70 font-medium leading-relaxed italic line-clamp-2 px-1">
-                            {item.description || 'Sin descripción detallada del platillo.'}
-                          </p>
-                        </div>
-
-                        <Separator className="bg-muted/50" />
-
-                        <div className="flex items-center justify-between">
-                          <Badge
-                            variant={item.available ? 'default' : 'destructive'}
-                            className="rounded-lg font-black text-[10px] px-3 py-1"
-                          >
-                            {item.available ? 'DISPONIBLE' : 'AGOTADO'}
-                          </Badge>
-                          <span className="text-[10px] font-black text-muted-foreground tracking-widest opacity-30">
-                            ID: #{item.id}
-                          </span>
                         </div>
                       </div>
-                    </Card>
+
+                      {/* Presentaciones compactas */}
+                      {item.presentations && item.presentations.length > 0 && (
+                        <div className="px-3 pb-2">
+                          <div className="flex flex-wrap gap-1">
+                            {item.presentations.slice(0, 3).map((p) => (
+                              <span
+                                key={p.id}
+                                className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${p.available ? 'bg-secondary/10 text-secondary' : 'bg-muted text-muted-foreground/50'}`}
+                              >
+                                {p.name.toUpperCase()}
+                              </span>
+                            ))}
+                            {item.presentations.length > 3 && (
+                              <span className="text-[8px] font-bold text-muted-foreground/50">+{item.presentations.length - 3}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Footer con estado */}
+                      <div className="px-3 pb-2 flex items-center justify-between">
+                        <Badge
+                          variant={item.available ? 'default' : 'destructive'}
+                          className="text-[8px] font-black px-2 py-0.5 rounded-md"
+                        >
+                          {item.available ? 'DISPONIBLE' : 'AGOTADO'}
+                        </Badge>
+                        <span className="text-[8px] font-black text-muted-foreground/30">#{item.id}</span>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (

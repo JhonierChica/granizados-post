@@ -96,7 +96,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
         <div className="space-y-0.5 max-h-28 overflow-y-auto no-scrollbar">
           {items.length > 0 ? items.map((item, idx) => {
             const itemName = item.menuItemName || item.name || getMenuItemName(item.menuItemId);
-            const itemPrice = item.menuItemPrice || item.unitPrice || item.price || getMenuItemPrice(item.menuItemId);
+            const itemPrice = item.menuItemPrice ?? item.unitPrice ?? item.price ?? getMenuItemPrice(item.menuItemId);
             const subtotal = (itemPrice || 0) * (item.quantity || 1);
             return (
               <div key={idx} className="flex justify-between items-center py-1.5 px-1 rounded-md hover:bg-muted/40 transition-colors">

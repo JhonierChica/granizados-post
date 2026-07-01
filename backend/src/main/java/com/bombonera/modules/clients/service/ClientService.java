@@ -8,6 +8,7 @@ import com.bombonera.modules.clients.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +66,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public List<ClientResponse> getAllClients() {
         return clientRepository.findAll().stream()
+                .sorted(Comparator.comparing(Client::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -72,6 +74,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public List<ClientResponse> getActiveClients() {
         return clientRepository.findByIsActiveTrue().stream()
+                .sorted(Comparator.comparing(Client::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -79,6 +82,7 @@ public class ClientService {
     @Transactional(readOnly = true)
     public List<ClientResponse> getFrequentClients() {
         return clientRepository.findByIsFrequentCustomerTrue().stream()
+                .sorted(Comparator.comparing(Client::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

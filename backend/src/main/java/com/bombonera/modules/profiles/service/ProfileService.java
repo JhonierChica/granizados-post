@@ -11,6 +11,7 @@ import com.bombonera.modules.profiles.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,6 +59,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<ProfileResponse> getAllProfiles() {
         return profileRepository.findAll().stream()
+                .sorted(Comparator.comparing(Profile::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -65,6 +67,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<ProfileResponse> getActiveProfiles() {
         return profileRepository.findByActiveTrue().stream()
+                .sorted(Comparator.comparing(Profile::getId))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

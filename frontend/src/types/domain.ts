@@ -173,6 +173,7 @@ export interface PaymentMethod {
 export interface ItemSalesSummary {
   name: string;
   categoryName?: string;
+  presentationName?: string;
   quantity: number;
   unitPrice: number;
   total: number;
