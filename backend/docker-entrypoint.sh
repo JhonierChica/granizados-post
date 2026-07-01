@@ -17,7 +17,7 @@ if psql -h "${DB_HOST:-postgres}" -p "${DB_PORT:-5432}" -U "${DB_USER:-postgres}
   echo "Schema already exists — skipping import.sql."
 else
   echo "Schema not found — running import.sql..."
-  PGPASSWORD="${DB_PASSWORD:-bombonera123}" psql \
+  PGPASSWORD="${DB_PASSWORD:-6509}" psql \
     -h "${DB_HOST:-postgres}" \
     -p "${DB_PORT:-5432}" \
     -U "${DB_USER:-postgres}" \

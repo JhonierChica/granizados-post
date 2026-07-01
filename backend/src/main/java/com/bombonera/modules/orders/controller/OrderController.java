@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
-@PreAuthorize("hasAnyRole('ADMIN', 'WAITER')")
+@PreAuthorize("hasAnyRole('ADMIN', 'WAITER', 'CASHIER')")
 public class OrderController {
 
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);

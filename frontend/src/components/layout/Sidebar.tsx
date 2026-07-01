@@ -117,15 +117,22 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
                 ],
               },
               {
+                id: 'trabajadores',
+                label: 'Trabajadores',
+                icon: <EmployeeIcon size={20} />,
+                items: [
+                  { path: ROUTES.ADMIN_EMPLOYEES, label: 'Empleados', icon: <EmployeeIcon size={14} /> },
+                  { path: ROUTES.ADMIN_POSITIONS, label: 'Cargos', icon: <BriefcaseIcon size={14} /> },
+                  { path: ROUTES.ADMIN_PROFILES, label: 'Perfiles', icon: <ProfileIcon size={14} /> },
+                  { path: ROUTES.ADMIN_USERS, label: 'Usuarios', icon: <UsersIcon size={14} /> },
+                ],
+              },
+              {
                 id: 'configuracion',
                 label: 'Configuración',
                 icon: <SettingsIcon size={20} />,
                 items: [
                   { path: ROUTES.CASHIER_TABLES, label: 'Mesas', icon: <TableIcon size={14} /> },
-                  { path: ROUTES.ADMIN_EMPLOYEES, label: 'Empleados', icon: <EmployeeIcon size={14} /> },
-                  { path: ROUTES.ADMIN_POSITIONS, label: 'Cargos', icon: <BriefcaseIcon size={14} /> },
-                  { path: ROUTES.ADMIN_PROFILES, label: 'Perfiles', icon: <ProfileIcon size={14} /> },
-                  { path: ROUTES.ADMIN_USERS, label: 'Usuarios', icon: <UsersIcon size={14} /> },
                   {
                     path: ROUTES.ADMIN_PAYMENT_METHODS,
                     label: 'Métodos de Pago',
@@ -146,15 +153,15 @@ const Sidebar: React.FC<SidebarProps> = React.memo(
         case USER_ROLES.CASHIER:
           return {
             mainItems: [
-              { path: ROUTES.CASHIER_TABLES, label: 'Mesas', icon: <TableIcon size={20} /> },
-              { path: ROUTES.CASHIER_CLIENTS, label: 'Clientes', icon: <ClientsIcon size={20} /> },
+              { path: ROUTES.WAITER_ORDERS, label: 'Pedidos', icon: <OrdersIcon size={20} /> },
               { path: ROUTES.CASHIER_PAYMENTS, label: 'Pagos', icon: <PaymentIcon size={20} /> },
-              { path: ROUTES.CASHIER_DELIVERIES, label: 'Domicilios', icon: <DeliveryIcon size={20} /> },
               {
                 path: ROUTES.CASHIER_CASH_REGISTER,
                 label: 'Cierre de Caja',
                 icon: <CashRegisterIcon size={20} />,
               },
+              { path: ROUTES.CASHIER_CLIENTS, label: 'Clientes', icon: <ClientsIcon size={20} /> },
+              { path: ROUTES.CASHIER_TABLES, label: 'Mesas', icon: <TableIcon size={20} /> },
             ],
             groups: [],
           };

@@ -115,10 +115,10 @@ const Dashboard: React.FC = () => {
         {
           label: 'Caja',
           items: [
+            { id: 'orders',     title: 'Pedidos',          description: 'Tomar y gestionar pedidos activos',   path: ROUTES.WAITER_ORDERS,          icon: ShoppingBag, colorKey: 'orders' },
             { id: 'tables',     title: 'Mesas',           description: 'Ver estado de todas las mesas',      path: ROUTES.CASHIER_TABLES,         icon: Table2,     colorKey: 'tables' },
             { id: 'clients',    title: 'Clientes',        description: 'Registro de clientes frecuentes',    path: ROUTES.CASHIER_CLIENTS,        icon: Users,      colorKey: 'clients' },
             { id: 'payments',   title: 'Pagos',           description: 'Cobros multi-método y referencias',  path: ROUTES.CASHIER_PAYMENTS,       icon: CreditCard, colorKey: 'payments' },
-            { id: 'deliveries', title: 'Domicilios',      description: 'Entregas pendientes y completadas',  path: ROUTES.CASHIER_DELIVERIES,     icon: Truck,      colorKey: 'deliveries' },
             { id: 'cashreg',    title: 'Cierre de Caja',  description: 'Balance diario y reportes de venta', path: ROUTES.CASHIER_CASH_REGISTER,  icon: Calculator, colorKey: 'cashreg' },
           ],
         },

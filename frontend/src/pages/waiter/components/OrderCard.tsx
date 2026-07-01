@@ -33,7 +33,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   const statusBadge = getStatusBadge(order.status);
   const items = order.items || [];
   const userRole = normalizeProfileCode(user?.role);
-  const canCollectPayment = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER;
+  const canCollectPayment = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER || userRole === USER_ROLES.WAITER;
   const canDeleteOrder = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER;
 
   return (
