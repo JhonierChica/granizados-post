@@ -41,4 +41,9 @@ export const paymentService = {
     const response = await apiClient.get(`/payments/daily-summary?date=${date}`);
     return response.data;
   },
+
+  deletePayment: async (id: number): Promise<any> => {
+    const response = await apiClient.delete(`/payments/${id}`);
+    return response.data;
+  },
 };

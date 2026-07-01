@@ -172,6 +172,14 @@ public class PaymentService {
     public void deletePayment(Long id) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id));
+
+        // Revertir orden a SERVIDO para poder cobrarse de nuevo
+        Order order = payment.getOrder();
+        if (order != null && "X".equals(order.getStatus())) {
+            order.setStatus("S"); // SERVIDO — listo para cobrar de nuevo
+            orderRepository.save(order);
+        }
+
         paymentRepository.delete(payment);
     }
 

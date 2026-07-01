@@ -4,7 +4,7 @@ import Layout from '../../components/layout/Layout';
 import Card from '../../components/common/Card';
 import Loading from '../../components/common/Loading';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
-import { PaymentIcon, CashRegisterIcon, ReceiptIcon, WalletIcon, TrendingUpIcon, CalendarIcon, UserIcon, ShieldCheckIcon, AlertCircleIcon, ArrowRightIcon } from '../../components/common/Icons';
+import { PaymentIcon, CashRegisterIcon, ReceiptIcon, WalletIcon, TrendingUpIcon, CalendarIcon, UserIcon, ShieldCheckIcon, AlertCircleIcon, ArrowRightIcon, DeleteIcon } from '../../components/common/Icons';
 import { paymentService } from '../../services/paymentService';
 import { cashRegisterService } from '../../services/cashRegisterService';
 import { paymentMethodService } from '../../services/paymentMethodService';
@@ -14,9 +14,13 @@ import { Badge } from '../../components/ui/badge';
 import { Separator } from '../../components/ui/separator';
 import { FilterIcon, CheckCircleIcon } from '../../components/common/Icons';
 import { toast } from 'sonner';
+import { USER_ROLES } from '../../utils/constants';
+import { normalizeProfileCode } from '../../utils/roles';
 
 const Payments: React.FC = () => {
   const { user } = useAuth();
+  const userRole = normalizeProfileCode(user?.role);
+  const canDeletePayment = userRole === USER_ROLES.ADMIN || userRole === USER_ROLES.CASHIER;
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCashCloseConfirm, setShowCashCloseConfirm] = useState(false);
@@ -24,6 +28,7 @@ const Payments: React.FC = () => {
   const [filterMethodId, setFilterMethodId] = useState<string>('all');
   const [mode, setMode] = useState<'current' | 'history'>('current');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [deleteConfirmPaymentId, setDeleteConfirmPaymentId] = useState<number | null>(null);
 
   useEffect(() => {
     loadPaymentMethods();
@@ -70,6 +75,19 @@ const Payments: React.FC = () => {
     } catch (err: any) {
       console.error('Error al realizar cierre de caja:', err);
       toast.error('Error al realizar el cierre de caja');
+    }
+  };
+
+  const handleDeletePayment = async () => {
+    if (deleteConfirmPaymentId == null) return;
+    try {
+      await paymentService.deletePayment(deleteConfirmPaymentId);
+      setDeleteConfirmPaymentId(null);
+      toast.success('Pago eliminado — la orden volvió a SERVIDA');
+      await loadPayments();
+    } catch (err: any) {
+      console.error('Error al eliminar pago:', err);
+      toast.error('Error al eliminar el pago');
     }
   };
 
@@ -315,13 +333,22 @@ const Payments: React.FC = () => {
                            </p>
                         </div>
                         <div className="space-y-1">
-                           <p className="text-[9px] font-black text-muted-foreground uppercase opacity-40 tracking-widest">Status</p>
-                           {getStatusBadge(payment.status || '')}
-                        </div>
-                     </div>
-                  </div>
-                ))
-               ) : (
+                            <p className="text-[9px] font-black text-muted-foreground uppercase opacity-40 tracking-widest">Status</p>
+                            {getStatusBadge(payment.status || '')}
+                         </div>
+                         {canDeletePayment && (
+                           <button
+                             onClick={() => setDeleteConfirmPaymentId(payment.id)}
+                             className="flex items-center justify-center h-10 w-10 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive hover:text-white transition-all active:scale-95 ml-2"
+                             title="Eliminar ticket"
+                           >
+                             <DeleteIcon size={16} />
+                           </button>
+                         )}
+                      </div>
+                   </div>
+                 ))
+                ) : (
                 <div className={`text-center py-32 rounded-6xl border-2 border-dashed flex flex-col items-center gap-6 shadow-inner ${mode === 'current' ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-blue-500/5 border-blue-500/10'}`}>
                    <div className={`p-6 rounded-full shadow-lg ${mode === 'current' ? 'bg-card shadow-emerald-500/5 text-emerald-400' : 'bg-card shadow-blue-500/5 text-blue-400'}`}>
                       <ShieldCheckIcon size={48} />
@@ -363,6 +390,15 @@ const Payments: React.FC = () => {
           onConfirm={handleCashClose}
           title="VALIDAR CIERRE FISCAL"
           message={`¿Confirma el arqueo definitivo de la jornada? Se consolidarán ${totalPayments} movimientos por un valor total de $${totalAmount.toLocaleString('es-CO')}. Esta operación notificará a gerencia y reiniciará el flujo de caja.`}
+        />
+
+        {/* Delete Payment Confirmation */}
+        <ConfirmDialog
+          isOpen={deleteConfirmPaymentId !== null}
+          onClose={() => setDeleteConfirmPaymentId(null)}
+          onConfirm={handleDeletePayment}
+          title="ELIMINAR TICKET"
+          message="¿Está seguro que desea eliminar este pago? La orden volverá al estado SERVIDA para poder cobrarse de nuevo."
         />
       </div>
     </Layout>

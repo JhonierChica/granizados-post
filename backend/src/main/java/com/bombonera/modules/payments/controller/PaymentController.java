@@ -100,7 +100,7 @@ public class PaymentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER')")
     public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
         try {
             paymentService.deletePayment(id);

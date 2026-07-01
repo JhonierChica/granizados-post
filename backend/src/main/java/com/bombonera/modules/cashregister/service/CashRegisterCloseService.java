@@ -8,6 +8,7 @@ import com.bombonera.modules.payments.model.Payment;
 import com.bombonera.modules.payments.repository.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,9 @@ public class CashRegisterCloseService {
 
     private static final Logger log = LoggerFactory.getLogger(CashRegisterCloseService.class);
 
+    @Value("${app.cash-register.day-start-hour:5}")
+    private int dayStartHour;
+
     private final CashRegisterCloseRepository cashRegisterCloseRepository;
     private final PaymentRepository paymentRepository;
 
@@ -41,9 +45,26 @@ public class CashRegisterCloseService {
         this.paymentRepository = paymentRepository;
     }
 
+    /**
+     * Resuelve la fecha efectiva del día de negocio según la hora de corte configurada.
+     * Si la hora actual es menor a dayStartHour, el cierre pertenece al día calendario anterior.
+     *
+     * Ejemplo con cutoff=5:
+     *   - 04:59 → returns yesterday
+     *   - 05:00 → returns today
+     *   - 22:00 → returns today
+     */
+    private LocalDate resolveBusinessDate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.getHour() < dayStartHour) {
+            return now.toLocalDate().minusDays(1);
+        }
+        return now.toLocalDate();
+    }
+
     @Transactional
     public CashRegisterCloseResponse createDailyCashClose(String closedBy) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = resolveBusinessDate();
         
         // Verificar si ya existe un cierre para hoy
         LocalDateTime startOfDay = today.atStartOfDay();
@@ -104,21 +125,21 @@ public class CashRegisterCloseService {
 
     @Transactional
     public CashRegisterCloseResponse createCashRegisterClose(CreateCashRegisterCloseRequest request) {
-        LocalDateTime closingDate = request.getClosingDate() != null ? request.getClosingDate() : LocalDateTime.now();
-        LocalDate closingLocalDate = closingDate.toLocalDate();
+        LocalDate businessDate = resolveBusinessDate();
+        LocalDateTime closingDateTime = businessDate.atTime(23, 59, 59);
 
-        // Guard: Evitar cierres duplicados para el mismo día (basado en la fecha del cierre)
-        LocalDateTime startOfDay = closingLocalDate.atStartOfDay();
-        LocalDateTime endOfDay = closingLocalDate.atTime(LocalTime.MAX);
+        // Guard: Evitar cierres duplicados para el mismo día de negocio
+        LocalDateTime startOfDay = businessDate.atStartOfDay();
+        LocalDateTime endOfDay = businessDate.atTime(LocalTime.MAX);
         List<CashRegisterClose> existingCloses = cashRegisterCloseRepository
                 .findByClosingDateBetweenOrderByClosingDateDesc(startOfDay, endOfDay);
         
         if (!existingCloses.isEmpty()) {
-            throw new RuntimeException("Ya existe un cierre de caja registrado para el día " + closingLocalDate);
+            throw new RuntimeException("Ya existe un cierre de caja registrado para el día " + businessDate);
         }
 
         CashRegisterClose close = new CashRegisterClose();
-        close.setClosingDate(closingDate);
+        close.setClosingDate(closingDateTime);
         
         // Obtener último cierre histórico para el monto inicial
         CashRegisterClose lastClose = cashRegisterCloseRepository.findTopByOrderByClosingDateDesc().orElse(null);
@@ -135,12 +156,12 @@ public class CashRegisterCloseService {
         }
         close.setInitialAmount(initialAmount);
 
-        // Cálculo de ventas para el día del cierre
+        // Cálculo de ventas para el día de negocio
         BigDecimal totalSales = request.getTotalSales();
         Integer totalTransactions = request.getTotalTransactions();
 
         if (totalSales == null || totalSales.compareTo(BigDecimal.ZERO) == 0) {
-            List<Payment> todayPayments = paymentRepository.findByPaymentDate(closingLocalDate);
+            List<Payment> todayPayments = paymentRepository.findByPaymentDate(businessDate);
             List<Payment> completedPayments = todayPayments.stream()
                     .filter(p -> "C".equals(p.getStatus()))
                     .collect(Collectors.toList());
@@ -164,7 +185,7 @@ public class CashRegisterCloseService {
         close.setFinalAmount(finalAmount);
         
         close.setDifference(finalAmount.subtract(expectedAmount));
-        MethodTotals methodTotals = calculateMethodTotals(closingLocalDate);
+        MethodTotals methodTotals = calculateMethodTotals(businessDate);
         close.setCashAmount(methodTotals.cashAmount);
         close.setCardAmount(methodTotals.cardAmount);
         close.setOtherAmount(methodTotals.transferAmount.add(methodTotals.otherAmount));
