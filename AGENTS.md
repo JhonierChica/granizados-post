@@ -11,7 +11,7 @@
 - **Flujo**: Mesera toma pedido → ella prepara → ella sirve → ella (o socio) cobra.
 - **Stack**: Spring Boot 4 + React 19 + TypeScript + PostgreSQL + WebSockets (STOMP).
 - **Ejecutar**: `npm run dev` desde la raíz.
-- **Fork de La Terraza del Sinú** — misma arquitectura, simplificado para bebidas.
+- **Sistema POS para La Bombonera Granizados** — negocio de bebidas preparadas, mesas y domicilios.
 - **Visibilidad total**: Todos los dispositivos ven todas las mesas en tiempo real (WebSocket). Cada mesera solo edita SUS pedidos, pero cualquier rol ve toda la información.
 
 ---
@@ -130,10 +130,21 @@ la-bombonera/
 ## Comandos
 
 ```bash
-npm run dev              # backend (8080) + frontend (Vite)
+npm run dev              # backend (8081) + frontend (Vite)
 npm run dev:backend      # backend solo
 npm run dev:frontend     # frontend solo
 ```
+
+## Docker (instalación local)
+
+```bash
+docker compose up          # levanta todo (postgres + backend + frontend)
+docker compose down        # detiene los servicios
+docker compose down -v     # detiene y borra la base de datos
+```
+
+El sistema queda disponible en `http://localhost:5174`.
+Credenciales por defecto: `admin` / `admin123`.
 
 ---
 
