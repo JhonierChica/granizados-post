@@ -24,8 +24,9 @@ class WebSocketService {
   private readonly wsUrl: string;
 
   constructor() {
-    // Conecta al mismo host:port que la página — Vite proxy redirige al backend
-    this.wsUrl = `ws://${window.location.host}/ws`;
+    // Conecta directo al backend (puerto 8081) — evita problemas de proxy con nginx en Docker
+    const wsHost = window.location.hostname;
+    this.wsUrl = `ws://${wsHost}:8081/ws`;
   }
 
   connect(): void {
