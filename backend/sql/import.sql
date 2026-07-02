@@ -9,6 +9,31 @@
 BEGIN;
 
 -- ============================================
+-- 0. MIGRATION: Rename "menú" → "menu" if old table exists
+-- ============================================
+DO $$ 
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'menú' AND table_schema = 'public') THEN
+        -- Drop FK from item_presentations referencing old table
+        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_presentacion_menu') THEN
+            ALTER TABLE public.item_presentations DROP CONSTRAINT fk_presentacion_menu;
+        END IF;
+        -- Drop FK from detallePedido referencing old table
+        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_detalle_menu') THEN
+            ALTER TABLE public."detallePedido" DROP CONSTRAINT fk_detalle_menu;
+        END IF;
+        -- Rename old table
+        ALTER TABLE public."menú" RENAME TO menu;
+        -- Recreate FK on item_presentations pointing to new menu table
+        ALTER TABLE public.item_presentations ADD CONSTRAINT fk_presentacion_menu 
+            FOREIGN KEY (id_menu) REFERENCES public.menu(id_menu) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE CASCADE;
+        -- Recreate FK on detallePedido pointing to new menu table
+        ALTER TABLE public."detallePedido" ADD CONSTRAINT fk_detalle_menu 
+            FOREIGN KEY (id_menu) REFERENCES public.menu(id_menu) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+    END IF;
+END $$;
+
+-- ============================================
 -- 1. SEQUENCES
 -- ============================================
 CREATE SEQUENCE IF NOT EXISTS public.menu_id_menu_seq;
@@ -129,7 +154,7 @@ CREATE TABLE IF NOT EXISTS public.empleado
     CONSTRAINT empleado_numero_documento_key UNIQUE (numero_documento)
 );
 
-CREATE TABLE IF NOT EXISTS public."menú"
+CREATE TABLE IF NOT EXISTS public.menu
 (
     id_menu integer NOT NULL DEFAULT nextval('menu_id_menu_seq'::regclass),
     nombre_menu character varying(50) COLLATE pg_catalog."default" NOT NULL,
@@ -137,7 +162,7 @@ CREATE TABLE IF NOT EXISTS public."menú"
     precio real NOT NULL,
     id_categoria integer NOT NULL,
     estado character varying(1) COLLATE pg_catalog."default" NOT NULL DEFAULT 'A'::character varying,
-    CONSTRAINT "Menú_pkey" PRIMARY KEY (id_menu)
+    CONSTRAINT "menu_pkey" PRIMARY KEY (id_menu)
 );
 
 CREATE TABLE IF NOT EXISTS public.mesa
@@ -244,7 +269,7 @@ CREATE TABLE IF NOT EXISTS public.item_presentations (
     precio REAL NOT NULL,
     disponible BOOLEAN NOT NULL DEFAULT TRUE,
     CONSTRAINT fk_presentacion_menu FOREIGN KEY (id_menu)
-        REFERENCES public."menú" (id_menu) MATCH SIMPLE
+        REFERENCES public.menu (id_menu) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
@@ -264,7 +289,7 @@ END $$;
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_detalle_menu') THEN
         ALTER TABLE public."detallePedido" ADD CONSTRAINT fk_detalle_menu FOREIGN KEY (id_menu)
-            REFERENCES public."menú" (id_menu) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+            REFERENCES public.menu (id_menu) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
     END IF;
 END $$;
 
@@ -284,7 +309,7 @@ END $$;
 
 DO $$ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_categoria') THEN
-        ALTER TABLE public."menú" ADD CONSTRAINT fk_categoria FOREIGN KEY (id_categoria)
+        ALTER TABLE public.menu ADD CONSTRAINT fk_categoria FOREIGN KEY (id_categoria)
             REFERENCES public.categoria (id_categoria) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
     END IF;
 END $$;
@@ -380,6 +405,131 @@ CREATE INDEX IF NOT EXISTS idx_usuario_id_rol ON usuario(id_rol);
 CREATE INDEX IF NOT EXISTS idx_presentacion_menu ON public.item_presentations(id_menu);
 
 -- ============================================
+-- 5. SEED DATA — CATEGORIAS
+-- ============================================
+INSERT INTO categoria (id_categoria, nombre_categoria, estado, descripcion, orden_visualizacion)
+VALUES
+    (1, 'GRANIZADOS', 'A', '', 1),
+    (2, 'SODAS SABORIZADAS', 'A', '', 2),
+    (3, 'MICHELADAS', 'A', '', 3),
+    (4, 'ELIXIR DE LA CASA', 'A', '', 4),
+    (5, 'CERVEZAS', 'A', '', 5),
+    (6, 'MEKATOS', 'A', '', 6),
+    (7, 'GASEOSAS', 'A', '', 7)
+ON CONFLICT (id_categoria) DO NOTHING;
+
+-- ============================================
+-- 5. SEED DATA — MENU ITEMS
+-- ============================================
+INSERT INTO menu (id_menu, nombre_menu, descripcion, precio, id_categoria, estado)
+VALUES
+    (1, 'OJO DE DIABLO', '', 0, 1, 'A'),
+    (3, 'TUSSI', '', 0, 1, 'A'),
+    (5, 'BESO NEGRO', '', 0, 1, 'A'),
+    (6, 'BLUEBERRY', '', 0, 1, 'A'),
+    (7, 'MIAMI', '', 0, 1, 'A'),
+    (8, 'SMIRNOFF', '', 0, 1, 'A'),
+    (9, 'LULO MARACUYA', '', 0, 1, 'A'),
+    (10, 'FRESA BON BON BUM', '', 0, 1, 'A'),
+    (11, 'FRUTOS ROJOS', '', 0, 2, 'A'),
+    (12, 'MARACUYA', '', 0, 2, 'A'),
+    (13, 'MANGO BICHE', '', 0, 2, 'A'),
+    (14, 'LYCHEE', '', 0, 2, 'A'),
+    (15, 'CEREZA', '', 0, 2, 'A'),
+    (16, 'LULO', '', 0, 2, 'A'),
+    (17, 'MANZANA VERDE', '', 0, 2, 'A'),
+    (18, 'SANDIA', '', 0, 2, 'A'),
+    (19, 'MICHELADA CORONITA', '', 0, 3, 'A'),
+    (20, 'MICHELADA BUDWEISER', '', 0, 3, 'A'),
+    (21, 'MICHELADA COSTEÑITA', '', 0, 3, 'A'),
+    (22, 'MICHELADA HEINIKEN', '', 0, 3, 'A'),
+    (23, 'MICHELADA LIKE', '', 0, 3, 'A'),
+    (2, 'CORONITA', '', 0, 5, 'A'),
+    (24, 'HEINIKEN', '', 0, 5, 'A'),
+    (25, 'BUDWEISER', '', 0, 5, 'A'),
+    (26, 'COSTEÑITA', '', 0, 5, 'A'),
+    (27, 'LIKE', '', 0, 5, 'A')
+ON CONFLICT (id_menu) DO NOTHING;
+
+-- ============================================
+-- 5. SEED DATA — ITEM PRESENTATIONS
+-- ============================================
+INSERT INTO item_presentations (id_presentacion, id_menu, nombre, precio, disponible)
+VALUES
+    (86, 1, '8 Oz', 7000, true),
+    (87, 1, '10 Oz', 8000, true),
+    (88, 1, '12 Oz', 10000, true),
+    (89, 1, '16 Oz', 14000, true),
+    (90, 1, '24 Oz', 20000, true),
+    (165, 2, 'CORONITA', 4000, true),
+    (91, 3, '8 Oz', 7000, true),
+    (92, 3, '10 Oz', 8000, true),
+    (93, 3, '12 Oz', 10000, true),
+    (94, 3, '16 Oz', 14000, true),
+    (95, 3, '24 Oz', 20000, true),
+    (96, 5, '8 Oz', 7000, true),
+    (97, 5, '10 Oz', 8000, true),
+    (98, 5, '12 Oz', 10000, true),
+    (99, 5, '16 Oz', 14000, true),
+    (100, 5, '24 Oz', 20000, true),
+    (101, 6, '8 Oz', 7000, true),
+    (102, 6, '10 Oz', 8000, true),
+    (103, 6, '12 Oz', 10000, true),
+    (104, 6, '16 Oz', 14000, true),
+    (105, 6, '24 Oz', 20000, true),
+    (106, 7, '8 Oz', 7000, true),
+    (107, 7, '10 Oz', 8000, true),
+    (108, 7, '12 Oz', 10000, true),
+    (109, 7, '16 Oz', 14000, true),
+    (110, 7, '24 Oz', 20000, true),
+    (111, 8, '8 Oz', 7000, true),
+    (112, 8, '10 Oz', 8000, true),
+    (113, 8, '12 Oz', 10000, true),
+    (114, 8, '16 Oz', 14000, true),
+    (115, 8, '24 Oz', 20000, true),
+    (116, 9, '8 Oz', 7000, true),
+    (117, 9, '10 Oz', 8000, true),
+    (118, 9, '12 Oz', 10000, true),
+    (119, 9, '16 Oz', 14000, true),
+    (120, 9, '24 Oz', 20000, true),
+    (121, 10, '8 Oz', 7000, true),
+    (122, 10, '10 Oz', 8000, true),
+    (123, 10, '12 Oz', 10000, true),
+    (124, 10, '16 Oz', 14000, true),
+    (125, 10, '24 Oz', 20000, true),
+    (128, 11, 'MEDIANO', 7000, true),
+    (129, 11, 'GRANDE', 9000, true),
+    (130, 12, 'MEDIANO', 7000, true),
+    (131, 12, 'GRANDE', 9000, true),
+    (132, 13, 'MEDIANO', 7000, true),
+    (133, 13, 'GRANDE', 9000, true),
+    (134, 14, 'MEDIANO', 7000, true),
+    (135, 14, 'GRANDE', 9000, true),
+    (136, 15, 'MEDIANO', 7000, true),
+    (137, 15, 'GRANDE', 9000, true),
+    (138, 16, 'MEDIANO', 7000, true),
+    (139, 16, 'GRANDE', 9000, true),
+    (140, 17, 'MEDIANO', 7000, true),
+    (141, 17, 'GRANDE', 8999, true),
+    (142, 18, 'MEDIANO', 7000, true),
+    (143, 18, 'GRANDE', 9000, true),
+    (154, 19, 'MEDIANO', 7000, true),
+    (155, 19, 'GRANDE', 12000, true),
+    (156, 20, 'MEDIANO', 7000, true),
+    (157, 20, 'GRANDE', 12000, true),
+    (158, 21, 'MEDIANO', 7000, true),
+    (159, 21, 'GRANDE', 12000, true),
+    (160, 22, 'MEDIANO', 7000, true),
+    (161, 22, 'GRANDE', 12000, true),
+    (162, 23, 'MEDIANO', 7000, true),
+    (163, 23, 'GRANDE', 12000, true),
+    (166, 24, 'HEINIKEN', 5000, true),
+    (167, 25, 'BUDWEISER', 5000, true),
+    (168, 26, 'COSTEÑITA', 4000, true),
+    (169, 27, 'LIKE', 5000, true)
+ON CONFLICT (id_presentacion) DO NOTHING;
+
+-- ============================================
 -- 5. SEED DATA (admin user, role, permissions)
 -- ============================================
 -- ON CONFLICT DO NOTHING ensures idempotency.
@@ -417,5 +567,7 @@ SELECT setval('cargo_id_cargo_seq', COALESCE((SELECT MAX(id_cargo) FROM cargo), 
 SELECT setval('rol_id_rol_seq', COALESCE((SELECT MAX(id_rol) FROM rol), 0) + 1, false);
 SELECT setval('empleado_id_empleado_seq', COALESCE((SELECT MAX(id_empleado) FROM empleado), 0) + 1, false);
 SELECT setval('usuario_id_usuario_seq', COALESCE((SELECT MAX(id_usuario) FROM usuario), 0) + 1, false);
+SELECT setval('menu_id_menu_seq', COALESCE((SELECT MAX(id_menu) FROM menu), 0) + 1, false);
+SELECT setval('item_presentations_id_presentacion_seq', COALESCE((SELECT MAX(id_presentacion) FROM item_presentations), 0) + 1, false);
 
 COMMIT;
