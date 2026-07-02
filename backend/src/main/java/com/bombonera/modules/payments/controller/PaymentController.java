@@ -26,7 +26,7 @@ public class PaymentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER', 'WAITER')")
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody CreatePaymentRequest request) {
         try {
             PaymentResponse response = paymentService.createPayment(request);

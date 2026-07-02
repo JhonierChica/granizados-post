@@ -2,17 +2,20 @@ package com.bombonera.modules.payments.service;
 
 import com.bombonera.modules.cashregister.model.CashRegisterClose;
 import com.bombonera.modules.cashregister.repository.CashRegisterCloseRepository;
+import com.bombonera.modules.orders.dto.OrderItemResponse;
+import com.bombonera.modules.orders.dto.OrderResponse;
+import com.bombonera.modules.orders.event.OrderStatusChangedEvent;
 import com.bombonera.modules.orders.model.Order;
 import com.bombonera.modules.orders.repository.OrderRepository;
 import com.bombonera.modules.paymentmethods.model.PaymentMethod;
 import com.bombonera.modules.paymentmethods.repository.PaymentMethodRepository;
 import com.bombonera.modules.payments.dto.CreatePaymentRequest;
 import com.bombonera.modules.payments.dto.DailyPaymentSummaryResponse;
-import com.bombonera.modules.orders.dto.OrderItemResponse;
 import com.bombonera.modules.payments.dto.PaymentResponse;
 import com.bombonera.modules.payments.dto.UpdatePaymentRequest;
 import com.bombonera.modules.payments.model.Payment;
 import com.bombonera.modules.payments.repository.PaymentRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +37,18 @@ public class PaymentService {
     private final OrderRepository orderRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final CashRegisterCloseRepository cashRegisterCloseRepository;
+    private final ApplicationEventPublisher publisher;
 
     public PaymentService(PaymentRepository paymentRepository,
                          OrderRepository orderRepository,
                          PaymentMethodRepository paymentMethodRepository,
-                         CashRegisterCloseRepository cashRegisterCloseRepository) {
+                         CashRegisterCloseRepository cashRegisterCloseRepository,
+                         ApplicationEventPublisher publisher) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.cashRegisterCloseRepository = cashRegisterCloseRepository;
+        this.publisher = publisher;
     }
 
     public PaymentResponse createPayment(CreatePaymentRequest request) {
@@ -70,6 +76,15 @@ public class PaymentService {
         payment.setPaymentStatus(Payment.PaymentStatus.COMPLETADO);
 
         Payment savedPayment = paymentRepository.save(payment);
+
+        // Marcar la orden como PAGADA y broadcast a todos los clientes en tiempo real
+        String oldStatus = order.getOrderStatus() != null ? order.getOrderStatus().name() : "SERVIDO";
+        order.setOrderStatus(Order.OrderStatus.PAGADO);
+        Order savedOrder = orderRepository.save(order);
+
+        OrderResponse orderResponse = mapOrderToResponse(savedOrder);
+        publisher.publishEvent(new OrderStatusChangedEvent(this, savedOrder.getId(), oldStatus, "PAGADO", orderResponse));
+
         return mapToResponse(savedPayment);
     }
 
@@ -210,6 +225,46 @@ public class PaymentService {
                 .collect(Collectors.toList()));
         }
         
+        return response;
+    }
+
+    private OrderResponse mapOrderToResponse(Order order) {
+        OrderResponse response = new OrderResponse();
+        response.setId(order.getId());
+        response.setClientId(order.getClient() != null ? order.getClient().getId() : null);
+        response.setClientName(order.getClient() != null ? order.getClient().getName() : null);
+        response.setClientPhone(order.getClient() != null ? order.getClient().getPhone() : null);
+        response.setClientAddress(order.getClient() != null ? order.getClient().getAddress() : null);
+        if (order.getTable() != null) {
+            response.setTableId(order.getTable().getId());
+            response.setTableNumber(order.getTable().getTableNumber());
+        }
+        response.setStatus(order.getOrderStatus());
+        response.setOrderType(order.getOrderType());
+        response.setTotal(order.getTotalAmount());
+        response.setNotes(order.getNotes());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        if (order.getUser() != null && order.getUser().getEmployee() != null) {
+            String firstName = order.getUser().getEmployee().getFirstName();
+            String lastName = order.getUser().getEmployee().getLastName();
+            String waiterName = String.format("%s %s", firstName != null ? firstName : "", lastName != null ? lastName : "").trim();
+            response.setWaiterName(waiterName.isBlank() ? null : waiterName);
+        }
+        if (order.getItems() != null) {
+            response.setItems(order.getItems().stream()
+                .map(item -> {
+                    OrderItemResponse itemDto = new OrderItemResponse();
+                    itemDto.setMenuItemId(item.getMenuItem().getId());
+                    itemDto.setMenuItemName(item.getMenuItem().getName());
+                    itemDto.setMenuItemPrice(java.math.BigDecimal.valueOf(item.getUnitPrice()));
+                    itemDto.setQuantity(item.getQuantity());
+                    itemDto.setPresentationId(item.getPresentationId());
+                    itemDto.setPresentationName(item.getPresentationName());
+                    return itemDto;
+                })
+                .collect(Collectors.toList()));
+        }
         return response;
     }
 
