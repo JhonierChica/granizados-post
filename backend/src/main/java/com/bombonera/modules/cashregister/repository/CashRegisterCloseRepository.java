@@ -1,6 +1,8 @@
 package com.bombonera.modules.cashregister.repository;
 
 import com.bombonera.modules.cashregister.model.CashRegisterClose;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -21,6 +23,14 @@ public interface CashRegisterCloseRepository extends JpaRepository<CashRegisterC
     
     @Query("SELECT c FROM CashRegisterClose c ORDER BY c.closingDate DESC")
     List<CashRegisterClose> findAllOrderByClosingDateDesc();
+
+    Page<CashRegisterClose> findAllByOrderByClosingDateDesc(Pageable pageable);
+
+    Page<CashRegisterClose> findByClosingDateBetweenOrderByClosingDateDesc(
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Pageable pageable
+    );
     
     Optional<CashRegisterClose> findTopByOrderByClosingDateDesc();
 }

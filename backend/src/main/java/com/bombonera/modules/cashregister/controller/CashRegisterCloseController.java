@@ -3,6 +3,7 @@ package com.bombonera.modules.cashregister.controller;
 import com.bombonera.modules.cashregister.dto.CashRegisterCloseResponse;
 import com.bombonera.modules.cashregister.dto.CreateCashRegisterCloseRequest;
 import com.bombonera.modules.cashregister.service.CashRegisterCloseService;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +48,10 @@ public class CashRegisterCloseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CashRegisterCloseResponse>> getAllCloses() {
-        List<CashRegisterCloseResponse> closes = cashRegisterCloseService.getAllCloses();
+    public ResponseEntity<Page<CashRegisterCloseResponse>> getAllCloses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<CashRegisterCloseResponse> closes = cashRegisterCloseService.getAllCloses(page, size);
         return ResponseEntity.ok(closes);
     }
 
@@ -83,6 +86,19 @@ public class CashRegisterCloseController {
     @GetMapping("/user/{closedBy}")
     public ResponseEntity<List<CashRegisterCloseResponse>> getClosesByUser(@PathVariable String closedBy) {
         List<CashRegisterCloseResponse> closes = cashRegisterCloseService.getClosesByUser(closedBy);
+        return ResponseEntity.ok(closes);
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<Page<CashRegisterCloseResponse>> getFilteredCloses(
+            @RequestParam String filterType,
+            @RequestParam(required = false) String selectedDate,
+            @RequestParam(required = false) Integer selectedMonth,
+            @RequestParam(required = false) Integer selectedYear,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<CashRegisterCloseResponse> closes = cashRegisterCloseService.getClosesFiltered(
+                filterType, selectedDate, selectedMonth, selectedYear, page, size);
         return ResponseEntity.ok(closes);
     }
 }

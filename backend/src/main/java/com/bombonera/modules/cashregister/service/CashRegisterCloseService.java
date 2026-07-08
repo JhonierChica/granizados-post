@@ -9,6 +9,9 @@ import com.bombonera.modules.payments.repository.PaymentRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,11 +78,16 @@ public class CashRegisterCloseService {
             throw new RuntimeException("Ya existe un cierre de caja para el día de hoy");
         }
 
-        // Obtener pagos del día
+        // Obtener pagos del día de negocio
         List<Payment> todayPayments = paymentRepository.findByPaymentDate(today);
         List<Payment> completedPayments = todayPayments.stream()
                 .filter(p -> "C".equals(p.getStatus()))
                 .collect(Collectors.toList());
+
+        // FR6: Validar que hay al menos un pago completado
+        if (completedPayments.isEmpty()) {
+            throw new RuntimeException("No hay pagos completados para la fecha de cierre: " + today);
+        }
 
         BigDecimal totalSales = completedPayments.stream()
                 .map(Payment::getAmountAsBigDecimal)
@@ -105,14 +113,14 @@ public class CashRegisterCloseService {
 
         CashRegisterClose close = new CashRegisterClose();
         close.setOpeningDate(startOfDay);
-        close.setClosingDate(LocalDateTime.now());
+        close.setClosingDate(today.atTime(23, 59, 59));
         close.setInitialAmount(initialAmount);
         close.setFinalAmount(finalAmount);
         close.setExpectedAmount(expectedAmount);
         close.setDifference(difference);
         close.setTotalSales(totalSales);
         close.setTotalTransactions(totalTransactions);
-        MethodTotals methodTotals = calculateMethodTotals(today);
+        MethodTotals methodTotals = calculateMethodTotalsFromPayments(completedPayments);
         close.setCashAmount(methodTotals.cashAmount);
         close.setCardAmount(methodTotals.cardAmount);
         close.setOtherAmount(methodTotals.transferAmount.add(methodTotals.otherAmount));
@@ -125,8 +133,8 @@ public class CashRegisterCloseService {
 
     @Transactional
     public CashRegisterCloseResponse createCashRegisterClose(CreateCashRegisterCloseRequest request) {
+        // Server-authoritative business date resolution
         LocalDate businessDate = resolveBusinessDate();
-        LocalDateTime closingDateTime = businessDate.atTime(23, 59, 59);
 
         // Guard: Evitar cierres duplicados para el mismo día de negocio
         LocalDateTime startOfDay = businessDate.atStartOfDay();
@@ -138,8 +146,19 @@ public class CashRegisterCloseService {
             throw new RuntimeException("Ya existe un cierre de caja registrado para el día " + businessDate);
         }
 
+        // Query payments for the business date
+        List<Payment> todayPayments = paymentRepository.findByPaymentDate(businessDate);
+        List<Payment> completedPayments = todayPayments.stream()
+                .filter(p -> "C".equals(p.getStatus()))
+                .collect(Collectors.toList());
+
+        // FR6: Validar que hay al menos un pago completado
+        if (completedPayments.isEmpty()) {
+            throw new RuntimeException("No hay pagos completados para la fecha de cierre: " + businessDate);
+        }
+
         CashRegisterClose close = new CashRegisterClose();
-        close.setClosingDate(closingDateTime);
+        close.setClosingDate(businessDate.atTime(23, 59, 59));
         
         // Obtener último cierre histórico para el monto inicial
         CashRegisterClose lastClose = cashRegisterCloseRepository.findTopByOrderByClosingDateDesc().orElse(null);
@@ -156,16 +175,11 @@ public class CashRegisterCloseService {
         }
         close.setInitialAmount(initialAmount);
 
-        // Cálculo de ventas para el día de negocio
+        // Cálculo de ventas: usar los pagos reales del día de negocio
         BigDecimal totalSales = request.getTotalSales();
         Integer totalTransactions = request.getTotalTransactions();
 
         if (totalSales == null || totalSales.compareTo(BigDecimal.ZERO) == 0) {
-            List<Payment> todayPayments = paymentRepository.findByPaymentDate(businessDate);
-            List<Payment> completedPayments = todayPayments.stream()
-                    .filter(p -> "C".equals(p.getStatus()))
-                    .collect(Collectors.toList());
-            
             totalSales = completedPayments.stream()
                     .map(Payment::getAmountAsBigDecimal)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -185,7 +199,7 @@ public class CashRegisterCloseService {
         close.setFinalAmount(finalAmount);
         
         close.setDifference(finalAmount.subtract(expectedAmount));
-        MethodTotals methodTotals = calculateMethodTotals(businessDate);
+        MethodTotals methodTotals = calculateMethodTotalsFromPayments(completedPayments);
         close.setCashAmount(methodTotals.cashAmount);
         close.setCardAmount(methodTotals.cardAmount);
         close.setOtherAmount(methodTotals.transferAmount.add(methodTotals.otherAmount));
@@ -197,12 +211,90 @@ public class CashRegisterCloseService {
         return mapToResponse(savedClose);
     }
 
+    /**
+     * Resolves the effective business date based on the configurable cutoff hour.
+     * If the current hour is less than dayStartHour, the close belongs to the
+     * previous calendar day. Otherwise, it belongs to today.
+     *
+     * Example with cutoff=5:
+     *   - 04:59 → returns yesterday
+     *   - 05:00 → returns today
+     *   - 22:00 → returns today
+     */
+    private LocalDate resolveBusinessDate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (now.getHour() < dayStartHour) {
+            return now.toLocalDate().minusDays(1);
+        }
+        return now.toLocalDate();
+    }
+
     @Transactional(readOnly = true)
-    public List<CashRegisterCloseResponse> getAllCloses() {
-        return cashRegisterCloseRepository.findAllOrderByClosingDateDesc()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<CashRegisterCloseResponse> getAllCloses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<CashRegisterClose> closesPage = cashRegisterCloseRepository
+                .findAllByOrderByClosingDateDesc(pageable);
+        return closesPage.map(this::mapToResponse);
+    }
+
+    /**
+     * Returns paginated closes filtered by date range derived from filterType.
+     *
+     * @param filterType   "day", "month", "year", or "all"
+     * @param selectedDate ISO date string (yyyy-MM-dd) for "day" filter
+     * @param selectedMonth 1-12 for "month" filter
+     * @param selectedYear  yyyy for "month" or "year" filters
+     * @param page         zero-based page number
+     * @param size         page size
+     * @return paginated response filtered by the requested date range
+     */
+    @Transactional(readOnly = true)
+    public Page<CashRegisterCloseResponse> getClosesFiltered(
+            String filterType,
+            String selectedDate,
+            Integer selectedMonth,
+            Integer selectedYear,
+            int page,
+            int size) {
+
+        LocalDateTime start;
+        LocalDateTime end;
+
+        switch (filterType) {
+            case "day":
+                if (selectedDate == null || selectedDate.isEmpty()) {
+                    return getAllCloses(page, size);
+                }
+                LocalDate date = LocalDate.parse(selectedDate);
+                start = date.atStartOfDay();
+                end = date.atTime(LocalTime.MAX);
+                break;
+
+            case "month":
+                if (selectedMonth == null || selectedYear == null) {
+                    return getAllCloses(page, size);
+                }
+                LocalDate firstOfMonth = LocalDate.of(selectedYear, selectedMonth, 1);
+                start = firstOfMonth.atStartOfDay();
+                end = firstOfMonth.plusMonths(1).minusDays(1).atTime(LocalTime.MAX);
+                break;
+
+            case "year":
+                if (selectedYear == null) {
+                    return getAllCloses(page, size);
+                }
+                start = LocalDate.of(selectedYear, 1, 1).atStartOfDay();
+                end = LocalDate.of(selectedYear, 12, 31).atTime(LocalTime.MAX);
+                break;
+
+            default:
+                return getAllCloses(page, size);
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return cashRegisterCloseRepository
+                .findByClosingDateBetweenOrderByClosingDateDesc(start, end, pageable)
+                .map(this::mapToResponse);
     }
 
     @Transactional(readOnly = true)
@@ -262,7 +354,7 @@ public class CashRegisterCloseService {
                     .collect(Collectors.toList());
             response.setItemSales(calculateItemSalesSummary(completedPayments));
 
-            MethodTotals methodTotals = calculateMethodTotals(date);
+            MethodTotals methodTotals = calculateMethodTotalsFromPayments(completedPayments);
             response.setCashAmount(methodTotals.cashAmount);
             response.setCardAmount(methodTotals.cardAmount);
             response.setOtherAmount(methodTotals.otherAmount);
@@ -323,18 +415,21 @@ public class CashRegisterCloseService {
         return new ArrayList<>(summaryMap.values());
     }
 
-    private MethodTotals calculateMethodTotals(LocalDate date) {
-        List<Object[]> totals = paymentRepository.sumAmountsByMethodAndDate(date, "C");
+    /**
+     * Calculates payment method totals in-memory from already-loaded payments.
+     * Avoids a separate GROUP BY query — uses the payments already loaded via
+     * {@code PaymentRepository.findByPaymentDate()} with {@code @EntityGraph}.
+     */
+    private MethodTotals calculateMethodTotalsFromPayments(List<Payment> completedPayments) {
         BigDecimal cashAmount = BigDecimal.ZERO;
         BigDecimal transferAmount = BigDecimal.ZERO;
         BigDecimal cardAmount = BigDecimal.ZERO;
         BigDecimal otherAmount = BigDecimal.ZERO;
 
-        for (Object[] row : totals) {
-            String methodName = row[0] != null ? row[0].toString() : "";
-            BigDecimal amount = row[1] == null
-                    ? BigDecimal.ZERO
-                    : BigDecimal.valueOf(((Number) row[1]).doubleValue());
+        for (Payment payment : completedPayments) {
+            if (payment.getPaymentMethod() == null) continue;
+            String methodName = payment.getPaymentMethod().getName();
+            BigDecimal amount = payment.getAmountAsBigDecimal();
 
             if (isCashMethod(methodName)) {
                 cashAmount = cashAmount.add(amount);

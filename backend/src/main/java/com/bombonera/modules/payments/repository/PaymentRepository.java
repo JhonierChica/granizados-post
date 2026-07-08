@@ -1,6 +1,8 @@
 package com.bombonera.modules.payments.repository;
 
 import com.bombonera.modules.payments.model.Payment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +23,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     List<Payment> findByPaymentDateBetween(LocalDate startDate, LocalDate endDate);
 
+    @EntityGraph(attributePaths = {"order.items.menuItem.category", "paymentMethod"})
     List<Payment> findByPaymentDate(LocalDate date);
+
+    @EntityGraph(attributePaths = {"order.items.menuItem.category", "paymentMethod"})
+    Page<Payment> findByPaymentDate(LocalDate date, Pageable pageable);
 
     List<Payment> findByPaymentDateGreaterThanEqual(LocalDate date);
 

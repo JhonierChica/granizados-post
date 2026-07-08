@@ -1,9 +1,48 @@
 import apiClient from './apiClient';
 import type { CashRegisterClose } from '../types';
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
 export const cashRegisterService = {
-  getAll: async (): Promise<CashRegisterClose[]> => {
-    const response = await apiClient.get<CashRegisterClose[]>('/cash-register-closes');
+  getAll: async (page?: number, size?: number): Promise<PaginatedResponse<CashRegisterClose>> => {
+    const params: Record<string, string> = {};
+    if (page !== undefined) params.page = String(page);
+    if (size !== undefined) params.size = String(size);
+    const queryString = Object.keys(params).length > 0
+      ? '?' + new URLSearchParams(params).toString()
+      : '';
+    const response = await apiClient.get<PaginatedResponse<CashRegisterClose>>(`/cash-register-closes${queryString}`);
+    return response.data;
+  },
+
+  getAllPaginated: async (page: number, size: number): Promise<PaginatedResponse<CashRegisterClose>> => {
+    return cashRegisterService.getAll(page, size);
+  },
+
+  getFiltered: async (
+    filterType: string,
+    selectedDate?: string,
+    selectedMonth?: number,
+    selectedYear?: number,
+    page?: number,
+    size?: number,
+  ): Promise<PaginatedResponse<CashRegisterClose>> => {
+    const params = new URLSearchParams();
+    params.set('filterType', filterType);
+    if (selectedDate) params.set('selectedDate', selectedDate);
+    if (selectedMonth !== undefined) params.set('selectedMonth', String(selectedMonth));
+    if (selectedYear !== undefined) params.set('selectedYear', String(selectedYear));
+    if (page !== undefined) params.set('page', String(page));
+    if (size !== undefined) params.set('size', String(size));
+    const response = await apiClient.get<PaginatedResponse<CashRegisterClose>>(
+      `/cash-register-closes/filtered?${params.toString()}`
+    );
     return response.data;
   },
 

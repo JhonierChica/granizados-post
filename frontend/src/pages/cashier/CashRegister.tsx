@@ -1,8 +1,7 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import Layout from '../../components/layout/Layout';
 import Card from '../../components/common/Card';
-import Table from '../../components/common/Table';
 import Loading from '../../components/common/Loading';
 import Modal from '../../components/common/Modal';
 import { CashRegisterIcon, CalendarIcon, UserIcon, TrendingUpIcon, TrendingDownIcon, FileTextIcon, DownloadIcon, FilterIcon, ClockIcon, WalletIcon, ReceiptIcon } from '../../components/common/Icons';
@@ -31,30 +30,6 @@ const formatDateTime = (dateTime: string | undefined): string => {
   });
 };
 
-const toDateStr = (d: Date): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-const toMonthStr = (d: Date): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-
-const filterCloses = (
-  closes: CashRegisterClose[],
-  type: FilterType | ExportType,
-  date: string,
-  month: string,
-  year: string,
-): CashRegisterClose[] => {
-  if (type === 'all' || type === 'last') return closes;
-  return closes.filter((c) => {
-    if (!c.closingDate) return false;
-    const d = new Date(c.closingDate);
-    if (type === 'daily') return toDateStr(d) === date;
-    if (type === 'monthly') return toMonthStr(d) === month;
-    if (type === 'annual') return d.getFullYear().toString() === year;
-    return true;
-  });
-};
-
 const CashRegister: React.FC = () => {
   const [closes, setCloses] = useState<CashRegisterClose[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,29 +48,77 @@ const CashRegister: React.FC = () => {
   const [exportMonth, setExportMonth] = useState(new Date().toISOString().slice(0, 7));
   const [exportYear, setExportYear] = useState(new Date().getFullYear().toString());
 
-  useEffect(() => { loadData(); }, []);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
-  const loadData = async () => {
+  const PAGE_SIZE = 20;
+
+  const loadData = useCallback(async (pageNum: number = 0) => {
     try {
       setLoading(true);
-      const data = await cashRegisterService.getAll();
-      setCloses(data);
+      
+      if (filterType !== 'all') {
+        // Server-side filtering — fetch all matching records for correct summaries
+        const response = await cashRegisterService.getFiltered(
+          filterType === 'daily' ? 'day' : filterType === 'monthly' ? 'month' : 'year',
+          filterType === 'daily' ? selectedDate : undefined,
+          filterType === 'monthly' ? (parseInt(selectedMonth.split('-')[1]) || new Date().getMonth() + 1) : undefined,
+          (filterType === 'monthly' || filterType === 'annual')
+            ? (filterType === 'monthly' ? parseInt(selectedMonth.split('-')[0]) : parseInt(selectedYear))
+            : undefined,
+          0,
+          1000 // large enough to return all filtered closes without pagination
+        );
+        setCloses(response.content);
+        setPage(response.number);
+        setTotalPages(response.totalPages);
+        setTotalElements(response.totalElements);
+      } else {
+        const response = await cashRegisterService.getAll(pageNum, PAGE_SIZE);
+        setCloses(response.content);
+        setPage(response.number);
+        setTotalPages(response.totalPages);
+        setTotalElements(response.totalElements);
+      }
     } catch (err) {
       console.error('Error al cargar datos:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterType, selectedDate, selectedMonth, selectedYear]);
 
-  const filteredCloses = filterCloses(closes, filterType, selectedDate, selectedMonth, selectedYear);
-  const totalSales = filteredCloses.reduce((s: number, c: CashRegisterClose) => s + (Number(c.totalSales) || 0), 0);
-  const totalTransactions = filteredCloses.reduce((s: number, c: CashRegisterClose) => s + (c.totalTransactions || 0), 0);
-  const totalDifference = filteredCloses.reduce((s: number, c: CashRegisterClose) => s + (Number(c.difference) || 0), 0);
+  useEffect(() => { loadData(0); }, [loadData]);
 
-  const getExportCloses = (): CashRegisterClose[] => {
+  const { totalSales, totalTransactions, totalDifference } = useMemo(() => {
+    let sales = 0, transactions = 0, difference = 0;
+    for (const c of closes) {
+      sales += Number(c.totalSales) || 0;
+      transactions += c.totalTransactions || 0;
+      difference += Number(c.difference) || 0;
+    }
+    return { totalSales: sales, totalTransactions: transactions, totalDifference: difference };
+  }, [closes]);
+
+  const getFilteredForExport = useCallback(async (): Promise<CashRegisterClose[]> => {
     if (exportType === 'last') return closes.length > 0 ? [closes[0]] : [];
-    return filterCloses(closes, exportType, exportDate, exportMonth, exportYear);
-  };
+    // Server-side fetch for accurate export data
+    try {
+      const response = await cashRegisterService.getFiltered(
+        exportType === 'daily' ? 'day' : exportType === 'monthly' ? 'month' : 'year',
+        exportType === 'daily' ? exportDate : undefined,
+        exportType === 'monthly' ? (parseInt(exportMonth.split('-')[1]) || new Date().getMonth() + 1) : undefined,
+        (exportType === 'monthly' || exportType === 'annual')
+          ? (exportType === 'monthly' ? parseInt(exportMonth.split('-')[0]) : parseInt(exportYear))
+          : undefined,
+        0,
+        1000
+      );
+      return response.content;
+    } catch {
+      return [];
+    }
+  }, [exportType, exportDate, exportMonth, exportYear, closes]);
 
   const getExportLabel = (): string => {
     if (exportType === 'last') return 'Último Cierre';
@@ -108,8 +131,8 @@ const CashRegister: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
-  const handleGeneratePDF = () => {
-    const closesToExport = getExportCloses();
+  const handleGeneratePDF = async () => {
+    const closesToExport = await getFilteredForExport();
     if (closesToExport.length === 0) return;
 
     let closesToPrint = closesToExport;
@@ -383,7 +406,7 @@ const CashRegister: React.FC = () => {
                     <span className="text-[10px] font-black uppercase tracking-widest">Arqueos Ejecutados</span>
                  </div>
                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black tracking-tighter">{filteredCloses.length}</span>
+                    <span className="text-3xl font-black tracking-tighter">{closes.length}</span>
                     <span className="text-xs font-black text-muted-foreground uppercase opacity-40">Periodo</span>
                  </div>
               </div>
@@ -479,16 +502,67 @@ const CashRegister: React.FC = () => {
               <div className="ml-auto p-4 bg-muted/10 rounded-2xl border-2 border-dashed border-muted/40 hidden lg:flex items-center gap-4">
                  <div className="text-right">
                     <p className="text-[9px] font-black text-muted-foreground uppercase">Registros Coincidentes</p>
-                    <p className="font-black text-lg leading-none tracking-tighter">{filteredCloses.length}</p>
+                    <p className="font-black text-lg leading-none tracking-tighter">{closes.length}</p>
                  </div>
                  <div className="w-1 h-8 bg-muted/40 rounded-full" />
                  <CalendarIcon size={20} className="text-muted-foreground opacity-40" />
-              </div>
            </div>
+
+            {/* Bottom Pagination — only for unfiltered "all" view */}
+            {filterType === 'all' && totalPages > 1 && (
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  onClick={() => loadData(page - 1)}
+                  disabled={page === 0}
+                  className="h-10 px-4 bg-card border-2 border-muted/60 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:border-primary/30 hover:bg-primary/5 transition-all"
+                >
+                  ← Anterior
+                </button>
+                <span className="text-sm font-bold text-muted-foreground min-w-[80px] text-center">
+                  Pág. {page + 1} / {totalPages}
+                </span>
+                <button
+                  onClick={() => loadData(page + 1)}
+                  disabled={page >= totalPages - 1}
+                  className="h-10 px-4 bg-card border-2 border-muted/60 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:border-primary/30 hover:bg-primary/5 transition-all"
+                >
+                  Siguiente →
+                </button>
+              </div>
+            )}
+         </div>
+
+            {/* Pagination Controls — only for unfiltered "all" view */}
+            {filterType === 'all' && totalPages > 1 && (
+              <div className="flex items-center justify-between gap-4 py-2">
+                <span className="text-xs font-medium text-muted-foreground italic">
+                  {totalElements} registro{totalElements !== 1 ? 's' : ''} total{totalElements !== 1 ? 'es' : ''}
+                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => loadData(page - 1)}
+                    disabled={page === 0}
+                    className="h-10 px-4 bg-card border-2 border-muted/60 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:border-primary/30 hover:bg-primary/5 transition-all"
+                  >
+                    ← Anterior
+                  </button>
+                  <span className="text-sm font-bold text-muted-foreground min-w-[80px] text-center">
+                    Pág. {page + 1} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => loadData(page + 1)}
+                    disabled={page >= totalPages - 1}
+                    className="h-10 px-4 bg-card border-2 border-muted/60 rounded-xl font-bold text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed hover:border-primary/30 hover:bg-primary/5 transition-all"
+                  >
+                    Siguiente →
+                  </button>
+                </div>
+              </div>
+            )}
 
            {/* Results List */}
            <div className="grid grid-cols-1 gap-4">
-              {filteredCloses.map((item) => (
+              {closes.map((item) => (
                  <div
                    key={item.id}
                    onClick={() => { setSelectedClose(item); setShowDetailModal(true); }}
@@ -528,7 +602,7 @@ const CashRegister: React.FC = () => {
                 </div>
               ))}
 
-              {filteredCloses.length === 0 && (
+              {closes.length === 0 && (
                 <div className="text-center py-40 bg-muted/10 rounded-8xl border-2 border-dashed border-muted shadow-inner animate-in fade-in zoom-in duration-700">
                     <div className="bg-card border border-muted w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-muted">
                        <FileTextIcon size={40} className="text-muted-foreground opacity-20" />
@@ -725,7 +799,7 @@ const CashRegister: React.FC = () => {
 
              <div className="bg-primary p-6 rounded-4xl flex flex-col items-center justify-center text-white shadow-xl shadow-primary/20 gap-2">
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Impacto del Reporte</p>
-                <h4 className="text-lg font-black tracking-tight">{getExportLabel()} — {getExportCloses().length} Documentos</h4>
+                <h4 className="text-lg font-black tracking-tight">{getExportLabel()} — {exportType === 'last' ? (closes.length > 0 ? 1 : 0) : closes.length} Documentos</h4>
                 <button 
                    onClick={handleGeneratePDF} 
                    className="mt-4 w-full h-14 bg-primary-foreground text-primary rounded-2xl font-black text-sm uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
